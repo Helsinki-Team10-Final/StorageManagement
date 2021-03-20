@@ -11,10 +11,10 @@ module.exports = {
   typeDefs: gql`
     
     type User {
-        _id: ID!
-        name: String
-        role: String
-        email: String
+      _id: ID!
+      name: String
+      role: String
+      email: String
     }
 
     type UserLogin{
@@ -86,7 +86,7 @@ module.exports = {
           return {access_token}
         } catch (error) {
           console.log(error, '---> error')
-          return new ApolloError(error)
+          return new ApolloError("bad request","404",err)
         }
       },
 
