@@ -88,7 +88,7 @@ module.exports = {
           return {access_token, name: res.name, role: res.role}
         } catch (error) {
           console.log(error, '---> error')
-          return new ApolloError(error)
+          return new ApolloError("bad request","404",error)
         }
       },
 
