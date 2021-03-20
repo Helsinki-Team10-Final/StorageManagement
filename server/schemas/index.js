@@ -19,6 +19,8 @@ module.exports = {
 
     type UserLogin{
       access_token: String
+      name: String
+      role: String
     }
 
     type Item{
@@ -83,7 +85,7 @@ module.exports = {
           const access_token = await generateToken(res)
           // return res
           // console.log(access_token)
-          return {access_token}
+          return {access_token, name: res.name, role: res.role}
         } catch (error) {
           console.log(error, '---> error')
           return new ApolloError(error)
