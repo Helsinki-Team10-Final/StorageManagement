@@ -1,16 +1,15 @@
 const {decodedToken} = require('../helpers/jwt')
 
-function checkerAuth(access_token){
-    if (decodedToken(access_token).role === 'checker') return true
-    return false
-}
+const User = require('../models/user')
 
-function pickerAuth(access_token){
-    if (decodedToken(access_token).role === 'picker') return true
-    return false
+async function authorization(access_token, role) {
+  const user = decodedToken(access_token)
+  const findUser = await User.findOneById(user._id)
+  if (!findUser) return false
+  if (findUser.role !== role) return false
+  return true
 }
 
 module.exports= {
-    checkerAuth,
-    pickerAuth
+  authorization
 }

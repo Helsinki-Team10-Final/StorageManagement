@@ -10,6 +10,10 @@ class User {
     return getDatabase().collection('users').findOne(obj)
   }
 
+  static findOneById(id) {
+    return getDatabase().collection('users').findOne({_id: new mongodb.ObjectID(id)})
+  }
+
   static create(obj) {
     return getDatabase().collection('users').insertOne(obj)
   }
