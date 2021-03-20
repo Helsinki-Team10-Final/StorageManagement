@@ -1,5 +1,6 @@
 import './App.css';
 import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
 import LandingPage from './pages/LandingPage'
 import {Switch, Route} from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
@@ -15,6 +16,9 @@ function App() {
         </Route>
         <Route exact path="/login">
           <Login />
+        </Route>
+        <Route exact path="/main">
+          <Dashboard />
         </Route>
         
       </Switch>

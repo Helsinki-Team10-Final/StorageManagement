@@ -6,12 +6,16 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter} from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
+import client from './config/index'
+import { ApolloProvider } from '@apollo/client'
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
         <App />  
       </BrowserRouter>
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
