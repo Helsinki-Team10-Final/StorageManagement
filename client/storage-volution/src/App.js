@@ -12,7 +12,7 @@ function App() {
       <Switch>
         <Route exact path="/">
           <LandingPage />
-          <Login />
+          {/* <Login /> */}
         </Route>
         <Route exact path="/login">
           <Login />

@@ -1,7 +1,8 @@
 import '../assets/css/login.css'
-import { useState } from 'react';
-import { gql, useQuery } from '@apollo/client'
-import {useHistory} from 'react-router-dom'
+import { useState, useEffect } from 'react';
+import { gql, useMutation } from '@apollo/client'
+import { useHistory } from 'react-router-dom'
+import { toast } from 'react-toastify';
 
 const Login = gql`
   mutation login($login : UserLoginInput) {
@@ -15,23 +16,51 @@ const Login = gql`
 
 export default function LandingPage () {
   const history = useHistory()
+  const [handleLogin, {data}] = useMutation(Login);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
+  useEffect(() => {
+    const {name, role, access_token} = localStorage
+    if (name && role && access_token) {
+      history.push('/main')
+    }
+  }, [])
 
-  const HandleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      console.log(formData)
-      const {loading, error, data} = useQuery(Login, {variables: {login: formData}});
-      // setFormData({
-      //   email: '',
-      //   password: ''
-      // })
-      console.log(data, error)
+      // console.log(formData)
+      if (!formData.email || !formData.password) throw ({})
+      await handleLogin({variables: {login: formData}})
+      console.log(data)
+      localStorage.setItem('access_token', data.login.access_token)
+      localStorage.setItem('name', data.login.name)
+      localStorage.setItem('role', data.login.role)
+      history.push('/main')
     } catch (err) {
-      console.log(err)
+      if (err.graphQLErrors) {
+        toast.error(`❌ ${err.graphQLErrors[0].extensions.message}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error(`❌ Email and Password are required`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   }
   
@@ -64,7 +93,7 @@ export default function LandingPage () {
                           value={formData.email}
                           onChange={onChange}
                           name="email"
-                          required autoFocus/>
+                          autoFocus/>
                         <label htmlFor="inputEmail">Email address</label>
                       </div>
 
@@ -76,7 +105,7 @@ export default function LandingPage () {
                           placeholder="Password"
                           onChange={onChange}
                           name="password"
-                          required/>
+                          />
                         <label htmlFor="inputPassword">Password</label>
                       </div>
 

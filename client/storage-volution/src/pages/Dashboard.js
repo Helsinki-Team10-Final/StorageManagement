@@ -1,8 +1,8 @@
 export default function Dashboard(props) {
   return (
     <>
-      Masuk Dashboard
-      <button className="btn">Logout</button>
+      <h1>Masuk Dashboard</h1>
+      <button className="btn btn-primary">Logout</button>
     </>
   )
 }
