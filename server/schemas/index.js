@@ -55,11 +55,9 @@ module.exports = {
       login(input: UserLoginInput): UserLogin
       createUser(user: CreateUserInput): User
       createItem(item: CreateItemInput): Item
-      checkerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
       pickerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
       deleteItem(id: ID!): Item
     }
-
     `,
 
   resolvers: {
@@ -127,21 +125,6 @@ module.exports = {
           return new ApolloError(error)
         }
       },
-
-      checkerUpdateItem: async(_, args) => {
-        try {
-          // console.log(args,'-------')
-          if (!await checkerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
-          let item = await Item.findOne(args.id)
-          item.quantity += args.quantity
-          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
-          return updatedItem
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      },
-
       pickerUpdateItem: async(_, args) => {
         try {
           // console.log(args,'-------')

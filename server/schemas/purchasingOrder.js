@@ -25,32 +25,31 @@ module.exports = {
       currentQuantity: Int
     }
 
-    input ItemInput {
+    input ItemInputCreate {
       name: String
       quantity: Int
     }
 
-    input PurchasingOrderInput {
-      vendorName: String
-      expiredDate: Date
-      items: [ItemInput]
-    }
-
-    input currentQuantityPO {
+    input ItemInputUpdate {
       name: String
       quantity: Int
       currentQuantity: Int
     }
 
-    input updatePO {
+    input CreatePurchasingOrderInput {
       vendorName: String
       expiredDate: Date
-      items: [ItemInput]
+      items: [ItemInputCreate]
     }
 
-    input CurrentQuantityPurchasingOrderInput {
-      item_name: String
-      quantity: Int
+    input UpdateCurrentQuantityPurchasingOrderInput {
+      _id: ID!
+      vendorName: String!
+      items: [ItemInputUpdate]
+      status: String
+      createdAt: Date
+      updatedAt: Date
+      expiredDate: Date
     }
 
     extend type Query {
@@ -59,8 +58,8 @@ module.exports = {
     }
 
     extend type Mutation {
-      createPurchasingOrder(input: PurchasingOrderInput, access_token: String!) : PurchasingOrder
-      updateCurrentQuantityPurchasingOrder(id: ID!, input: CurrentQuantityPurchasingOrderInput, access_token: String) : PurchasingOrder
+      createPurchasingOrder(input: CreatePurchasingOrderInput, access_token: String!) : PurchasingOrder
+      updateCurrentQuantityPurchasingOrder(id: ID!, input: UpdateCurrentQuantityPurchasingOrderInput, access_token: String) : PurchasingOrder
     }
   `,
   resolvers: {
@@ -102,15 +101,23 @@ module.exports = {
           return new ApolloError("bad request","404",err)
         }
       },
-      // async updateCurrentQuantityPurchasingOrder(_, args) {
-      //   try {
-      //     const authorize = authorization(args.access_token, "checker")
-      //     if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
-      //   } catch (err) {
-      //     console.log(err)
-      //     return new ApolloError("bad request","404",err)
-      //   }
-      // }
+      async updateCurrentQuantityPurchasingOrder(_, args) {
+        try {
+          const authorize = authorization(args.access_token, "checker")
+          if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
+          const payload = {
+            items: args.input.items,
+            status: 'clear',
+            updatedAt: new Date()
+          }
+          const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.id, payload)
+          console.log(updatedPurchasingOrder)
+          return updatedPurchasingOrder.value
+        } catch (err) {
+          console.log(err)
+          return new ApolloError("bad request","404",err)
+        }
+      }
     }
   }
 }
