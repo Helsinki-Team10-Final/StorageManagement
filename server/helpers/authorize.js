@@ -1,4 +1,5 @@
 const {decodedToken} = require('../helpers/jwt')
+
 const User = require('../models/user')
 
 async function authorization(access_token, role) {

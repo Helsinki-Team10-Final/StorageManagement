@@ -6,10 +6,10 @@ const {
   comparePassword
 } = require('../helpers/bcrypt')
 const {generateToken} = require('../helpers/jwt')
+const {checkerAuth, pickerAuth} = require('../helpers/authorize')
 
 module.exports = {
   typeDefs: gql`
-    
     type User {
       _id: ID!
       name: String
@@ -19,6 +19,8 @@ module.exports = {
 
     type UserLogin{
       access_token: String
+      name: String
+      role: String
     }
 
     type Item{
@@ -53,8 +55,8 @@ module.exports = {
     type Mutation{
       createUser(user: CreateUserInput): User
       createItem(item: CreateItemInput): Item
-      checkerUpdateItem(id: ID!, quantity: Int): Item
-      pickerUpdateItem(id: ID!, quantity: Int): Item
+      checkerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
+      pickerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
       deleteItem(id: ID!): Item
     }
 
@@ -83,12 +85,34 @@ module.exports = {
           const access_token = await generateToken(res)
           // return res
           // console.log(access_token)
-          return {access_token}
+          return {access_token, name: res.name, role: res.role}
         } catch (error) {
           console.log(error, '---> error')
           return new ApolloError("bad request","404",err)
         }
       },
+
+      items: async () => {
+        try {
+          const res = await Item.find()
+          // console.log(resDB)
+          return res
+        } catch (error) {console.log(error, '---> error')
+          return new ApolloError(error)
+        }
+      },
+
+      item: async (parent, args, context, info) => {
+        try {
+          // console.log(args, '------')
+          const res = await Item.findOne(args.itemId)
+          // console.log(res)
+          return res
+        } catch (error) {
+          console.log(error, '---> error')
+          return new ApolloError(error)
+        }
+      }
 
     },
 
@@ -121,6 +145,33 @@ module.exports = {
         }
       },
 
+      checkerUpdateItem: async(_, args) => {
+        try {
+          // console.log(args,'-------')
+          if (!await checkerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
+          let item = await Item.findOne(args.id)
+          item.quantity += args.quantity
+          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
+          return updatedItem
+        } catch (error) {
+          console.log(error, '---> error')
+          return new ApolloError(error)
+        }
+      },
+
+      pickerUpdateItem: async(_, args) => {
+        try {
+          // console.log(args,'-------')
+          if (!await pickerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
+          let item = await Item.findOne(args.id)
+          item.quantity -= args.quantity
+          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
+          return updatedItem
+        } catch (error) {
+          console.log(error, '---> error')
+          return new ApolloError(error)
+        }
+      },
 
     }
   }
