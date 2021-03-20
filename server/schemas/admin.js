@@ -10,10 +10,7 @@ module.exports = {
       _id: ID
       purchasingOrder: PurchasingOrder
       role: String
-    }
-
-    extend type Query {
-      brodcasts: [BroadCast]
+      checkerId: String
     }
 
     extend type Mutation {
@@ -23,48 +20,41 @@ module.exports = {
 
   `,
   resolvers: {
-    Query: {
-      async brodcasts(_, args) {
-        try {
-          const authorize = authorization(args.access_token, "warehouseadmin")
-          const allBroadcast = await Broadcast.find()
-          return allBroadcast
-        } catch(err) {
-
-        }
-      }
-    },
     Mutation: {
       async updateStatusPurchasingOrderAdmin(_, args) {
         try {
           const authorize = authorization(args.access_token, "warehouseadmin")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
-          const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatusFromAdmin(args.id, args.status)
+          const payload = {
+            status: args.status,
+            updatedAt: new Date()
+          }
+          const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(args.id, payload)
           console.log(updatedStatusPurchasingOrder)
           return updatedStatusPurchasingOrder.value
         } catch(err) {
           console.log(err)
           return new ApolloError("bad request","404",err)
         }
+      },
+      async createBroadcast(_, args) {
+        try {
+          const authorize = authorization(args.access_token, "warehouseadmin")
+          if (!authorize) throw {type: "CustomError", message: "Not authorize"}
+          const foundPurchasingOrder = await PurchasingOrder.findById(args.idPurchasingOrder)
+          console.log(foundPurchasingOrder)
+          const broadcast = {
+            purchasingOrder: foundPurchasingOrder,
+            role: args.role
+          }
+          const newBroadcast = await Broadcast.create(broadcast)
+          console.log(broadcast)
+          return newBroadcast.ops[0]
+        } catch(err) {
+          console.log(err)
+          return new ApolloError("bad request","404",err)
+        }
       }
-      // async createBroadcast(_, args) {
-      //   try {
-      //     const authorize = authorization(args.access_token, "warehouseadmin")
-      //     if (!authorize) throw {type: "CustomError", message: "Not authorize"}
-      //     const foundPurchasingOrder = await PurchasingOrder.findById(args.idPurchasingOrder)
-      //     console.log(foundPurchasingOrder)
-      //     const broadcast = {
-      //       purchasingOrder: foundPurchasingOrder,
-      //       role: args.role
-      //     }
-      //     const newBroadcast = await Broadcast.create(broadcast)
-      //     console.log(broadcast)
-      //     return newBroadcast.ops[0]
-      //   } catch(err) {
-      //     console.log(err)
-      //     return new ApolloError("bad request","404",err)
-      //   }
-      // }
     }
   }
 }
