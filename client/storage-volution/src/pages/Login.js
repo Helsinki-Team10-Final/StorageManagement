@@ -21,12 +21,13 @@ export default function LandingPage () {
     email: '',
     password: ''
   })
+  console.log(formData)
   useEffect(() => {
     const {name, role, access_token} = localStorage
     if (name && role && access_token) {
       history.push('/main')
     }
-  }, [])
+  }, [history])
 
   const handleSubmit = async (e) => {
     try {
@@ -34,11 +35,12 @@ export default function LandingPage () {
       // console.log(formData)
       if (!formData.email || !formData.password) throw ({})
       await handleLogin({variables: {login: formData}})
-      console.log(data)
-      localStorage.setItem('access_token', data.login.access_token)
-      localStorage.setItem('name', data.login.name)
-      localStorage.setItem('role', data.login.role)
-      history.push('/main')
+      if (data) {
+        localStorage.setItem('access_token', data.login.access_token)
+        localStorage.setItem('name', data.login.name)
+        localStorage.setItem('role', data.login.role)
+        history.push('/main')
+      }
     } catch (err) {
       if (err.graphQLErrors) {
         toast.error(`❌ ${err.graphQLErrors[0].extensions.message}`, {
@@ -103,13 +105,17 @@ export default function LandingPage () {
                           id="inputPassword" 
                           className="form-control" 
                           placeholder="Password"
+                          value={formData.password}
                           onChange={onChange}
                           name="password"
                           />
                         <label htmlFor="inputPassword">Password</label>
                       </div>
 
-                      <button className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Sign in</button>
+                      <button 
+                        className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" 
+                        type="submit"
+                        >Sign in</button>
                     </form>
                   </div>
                 </div>
