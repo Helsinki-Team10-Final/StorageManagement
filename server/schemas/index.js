@@ -43,14 +43,14 @@ module.exports = {
       name: String
     }
 
-    type Query {
+    extend type Query {
         users: [User]
         login(input: UserLoginInput): UserLogin
         items: [Item]
         item(itemId: ID!): Item
     }
 
-    type Mutation{
+    extend type Mutation{
       createUser(user: CreateUserInput): User
       createItem(item: CreateItemInput): Item
       checkerUpdateItem(id: ID!, quantity: Int): Item
@@ -89,7 +89,6 @@ module.exports = {
           return new ApolloError(error)
         }
       },
-
     },
 
     Mutation: {
@@ -120,8 +119,6 @@ module.exports = {
           return new ApolloError(error)
         }
       },
-
-
     }
   }
 }
