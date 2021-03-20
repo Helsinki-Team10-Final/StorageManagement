@@ -1,6 +1,77 @@
 import '../assets/css/login.css'
+import { useState, useEffect } from 'react';
+import { gql, useMutation } from '@apollo/client'
+import { useHistory } from 'react-router-dom'
+import { toast } from 'react-toastify';
+
+const Login = gql`
+  mutation login($login : UserLoginInput) {
+    login(input: $login){
+      access_token
+      name
+      role
+    }
+  }
+`;
 
 export default function LandingPage () {
+  const history = useHistory()
+  const [handleLogin, {data}] = useMutation(Login);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+  useEffect(() => {
+    const {name, role, access_token} = localStorage
+    if (name && role && access_token) {
+      history.push('/main')
+    }
+  }, [])
+
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      // console.log(formData)
+      if (!formData.email || !formData.password) throw ({})
+      await handleLogin({variables: {login: formData}})
+      console.log(data)
+      localStorage.setItem('access_token', data.login.access_token)
+      localStorage.setItem('name', data.login.name)
+      localStorage.setItem('role', data.login.role)
+      history.push('/main')
+    } catch (err) {
+      if (err.graphQLErrors) {
+        toast.error(`❌ ${err.graphQLErrors[0].extensions.message}`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error(`❌ Email and Password are required`, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  }
+  
+  const onChange = e => {
+    let {name, value} = e.target
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
   return (
     <>
       <div className="container-fluid">
@@ -12,24 +83,33 @@ export default function LandingPage () {
                 <div className="row">
                   <div className="col-md-9 col-lg-8 mx-auto">
                     <h3 className="login-heading mb-4">Welcome back!</h3>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                       <div className="form-label-group">
-                        <input type="email" id="inputEmail" className="form-control" placeholder="Email address" required autofocus/>
-                        <label for="inputEmail">Email address</label>
+                        <input 
+                          type="email" 
+                          id="inputEmail" 
+                          className="form-control" 
+                          placeholder="Email address"
+                          value={formData.email}
+                          onChange={onChange}
+                          name="email"
+                          autoFocus/>
+                        <label htmlFor="inputEmail">Email address</label>
                       </div>
 
                       <div className="form-label-group">
-                        <input type="password" id="inputPassword" className="form-control" placeholder="Password" required/>
-                        <label for="inputPassword">Password</label>
+                        <input 
+                          type="password" 
+                          id="inputPassword" 
+                          className="form-control" 
+                          placeholder="Password"
+                          onChange={onChange}
+                          name="password"
+                          />
+                        <label htmlFor="inputPassword">Password</label>
                       </div>
 
-                      <div className="custom-control custom-checkbox mb-3">
-                        <input type="checkbox" className="custom-control-input" id="customCheck1"/>
-                        <label className="custom-control-label" for="customCheck1">Remember password</label>
-                      </div>
                       <button className="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Sign in</button>
-                      <div className="text-center">
-                        <a className="small" href="#">Forgot password?</a></div>
                     </form>
                   </div>
                 </div>
