@@ -11,10 +11,10 @@ const {checkerAuth, pickerAuth} = require('../helpers/authorize')
 module.exports = {
   typeDefs: gql`
     type User {
-        _id: ID!
-        name: String
-        role: String
-        email: String
+      _id: ID!
+      name: String
+      role: String
+      email: String
     }
 
     type UserLogin{
@@ -47,12 +47,12 @@ module.exports = {
 
     type Query {
         users: [User]
-        login(input: UserLoginInput): UserLogin
         items: [Item]
         item(itemId: ID!): Item
     }
 
     type Mutation{
+      login(input: UserLoginInput): UserLogin
       createUser(user: CreateUserInput): User
       createItem(item: CreateItemInput): Item
       checkerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
@@ -72,23 +72,6 @@ module.exports = {
         } catch (error) {
           console.log(error, '---> error')
           return new ApolloError(error)
-        }
-      },
-
-      login: async (parent, args, context, info) => {
-        try {
-          const {email, password} = args.input
-          const res = await User.findOne({email})
-          if (!res) throw {type: "CustomError", message: "Email or Password Wrong"}
-          const comparedPassword = await comparePassword(password, res.password)
-          if (!comparedPassword) throw {type: "CustomError", message: "Email or Password Wrong"}
-          const access_token = await generateToken(res)
-          // return res
-          // console.log(access_token)
-          return {access_token, name: res.name, role: res.role}
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError("bad request","404",error)
         }
       },
 
@@ -170,6 +153,23 @@ module.exports = {
         } catch (error) {
           console.log(error, '---> error')
           return new ApolloError(error)
+        }
+      },
+
+      login: async (_,args) => {
+        try {
+          const {email, password} = args.input
+          const res = await User.findOne({email})
+          if (!res) throw {type: "CustomError", message: "Email or Password Wrong"}
+          const comparedPassword = await comparePassword(password, res.password)
+          if (!comparedPassword) throw {type: "CustomError", message: "Email or Password Wrong"}
+          const access_token = await generateToken(res)
+          // return res
+          // console.log(access_token)
+          return {access_token, name: res.name, role: res.role}
+        } catch (error) {
+          console.log(error, '---> error')
+          return new ApolloError("bad request","404",error)
         }
       },
 
