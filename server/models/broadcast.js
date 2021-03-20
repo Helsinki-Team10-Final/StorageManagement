@@ -6,8 +6,8 @@ class Broadcast {
     return getDatabase().collection('broadcasts').find().toArray()
   }
 
-  static findOne(obj) {
-    return getDatabase().collection('broadcasts').findOne(obj)
+  static findOne(id) {
+    return getDatabase().collection('broadcasts').findOne({_id: new mongodb.ObjectID(id)})
   }
 
   static create(obj) {
