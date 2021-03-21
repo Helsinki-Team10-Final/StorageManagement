@@ -101,6 +101,7 @@ module.exports = {
           return new ApolloError("bad request","404",err)
         }
       },
+      // add key currentQuantity to Item PO
       async updateCurrentQuantityPurchasingOrder(_, args) {
         try {
           const authorize = authorization(args.access_token, "checker")
