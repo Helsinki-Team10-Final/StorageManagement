@@ -4,7 +4,7 @@ const {checkerAuth, pickerAuth} = require('../helpers/authorize')
 
 module.exports = {
   typeDefs: gql`
-    type Item{
+    type Item {
       _id: ID!
       name: String
       quantity: Int
@@ -15,19 +15,16 @@ module.exports = {
     }
 
     extend type Query {
-        items: [Item]
-        item(itemId: ID!): Item
+      items: [Item]
+      item(itemId: ID!): Item
     }
 
     extend type Mutation{
       createItem(item: CreateItemInput): Item
-      checkerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
       pickerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
       deleteItem(id: ID!): Item
     }
-
-    `,
-
+  `,
   resolvers: {
     Query: {
       items: async () => {
@@ -40,7 +37,7 @@ module.exports = {
         }
       },
 
-      item: async (parent, args, context, info) => {
+      item: async (_, args) => {
         try {
           // console.log(args, '------')
           const res = await Item.findOne(args.itemId)
@@ -51,9 +48,7 @@ module.exports = {
           return new ApolloError(error)
         }
       }
-
     },
-
     Mutation: {
       createItem: async (_, args) => {
         try {
@@ -68,21 +63,6 @@ module.exports = {
           return new ApolloError(error)
         }
       },
-
-      checkerUpdateItem: async(_, args) => {
-        try {
-          // console.log(args,'-------')
-          if (!await checkerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
-          let item = await Item.findOne(args.id)
-          item.quantity += args.quantity
-          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
-          return updatedItem
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      },
-
       pickerUpdateItem: async(_, args) => {
         try {
           // console.log(args,'-------')
@@ -95,8 +75,7 @@ module.exports = {
           console.log(error, '---> error')
           return new ApolloError(error)
         }
-      },
-
+      }
     }
   }
 }

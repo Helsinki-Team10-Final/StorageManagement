@@ -14,18 +14,18 @@ class PurchasingOrder{
     return getDatabase().collection('purchasingorder').findOne({ _id: ObjectId(id) })
   }
 
-  static updateStatusFromAdmin(id, payload) {
+  static updateStatus(id, payload) {
     return getDatabase().collection('purchasingorder').findOneAndUpdate(
       { _id: ObjectId(id) },
-      { $set: {status: payload} },
+      { $set: {status: payload.status, updatedAt: payload.updatedAt} },
       { returnNewDocument: true , returnOriginal: false }
     )
   }
-
+  
   static updateCurrentQuantity(id, payload) {
     return getDatabase().collection('purchasingorder').findOneAndUpdate(
       { _id: ObjectId(id) },
-      { $set: {items: payload} },
+      { $set: {items: payload.items, updatedAt: payload.updatedAt, status: payload.status} },
       { returnNewDocument: true , returnOriginal: false }
     )
   }

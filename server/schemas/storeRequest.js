@@ -75,7 +75,7 @@ module.exports = {
 
       createBroadcastPicker: async (_, args) => {
         try {
-          const authorize = authorization(args.access_token, "buyer")
+          const authorize = await authorization(args.access_token, "buyer")
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
           const pickerLogin = decodedToken(access_token)
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
