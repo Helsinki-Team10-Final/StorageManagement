@@ -23,7 +23,7 @@ module.exports = {
     Mutation: {
       async updateStatusPurchasingOrderAdmin(_, args) {
         try {
-          const authorize = authorization(args.access_token, "warehouseadmin")
+          const authorize = await authorization(args.access_token, "warehouseadmin")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
           const payload = {
             status: args.status,
@@ -39,7 +39,7 @@ module.exports = {
       },
       async createBroadcast(_, args) {
         try {
-          const authorize = authorization(args.access_token, "warehouseadmin")
+          const authorize = await authorization(args.access_token, "warehouseadmin")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
           const foundPurchasingOrder = await PurchasingOrder.findById(args.idPurchasingOrder)
 

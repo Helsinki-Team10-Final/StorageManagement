@@ -1,4 +1,6 @@
 const { gql, ApolloError } = require('apollo-server')
+const Item = require('../models/item')
+const {checkerAuth, pickerAuth} = require('../helpers/authorize')
 
 module.exports = {
   typeDefs: gql`
