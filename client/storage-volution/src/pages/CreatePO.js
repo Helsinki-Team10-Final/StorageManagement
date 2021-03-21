@@ -1,6 +1,25 @@
 import {Form, Button, Container} from 'react-bootstrap'
-import DateTimePicker from 'react-datetime-picker';
+import { gql, useMutation } from '@apollo/client'
 import {useState} from 'react'
+import { useHistory } from 'react-router-dom'
+import { toast } from 'react-toastify';
+
+const AddPO = gql`
+  mutation createPO ($input: CreatePurchasingOrderInput, $access_token: String!){
+    createPurchasingOrder(input: $input, access_token: $access_token) {
+      vendorName,
+      status,
+      items {
+        name
+        quantity
+      }
+      createdAt,
+      updatedAt,
+      expiredDate
+    }
+  }
+
+`;
 
 const dateString = (date) => {
   const offsetMs = date.getTimezoneOffset() * 60 * 1000;
@@ -11,6 +30,8 @@ const dateString = (date) => {
 }
 
 export default function CreatePO(props) {
+  const history = useHistory()
+  const [handleCreatePO, {data}] = useMutation(AddPO);
   const [formData, setFormData] = useState({
     vendorName: '',
     expiredDate: dateString(new Date()),
@@ -25,6 +46,27 @@ export default function CreatePO(props) {
     setFormData({...formData, items: [...formData.items, { name: '', quantity: 1}]})
   }
 
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+
+      // console.log(formData)
+      if (!formData.vendorName) throw ({message: `Vendor's name is required.`})
+      await handleCreatePO({variables: {input: formData, access_token: localStorage.getItem('access_token')}})
+      history.push('/main')
+    } catch (err) {
+      console.log(err)
+      toast.error(`❌ ${err.message || err.graphQLErrors[0].extensions.message}`, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }
   const onChange = (e) => {
     let {name, value} = e.target
 
@@ -56,16 +98,16 @@ export default function CreatePO(props) {
   return (
     <>
       <h1 className="mb-5">Create PO</h1>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Form.Row>
-          <Form.Group className="col-md-5" >
+          <Form.Group className="col-md-8" >
             <Form.Label><h5><i className="fa fa-user"/> Vendor's Name</h5></Form.Label>
             <Form.Control onChange={onChange} name="vendorName" value={formData.vendorName} type="text" placeholder="Enter Vendor's Name" />
           </Form.Group>
         </Form.Row>
 
-        <Form.Label className="mb-3"><h5>Items</h5></Form.Label>
-        <Container fluid style={{maxHeight: '50vh', overflowY: "auto"}}>
+        <Form.Label><h5><i className="fa fa-box"/> Items</h5></Form.Label>
+        <Container className="col" fluid style={{maxHeight: '50vh', overflowY: "auto"}}>
           {
             formData.items.map((item, index) => {
               return (
@@ -96,16 +138,17 @@ export default function CreatePO(props) {
           }
         </Container>
 
-        <Button onClick={addNewItem} className="mb-3" variant="primary">
+        <Button onClick={addNewItem} className="mb-4" variant="primary">
           Add new item
         </Button>
 
-        <Form.Group >
-          <Form.Label>Expired Date</Form.Label>
-          {/* <Form.Control type="datetime-local" name="expiredDate" onChange={onChange} value={dateString(formData.expiredDate.toLocaleString("id-ID")).slice(0,19)}/> */}
-          <Form.Control type="datetime-local" name="expiredDate" onChange={onChange} value={formData.expiredDate.slice(0,19)}/>
-        </Form.Group>
-
+        <Form.Row>
+          <Form.Group className="col-md-8" >
+            <Form.Label><h5><i className="fa fa-calendar"/> Expired Date</h5></Form.Label>
+            <Form.Control type="datetime-local" name="expiredDate" onChange={onChange} value={formData.expiredDate.slice(0,19)}/>
+          </Form.Group>
+        </Form.Row>
+        
         <Button variant="primary" type="submit">
           Submit
         </Button>
