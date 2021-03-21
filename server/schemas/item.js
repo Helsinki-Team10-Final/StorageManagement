@@ -21,7 +21,6 @@ module.exports = {
 
     extend type Mutation{
       createItem(item: CreateItemInput): Item
-      pickerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
       deleteItem(id: ID!): Item
     }
   `,
@@ -63,19 +62,7 @@ module.exports = {
           return new ApolloError(error)
         }
       },
-      pickerUpdateItem: async(_, args) => {
-        try {
-          // console.log(args,'-------')
-          if (!await pickerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
-          let item = await Item.findOne(args.id)
-          item.quantity -= args.quantity
-          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
-          return updatedItem
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      }
+      
     }
   }
 }

@@ -17,7 +17,7 @@ class StoreRequest{
   static updateStatusFromAdmin(id, payload) {
     return getDatabase().collection('storerequests').findOneAndUpdate(
       { _id: ObjectId(id) },
-      { $set: {status: payload} },
+      { $set: {status: payload.status, updatedAt: payload.updatedAt} },
       { returnNewDocument: true , returnOriginal: false }
     )
   }

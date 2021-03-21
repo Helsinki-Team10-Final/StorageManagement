@@ -105,11 +105,11 @@ module.exports = {
           // Update / Create Collection Item
           args.items.forEach(async (item) => {
             console.log(item)
-            const foundItem = await Item.findOneByName(item.name) //mangga , pisang
+            const foundItem = await Item.findOneByName(item.name.toLowerCase()) //mangga , pisang
             // if not found then create new item
             if (!foundItem) {
               const payload = {
-                name: item.name,
+                name: item.name.toLowerCase(),
                 quantity: item.currentQuantity
               }
               const newItem = await Item.create(payload)
