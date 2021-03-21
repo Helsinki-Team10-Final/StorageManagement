@@ -3,10 +3,16 @@ const { authorization } = require('../helpers/authorize')
 const { decodedToken } = require('../helpers/jwt')
 const Broadcast = require('../models/broadcast')
 const PurchasingOrder = require('../models/purchasingOrder')
+const Item = require('../models/item')
+const { updateStatus } = require('../models/purchasingOrder')
 
 module.exports = {
   typeDefs: gql`
-  
+
+    type UpdateItemResponse {
+      message: String
+    }
+
     type AllBroadCast {
       broadcasts: [BroadCast]
       unfinishedBroadcast: BroadCast
@@ -18,7 +24,7 @@ module.exports = {
     }
 
     extend type Mutation {
-      checkerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
+      checkerUpdateItem(items: [ItemInputUpdate], access_token: String, idPO: String, idBroadCast: String): String 
       updateStatusPurchasingOrderChecker(id: ID!, access_token: String) : PurchasingOrder
     }
   `,
@@ -93,35 +99,42 @@ module.exports = {
     Mutation: {
       checkerUpdateItem: async(_, args) => {
         try {
-          // console.log(args,'-------')
           const authorize = await authorization(args.access_token, "checker")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
 
-          let item = await Item.findOne(args.id)
-          item.quantity += args.quantity
-          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
-          return updatedItem
+          // Update / Create Collection Item
+          args.items.forEach(async (item) => {
+            console.log(item)
+            const foundItem = await Item.findOneByName(item.name) //mangga , pisang
+            // if not found then create new item
+            if (!foundItem) {
+              const payload = {
+                name: item.name,
+                quantity: item.currentQuantity
+              }
+              const newItem = await Item.create(payload)
+            } else {
+              // if found then update quantity of that item
+              const updatedQuantity = await Item.updateOne(foundItem._id, {quantity: foundItem.quantity + item.currentQuantity})
+              
+            }
+          })
+
+          // Update PO
+          const payload = {
+            items: args.items,
+            status: 'clear',
+            updatedAt: new Date()
+          }
+          const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.idPO, payload)
+          // console.log(updatedPurchasingOrder)
+          const deletedBroadcast = await Broadcast.deleteOne(args.idBroadCast)
+          return "Successfully Checking Purchasing Order"
         } catch (error) {
           console.log(error, '---> error')
-          return new ApolloError(error)
+          return new ApolloError("bad request","404",err)
         }
       }
-      // async updateStatusPurchasingOrderChecker(_, args) {
-      //   try {
-      //     const authorize = authorization(args.access_token, "checker")
-      //     if (!authorize) throw {type: "CustomError", message: "Not authorize"}
-      //     const payload = {
-      //       status: "clear",
-      //       updatedAt: new Date()
-      //     }
-      //     const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(args.id, payload)
-      //     // console.log(updatedStatusPurchasingOrder)
-      //     return updatedStatusPurchasingOrder.value
-      //   } catch(err) {
-      //     console.log(err)
-      //     return new ApolloError("bad request","404",err)
-      //   }
-      // }
     }
   }
 }

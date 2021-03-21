@@ -15,7 +15,7 @@ module.exports = {
 
     extend type Mutation {
       updateStatusPurchasingOrderAdmin(id: ID!, status: String, access_token: String!): PurchasingOrder
-      createBroadcast(idPurchasingOrder: ID!, role: String!) : BroadCast
+      createBroadcast(idPurchasingOrder: ID!, role: String!, access_token: String) : BroadCast
     }
 
   `,
@@ -42,9 +42,18 @@ module.exports = {
           const authorize = authorization(args.access_token, "warehouseadmin")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
           const foundPurchasingOrder = await PurchasingOrder.findById(args.idPurchasingOrder)
+
+          //update status PO to checking
+          const payload = {
+            status: 'checking',
+            updatedAt: new Date()
+          }
+          const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(foundPurchasingOrder._id, payload)
+          console.log(updatedStatusPurchasingOrder)
+
           console.log(foundPurchasingOrder)
           const broadcast = {
-            purchasingOrder: foundPurchasingOrder,
+            purchasingOrder: updatedStatusPurchasingOrder.value,
             role: args.role
           }
           const newBroadcast = await Broadcast.create(broadcast)

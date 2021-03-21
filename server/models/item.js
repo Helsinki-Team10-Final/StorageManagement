@@ -6,8 +6,12 @@ class Item {
     return getDatabase().collection('items').find().toArray()
   }
 
-  static findOne(id) {
+  static findOneById(id) {
     return getDatabase().collection('items').findOne({_id: new mongodb.ObjectID(id)})
+  }
+
+  static findOneByName(name) {
+    return getDatabase().collection('items').findOne({ name })
   }
 
   static create(obj) {

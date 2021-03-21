@@ -4,12 +4,14 @@ const { connect } = require('./config/mongodb')
 const purchasingOrderSchema = require('./schemas/purchasingOrder')
 const adminSchema = require('./schemas/admin')
 const checkerSchema = require('./schemas/checker')
+const itemSchema = require('./schemas/item')
+const userSchema = require('./schemas/user')
 
 const customScalarResolver = require('./schemas/graphQlResolver')
 
 const server = new ApolloServer({
-    typeDefs: [Schemas.typeDefs, purchasingOrderSchema.typeDefs, adminSchema.typeDefs, checkerSchema.typeDefs],
-    resolvers: [customScalarResolver, Schemas.resolvers, adminSchema.resolvers, purchasingOrderSchema.resolvers, checkerSchema.resolvers]
+    typeDefs: [Schemas.typeDefs, purchasingOrderSchema.typeDefs, adminSchema.typeDefs, checkerSchema.typeDefs, itemSchema.typeDefs, userSchema.typeDefs],
+    resolvers: [customScalarResolver, Schemas.resolvers, adminSchema.resolvers, purchasingOrderSchema.resolvers, checkerSchema.resolvers, itemSchema.resolvers, userSchema.resolvers]
 })
 
 connect().then(async (db) => {
