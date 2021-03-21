@@ -23,12 +23,6 @@ module.exports = {
       role: String
     }
 
-    type Item{
-      _id: ID!
-      name: String
-      quantity: Int
-    }
-
     input UserLoginInput {
       email: String
       password: String
@@ -41,23 +35,13 @@ module.exports = {
       role: String
     }
 
-    input CreateItemInput {
-      name: String
-    }
-
     type Query {
         users: [User]
-        items: [Item]
-        item(itemId: ID!): Item
     }
 
     type Mutation{
       login(input: UserLoginInput): UserLogin
       createUser(user: CreateUserInput): User
-      createItem(item: CreateItemInput): Item
-      checkerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
-      pickerUpdateItem(id: ID!, quantity: Int, access_token: String): Item
-      deleteItem(id: ID!): Item
     }
 
     `,
@@ -74,29 +58,6 @@ module.exports = {
           return new ApolloError(error)
         }
       },
-
-      items: async () => {
-        try {
-          const res = await Item.find()
-          // console.log(resDB)
-          return res
-        } catch (error) {console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      },
-
-      item: async (parent, args, context, info) => {
-        try {
-          // console.log(args, '------')
-          const res = await Item.findOne(args.itemId)
-          // console.log(res)
-          return res
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      }
-
     },
 
     Mutation: {
@@ -108,48 +69,6 @@ module.exports = {
           const user = await User.create({name, email, password, role})
           // console.log(user.ops[0])
           return user.ops[0]
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      },
-
-      createItem: async (_, args) => {
-        try {
-          // await redis.del("items:data")
-          let {name} = args.item
-          const quantity = 0
-          const item = await Item.create({name, quantity})
-          // console.log(item.ops[0])
-          return item.ops[0]
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      },
-
-      checkerUpdateItem: async(_, args) => {
-        try {
-          // console.log(args,'-------')
-          if (!await checkerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
-          let item = await Item.findOne(args.id)
-          item.quantity += args.quantity
-          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
-          return updatedItem
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError(error)
-        }
-      },
-
-      pickerUpdateItem: async(_, args) => {
-        try {
-          // console.log(args,'-------')
-          if (!await pickerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
-          let item = await Item.findOne(args.id)
-          item.quantity -= args.quantity
-          let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
-          return updatedItem
         } catch (error) {
           console.log(error, '---> error')
           return new ApolloError(error)
