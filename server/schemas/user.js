@@ -1,4 +1,13 @@
 const { gql, ApolloError } = require('apollo-server')
+const User = require('../models/user')
+const {
+  hashPassword,
+  comparePassword
+} = require('../helpers/bcrypt')
+const {
+  generateToken,
+  decodedToken
+} = require ('../helpers/jwt')
 
 module.exports = {
   typeDefs: gql`
@@ -76,7 +85,7 @@ module.exports = {
           return {access_token, name: res.name, role: res.role}
         } catch (error) {
           console.log(error, '---> error')
-          return new ApolloError("bad request","404",err)
+          return new ApolloError("bad request","404",error)
         }
       }
     }
