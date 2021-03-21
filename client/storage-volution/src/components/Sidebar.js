@@ -5,22 +5,22 @@ export default function Sidebar({showSidebar}) {
   return (
     <>
       <nav id="sidebar" className={showSidebar ? "active" : null}>
-        <div class="sidebar-header">
+        <div className="sidebar-header">
           <h3>Bootstrap Sidebar</h3>
         </div>
 
-        <ul class="list-unstyled components">
+        <ul className="list-unstyled components">
           <p>Dummy Heading</p>
-          <li class="active">
+          <li className="active">
             <a
               href="#homeSubmenu"
               data-toggle="collapse"
               aria-expanded="false"
-              class="dropdown-toggle"
+              className="dropdown-toggle"
             >
               Home
             </a>
-            <ul class="collapse list-unstyled" id="homeSubmenu">
+            <ul className="collapse list-unstyled" id="homeSubmenu">
               <li>
                 <Link to="/">Home</Link>
               </li>

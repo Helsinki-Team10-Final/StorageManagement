@@ -8,6 +8,10 @@ import {BrowserRouter} from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.css';
 import client from './config/index'
 import { ApolloProvider } from '@apollo/client'
+import 'react-datetime-picker/dist/DateTimePicker.css'
+import 'react-calendar/dist/Calendar.css'
+import 'react-clock/dist/Clock.css'
+
 
 ReactDOM.render(
   <React.StrictMode>
