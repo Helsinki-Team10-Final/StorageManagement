@@ -38,7 +38,7 @@ module.exports = {
     }
 
     extend type Mutation {
-      pickerUpdateItem(input: BroadcastPickerInput, access_token: String): String 
+      pickerUpdateItem(input: BroadcastPickerInput, access_token: String, idStoreReq: ID!): String 
     }
   `,
   resolvers: {
@@ -110,44 +110,57 @@ module.exports = {
       }
     },
     Mutation: {
-      pickerUpdateItem: async (_, args) => {
+      async pickerUpdateItem (_, args) {
         try {
-          const authorize = await authorization(args.access_token, "picker")
-          if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-
-          
-          args.input.listItem.forEach(async (item) => { //pisang
-            let n = 0
-            item.listPO.forEach(async (po,indexPO) => {
-              let foundItem = await Item.findOneById(item.idItem)
-              console.log(foundItem, 'index: ',indexPO)
-              let foundPO = await PurchasingOrder.findById(po.idPO)
-              let arrItems = [...foundPO.items]
-
-              foundPO.items.forEach(async (itemPO, index) => {
-                if (itemPO.name.toLowerCase() === item.itemName.toLowerCase()){
-                  arrItems[index].currentQuantity -=  po.quantity
-                  n+=po.quantity
+          const listItem = args.input.listItem
+          // console.log(listItem)
+          //looping per item => pisang, semangka,durian
+          for (let i = 0; i < listItem.length; i++) {
+            let totalItemDecreased = 0
+            let item = listItem[i] // pisang // semangka //druan
+            for (let j = 0; j < item.listPO.length; j++) {
+              let PO = item.listPO[j]
+              console.log('=============================')
+              console.log('PO ', item.itemName, j+1)
+              console.log(PO)
+              const foundPO = await PurchasingOrder.findById(PO.idPO)
+              console.log(foundPO)
+              let clonePO = JSON.parse(JSON.stringify(foundPO))
+              for (let k = 0; k < foundPO.items.length; k++) {
+                let itemPO = foundPO.items[k]
+                if (item.itemName === itemPO.name) {
+                  clonePO.items[k].currentQuantity -= PO.quantity
+                  totalItemDecreased += PO.quantity
+                  const payload = {
+                    items: clonePO.items,
+                    status: 'clear',
+                    updatedAt: new Date()
+                  }
+                  //update currentquantity
+                  const updatedPO = await PurchasingOrder.updateCurrentQuantity(PO.idPO, payload)
+                  console.log(clonePO, '--------------------line 171')
                 }
-              })
-
-              const payload = {
-                items: [...arrItems],
-                status: "clear",
-                updatedAt: new Date()
+                // console.log(itemPO)
               }
-              const updatePO = await PurchasingOrder.updateCurrentQuantity(foundPO._id, payload)
+              // console.log(foundPO)
+              console.log('=============================')
+            }
+            console.log(totalItemDecreased , `${item.itemName} TOTAL BERKURANG`)
+            const foundItem = await Item.findOneById(item.idItem)
+            console.log(foundItem)
+            //update quantity on collection Item
+            const updatedItem = await Item.updateOne(foundItem._id, foundItem.quantity - totalItemDecreased)
+          }
 
-            // console.log(n)  
-            const updateItem = await Item.updateOne(foundItem._id, foundItem.quantity-n)
-            })
-          })
-
-          const deletedBroadcast = await Broadcast.deleteOne(args.input.idBroadcast)
-          return "Request Successfully Handled"
-        } catch (error) {
-          console.log(error, '---> error')
-          return new ApolloError("bad request", "404", err)
+          //update status request to Picked
+          const storeReqPayload = {
+            status: 'picked',
+            updatedAt: new Date()
+          }
+          const updatedStoreReq = await StoreRequest.updateStatusFromAdmin(args.idStoreReq, storeReqPayload)
+          return 'Items Picked Successfully'
+        } catch(err) {
+          console.log(err)
         }
       }
     }
