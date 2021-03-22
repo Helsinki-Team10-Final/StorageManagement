@@ -96,6 +96,7 @@ module.exports = {
           // console.log(result)
           return result          
         } catch(err) {
+          console.log(err)
           return new ApolloError(error)
         }
       },
