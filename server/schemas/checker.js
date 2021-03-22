@@ -42,18 +42,20 @@ module.exports = {
           let unfinishedBroadcast
 
           const allBroadcast = await Broadcast.find()
-        
+
           // console.log(allBroadcast)
           const broadcastForCheckers = []
-          
+
           allBroadcast.forEach(broadcast => {
             if (broadcast.role === 'checker' && broadcast.purchasingOrder.status === 'checking') {
               if (broadcast.checkerId) {
                 if (broadcast.checkerId === checkerData._id) {
                   unfinishedBroadcast = broadcast
                 }
+              } else {
+                broadcastForCheckers.push(broadcast)
               }
-              broadcastForCheckers.push(broadcast)
+
             }
           })
           return { broadcasts: broadcastForCheckers, unfinishedBroadcast }
@@ -71,25 +73,35 @@ module.exports = {
           const decoded = await decodedToken(args.access_token)
 
           const allBroadcast = await Broadcast.find()
-
+          let hasTask 
           allBroadcast.forEach(broadcast => {
             if (broadcast.checkerId) {
               if (decoded._id === broadcast.checkerId) {
-                throw {type: "CheckerError", message: "Redundant Task"}
+                hasTask = broadcast
+                // throw {type: "CheckerError", message: "Redundant Task"}
               }
             }
           })
 
           //add key to brodcast
           let foundBroadCast = await Broadcast.findOne(args.id)
-          delete foundBroadCast._id
-          foundBroadCast.checkerId = decoded._id
-          
-          // console.log(foundBroadCast)
+          if (foundBroadCast.checkerId) {
+            if (decoded._id === foundBroadCast.checkerId) {
+              return foundBroadCast
+            }
+          } else {
+            if (!hasTask){
+              delete foundBroadCast._id
+              foundBroadCast.checkerId = decoded._id
+              const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
+              // console.log(updatedBroadcast)
+              return updatedBroadcast
+            } else {
+              throw {type: "CheckerError", message: "Redundant Task"}
+            }
+          }
+          // 
 
-          const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
-          console.log(updatedBroadcast)
-          return updatedBroadcast
         } catch(err) {
           console.log(err)
           return new ApolloError("bad request","404",err)

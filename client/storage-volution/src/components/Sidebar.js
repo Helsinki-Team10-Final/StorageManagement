@@ -16,9 +16,6 @@ export default function Sidebar({showSidebar}) {
           <li>
             <Link to="/main/addPO">Create PO</Link>
           </li>
-          <li>
-            <Link to="/main/605719582782d941a0679fe1">Detail</Link>
-          </li>
         </ul>
       </nav>
     </>
