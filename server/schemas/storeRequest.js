@@ -37,11 +37,11 @@ module.exports = {
   
   extend type Query {
     requests: [Request]
-    request(id: ID!): Request
+    requestById(id: ID!): Request
   }
 
   extend type Mutation {
-    createRequest(request: RequestInput, access_token: String): Request
+    createRequest(request: RequestInput!, access_token: String!): Request
   }
 
   `,
@@ -58,14 +58,14 @@ module.exports = {
         }
       },
 
-      request: async (_, args) => {
+      requestById: async (_, args) => {
         try {
           const foundRequest = await StoreRequest.findById(args.id)
           return foundRequest
         } catch(err) {
           return new ApolloError(error)
         }
-      },
+      }
     },
     Mutation: {
       createRequest: async (_, args) => {
@@ -91,34 +91,6 @@ module.exports = {
         }
       },
 
-      // createBroadcastPicker: async (_, args) => {
-      //   try {
-      //     const authorize = await authorization(args.access_token, "buyer")
-      //     if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-      //     const pickerLogin = decodedToken(access_token)
-      //     const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
-      //     console.log(foundStoreReq)
-      //     // const broadcast = {
-      //     //   storeRequest: foundStoreReq,
-      //     //   role: args.role
-      //     // }
-      //     // const newBroadcast = await Broadcast.create(broadcast)
-      //     // // console.log(broadcast)
-      //     // // return newBroadcast.ops[0]
-      //     //create broadcast for picker
-      //     const broadcast = {
-      //       storeRequest: newStoreReq.ops[0],
-      //       role: "picker"
-      //     }
-      //     const newBroadcast = await Broadcast.create(broadcast)
-      //     // console.log(broadcast)
-      //     // return newBroadcast.ops[0]
-      //     return
-      //   } catch (err) {
-      //     console.log(err)
-      //     return new ApolloError("bad request", "404", err)
-      //   }
-      // }
     }
   }
 }

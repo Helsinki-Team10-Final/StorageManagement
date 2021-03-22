@@ -33,12 +33,12 @@ module.exports = {
     }
 
     extend type Query {
-      broadcastPicker(access_token: String) : AllBroadCastPicker
-      broadcastPickerById(access_token: String, id: ID!) : String
+      broadcastPicker(access_token: String!) : AllBroadCastPicker
+      broadcastPickerById(access_token: String!, id: ID!) : BroadcastPickerResult
     }
 
     extend type Mutation {
-      pickerUpdateItem(input: BroadcastPickerInput, access_token: String): String 
+      pickerUpdateItem(input: BroadcastPickerInput!, access_token: String!, idStoreReq: ID!): String 
     }
   `,
   resolvers: {
@@ -64,9 +64,10 @@ module.exports = {
               if (broadcast.pickerId) {
                 if (broadcast.pickerId === pickerData._id) {
                   unfinishedBroadcast = broadcast
+                } else {
+                  broadcastForPickers.push(broadcast)
                 }
               }
-              broadcastForPickers.push(broadcast)
             }
           })
           return { broadcasts: broadcastForPickers, unfinishedBroadcast }
@@ -84,25 +85,33 @@ module.exports = {
           const decoded = await decodedToken(args.access_token)
 
           const allBroadcast = await Broadcast.find()
-
+          let hasTask 
           allBroadcast.forEach(broadcast => {
             if (broadcast.pickerId) {
               if (decoded._id === broadcast.pickerId) {
-                throw { type: "CheckerError", message: "Redundant Task" }
+                hasTask = broadcast
+                // throw { type: "CheckerError", message: "Redundant Task" }
               }
             }
           })
 
           //add key to brodcast
           let foundBroadCast = await Broadcast.findOne(args.id)
-          delete foundBroadCast._id
-          foundBroadCast.pickerId = decoded._id
-
-          // console.log(foundBroadCast)
-
-          const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
-          //   console.log(updatedBroadcast)
-          return updatedBroadcast
+          if (foundBroadCast.pickerId){
+            if (decoded._id === foundBroadCast.pickerId){
+              return foundBroadCast
+            }
+          } else {
+            if (!hasTask){
+              delete foundBroadCast._id
+              foundBroadCast.pickerId = decoded._id
+              const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
+              return updatedBroadcast
+            } else {
+              throw {type: "CheckerError", message: "Redundant Task"}
+            }
+          }
+          
         } catch (err) {
           console.log(err)
           return new ApolloError("bad request", "404", err)
@@ -110,43 +119,11 @@ module.exports = {
       }
     },
     Mutation: {
-      pickerUpdateItem: async (_, args) => {
+      async pickerUpdateItem(_, args) {
         try {
-          const authorize = await authorization(args.access_token, "picker")
-          if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-
           
-          args.input.listItem.forEach(async (item) => { //pisang
-            let n = 0
-            item.listPO.forEach(async (po,indexPO) => {
-              let foundItem = await Item.findOneById(item.idItem)
-              console.log(foundItem, 'index: ',indexPO)
-              let foundPO = await PurchasingOrder.findById(po.idPO)
-              let arrItems = [...foundPO.items]
-
-              foundPO.items.forEach(async (itemPO, index) => {
-                if (itemPO.name.toLowerCase() === item.itemName.toLowerCase()){
-                  arrItems[index].currentQuantity -=  po.quantity
-                  n+=po.quantity
-                }
-              })
-
-              const payload = {
-                items: [...arrItems],
-                status: "clear",
-                updatedAt: new Date()
-              }
-              const updatePO = await PurchasingOrder.updateCurrentQuantity(foundPO._id, payload)
-
-            // console.log(n)  
-            const updateItem = await Item.updateOne(foundItem._id, foundItem.quantity-n)
-            })
-          })
-
-          const deletedBroadcast = await Broadcast.deleteOne(args.input.idBroadcast)
-          return "Request Successfully Handled"
         } catch (error) {
-          console.log(error, '---> error')
+          console.log(err)
           return new ApolloError("bad request", "404", err)
         }
       }

@@ -46,8 +46,8 @@ module.exports = {
 
     extend type Mutation {
       updateStatusPurchasingOrderAdmin(id: ID!, status: String, access_token: String!): PurchasingOrder
-      createBroadcastChecker(idPurchasingOrder: ID!, access_token: String) : BroadCast
-      createBroadcastPicker(idStoreReq: ID!, access_token: String, itemsToPick:[itemToPickInput]): BroadcastPickerResult
+      createBroadcastChecker(idPurchasingOrder: ID!, access_token: String!) : BroadCast
+      createBroadcastPicker(idStoreReq: ID!, access_token: String!, itemsToPick:[itemToPickInput]!): BroadcastPickerResult
     }
 
   `,
@@ -124,33 +124,7 @@ module.exports = {
           return new ApolloError("bad request", "404", err)
         }
       }
-      // async createBroadcastPicker(_,args) {
-      //   try {
-      //     const authorize = await authorization(args.access_token, "warehouseadmin")
-      //     if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-      //     const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
-
-      //     //update status PO to checking
-      //     const payload = {
-      //       status: 'picking',
-      //       updatedAt: new Date()
-      //     }
-      //     const updatedStatusStoreReq = await StoreRequest.updateStatusFromAdmin(foundStoreReq._id, payload)
-      //     console.log(updatedStatusStoreReq)
-
-      //     console.log(foundStoreReq)
-      //     const broadcast = {
-      //       storeRequest: updatedStatusStoreReq.value,
-      //       role: "picker"
-      //     }
-      //     const newBroadcast = await Broadcast.create(broadcast)
-      //     console.log(broadcast)
-      //     return newBroadcast.ops[0]
-      //   } catch (err) {
-      //     console.log(err)
-      //     return new ApolloError("bad request", "404", err)
-      //   }
-      // }
+      
     }
   }
 }

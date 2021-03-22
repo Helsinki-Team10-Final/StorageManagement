@@ -56,7 +56,7 @@ module.exports = {
     }
 
     extend type Mutation {
-      createPurchasingOrder(input: CreatePurchasingOrderInput, access_token: String!) : PurchasingOrder
+      createPurchasingOrder(input: CreatePurchasingOrderInput!, access_token: String!) : PurchasingOrder
       updateCurrentQuantityPurchasingOrder(id: ID!, input: UpdateCurrentQuantityPurchasingOrderInput, access_token: String) : PurchasingOrder
     }
   `,
