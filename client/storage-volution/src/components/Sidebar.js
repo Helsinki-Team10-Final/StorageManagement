@@ -6,7 +6,6 @@ export default function Sidebar({showSidebar}) {
     <>
       <nav id="sidebar" className={showSidebar ? "active" : null}>
         <div className="sidebar-header">
-          <h3>Bootstrap Sidebar</h3>
         </div>
 
         <ul className="list-unstyled components">

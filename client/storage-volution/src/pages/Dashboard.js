@@ -6,6 +6,7 @@ import Sidebar from '../components/Sidebar' //masih belom seelesai
 import CreatePO from './CreatePO'
 import ListPOK from './ListPOK'
 import DetailPO from './DetailPO'
+import ListBroadcast from './ListBroadcast'
 
 export default function Dashboard(props) {
   const [currentRole, setCurrentRole] = useState('')
@@ -52,8 +53,11 @@ export default function Dashboard(props) {
       <div className="container-fluid mx-4 my-3">
         {/* Lokasi SwitchRoute Child */}
         <Switch>
+          {/* <Route path={`${path}/listBroadcast`}>
+            
+          </Route> */}
           <Route exact path={`${path}`}>
-            <h1>List BroadCast dari Picker</h1>
+            <ListBroadcast />
           </Route>
           <Route>
             <h1>Page Not Found</h1>

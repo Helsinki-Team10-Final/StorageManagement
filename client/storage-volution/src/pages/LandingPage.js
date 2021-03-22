@@ -1,6 +1,7 @@
 import logo from '../logo.svg';
 import '../assets/css/landingPage.css';
 import hero1 from '../assets/img/h1_hero1.png';
+import { Link } from 'react-router-dom'
 
 export default function LandingPage () {
   return (
@@ -25,7 +26,7 @@ export default function LandingPage () {
                                                 <li><a >About</a></li>
                                                 <li>
                                                     <div className="header-right-btn ml-40">
-                                                        <a href="#" className="btn"
+                                                        <Link to="/login" className="btn"
                                                           style={{
                                                             border: "none",
                                                             padding: "18px 31px !important",
@@ -42,7 +43,7 @@ export default function LandingPage () {
                                                           }}
                                                         >
                                                           Login
-                                                        </a>
+                                                        </Link>
                                                     </div>
                                                 </li>
                                             </ul>
