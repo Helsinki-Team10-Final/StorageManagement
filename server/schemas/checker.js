@@ -42,10 +42,10 @@ module.exports = {
           let unfinishedBroadcast
 
           const allBroadcast = await Broadcast.find()
-        
+
           // console.log(allBroadcast)
           const broadcastForCheckers = []
-          
+
           allBroadcast.forEach(broadcast => {
             if (broadcast.role === 'checker' && broadcast.purchasingOrder.status === 'checking') {
               if (broadcast.checkerId) {
@@ -55,7 +55,6 @@ module.exports = {
               } else {
                 broadcastForCheckers.push(broadcast)
               }
-              
             }
           })
           return { broadcasts: broadcastForCheckers, unfinishedBroadcast }
@@ -101,7 +100,6 @@ module.exports = {
             }
           }
           // 
-          
         } catch(err) {
           console.log(err)
           return new ApolloError("bad request","404",err)
