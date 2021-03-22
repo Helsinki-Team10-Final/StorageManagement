@@ -85,11 +85,11 @@ module.exports = {
       async createPurchasingOrder(_, args) {
         try {
           //buyer
-          const authorize = authorization(args.access_token, "buyer")
+          const authorize = await authorization(args.access_token, "buyer")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
 
           let dataInput = {...args.input}
-          console.log(args.input)
+          // console.log(args.input)
           dataInput.status = "process"
           dataInput.createdAt = new Date()
           dataInput.updatedAt = new Date()
@@ -104,7 +104,7 @@ module.exports = {
       // add key currentQuantity to Item PO
       async updateCurrentQuantityPurchasingOrder(_, args) {
         try {
-          const authorize = authorization(args.access_token, "checker")
+          const authorize = await authorization(args.access_token, "checker")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
           const payload = {
             items: args.input.items,

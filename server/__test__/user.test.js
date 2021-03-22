@@ -47,7 +47,7 @@ describe('User Success Case', () => {
   
     // act
     const response = await mutate({ mutation: USER_REGISTER, variables: {user} });
-    console.log(response)
+    // console.log(response)
     // id = response.data.createUser._id
     // console.log(response.data.createUser.name, 'ini dari register')
     // assert
@@ -85,26 +85,26 @@ describe('User Success Case', () => {
     expect(response.data.login).toHaveProperty('access_token');
   });
   
-  test('UPDATE_USER: should return updated user data with specific detail', async () => {
+  // test('UPDATE_USER: should return updated user data with specific detail', async () => {
   
-    // graphl query
-    const input = {
-      "email": "picker@mail.com",
-      "password": "123456",
-      "role": "picker",
-      "name": "user123"
-    }
+  //   // graphl query
+  //   const input = {
+  //     "email": "picker@mail.com",
+  //     "password": "123456",
+  //     "role": "picker",
+  //     "name": "user123"
+  //   }
     
-    // act
-    const response = await User.updateOne(id, input)
-    console.log(response.name, 'ini dari update')
-    // console.log(response, 'dari updateeeeeeeeeeeeeeeeee')
-    // assert
-    expect(response).toHaveProperty('_id');
-    expect(response).toHaveProperty('name', input.name);
-    expect(response).toHaveProperty('role', input.role);
-    expect(response).toHaveProperty('email', input.email);
-  });
+  //   // act
+  //   const response = await User.updateOne(id, input)
+  //   console.log(response.name, 'ini dari update')
+  //   // console.log(response, 'dari updateeeeeeeeeeeeeeeeee')
+  //   // assert
+  //   expect(response).toHaveProperty('_id');
+  //   expect(response).toHaveProperty('name', input.name);
+  //   expect(response).toHaveProperty('role', input.role);
+  //   expect(response).toHaveProperty('email', input.email);
+  // });
 
   test('FIND_ALL_USER: should return list data of user', async () => {
   
@@ -185,8 +185,41 @@ describe('User Fail Case', () => {
     // act
     const response = await mutate({ mutation: USER_LOGIN, variables: {input} });
     // console.log(JSON.parse(response.errors[0].message), 'ALOWWWW')
-    console.log(response)
+    // console.log(response)
     // assert
     expect(response.errors).toBeDefined();
   });
+
+  test('CREATE_USER: should return data with specific properties', async () => {
+    // create a new instance of our server (not listening on any port)
+    // await connect()
+    
+    // apollo-server-testing provides a query function
+    // in order to execute graphql queries on that server
+    
+    // graphl query
+    const USER_REGISTER = `
+      mutation createUser($user: CreateUserInput) {
+        createUser(user: $user) {
+          _id
+          name
+          role
+          email
+        }
+      }
+    `;
+    
+    const user = {
+        email: "picker@mail.com",
+        password: "",
+        role: "",
+        name: ""
+    }
+    
+  
+    // act
+    const response = await mutate({ mutation: USER_REGISTER, variables: {user} });
+    console.log(response, 'ini dari create error')
+    // expect(response.errors).toBeDefined()
+  })
 })

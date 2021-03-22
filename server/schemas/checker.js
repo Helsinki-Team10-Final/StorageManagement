@@ -32,7 +32,7 @@ module.exports = {
     Query: {
       async broadcastChecker(_, args) {
         try {
-          console.log(args)
+          // console.log(args)
           const authorize = await authorization(args.access_token, "checker")
           // console.log(authorize)
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
@@ -88,7 +88,7 @@ module.exports = {
           // console.log(foundBroadCast)
 
           const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
-          console.log(updatedBroadcast)
+          // console.log(updatedBroadcast)
           return updatedBroadcast
         } catch(err) {
           console.log(err)
@@ -99,12 +99,13 @@ module.exports = {
     Mutation: {
       checkerUpdateItem: async(_, args) => {
         try {
+          // console.log(args, 'dari skema')
           const authorize = await authorization(args.access_token, "checker")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
 
           // Update / Create Collection Item
           args.items.forEach(async (item) => {
-            console.log(item)
+            // console.log(item)
             const foundItem = await Item.findOneByName(item.name) //mangga , pisang
             // if not found then create new item
             if (!foundItem) {

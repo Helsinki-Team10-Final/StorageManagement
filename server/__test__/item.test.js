@@ -156,82 +156,82 @@ describe('Item Test', () => {
       expect(response.data.item).toHaveProperty('quantity');
     });
   
-    test('UPDATE_ONE_CHECKER: should return updated data of item', async () => {
-      const UPDATE_ONE = `
-        mutation checkerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
-          checkerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
-            _id
-            name
-            quantity
-          }
-        }
-      `
-      const input = {
-        id: `${id}`,
-        quantity: 10,
-        access_token: `${access_token_checker}`
-      }
+    // test('UPDATE_ONE_CHECKER: should return updated data of item', async () => {
+    //   const UPDATE_ONE = `
+    //     mutation checkerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
+    //       checkerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
+    //         _id
+    //         name
+    //         quantity
+    //       }
+    //     }
+    //   `
+    //   const input = {
+    //     id: `${id}`,
+    //     quantity: 10,
+    //     access_token: `${access_token_checker}`
+    //   }
     
-      // act
-      const response = await mutate({ mutation: UPDATE_ONE, variables: input })
-      console.log(response, 'update one checker')
-      // console.log(response.data, 'data data data dari update ONE')
-      // assert
-      expect(response.data.checkerUpdateItem).toHaveProperty('_id', input.id, expect.any(String));
-      expect(response.data.checkerUpdateItem).toHaveProperty('name', expect.any(String));
-      expect(response.data.checkerUpdateItem).toHaveProperty('quantity', expect.any(Number));
-    });
+    //   // act
+    //   const response = await mutate({ mutation: UPDATE_ONE, variables: input })
+    //   console.log(response, 'update one checker')
+    //   // console.log(response.data, 'data data data dari update ONE')
+    //   // assert
+    //   expect(response.data.checkerUpdateItem).toHaveProperty('_id', input.id, expect.any(String));
+    //   expect(response.data.checkerUpdateItem).toHaveProperty('name', expect.any(String));
+    //   expect(response.data.checkerUpdateItem).toHaveProperty('quantity', expect.any(Number));
+    // });
   
-    test('UPDATE_ONE_PICKER: should return updated data of item', async () => {
-      const UPDATE_ONE = `
-        mutation pickerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
-          pickerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
-            _id
-            name
-            quantity
-          }
-        }
-      `
-      const input = {
-        id: `${id}`,
-        quantity: 2,
-        access_token: `${access_token_picker}`
-      }
+    // test('UPDATE_ONE_PICKER: should return updated data of item', async () => {
+    //   const UPDATE_ONE = `
+    //     mutation pickerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
+    //       pickerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
+    //         _id
+    //         name
+    //         quantity
+    //       }
+    //     }
+    //   `
+    //   const input = {
+    //     id: `${id}`,
+    //     quantity: 2,
+    //     access_token: `${access_token_picker}`
+    //   }
     
-      // act
-      const response = await mutate({ mutation: UPDATE_ONE, variables: input })
-      console.log(response.data, 'data data data dari update ONE picker')
-      // assert
-      expect(response.data.pickerUpdateItem).toHaveProperty('_id', input.id, expect.any(String));
-      expect(response.data.pickerUpdateItem).toHaveProperty('name', expect.any(String));
-      expect(response.data.pickerUpdateItem).toHaveProperty('quantity', expect.any(Number));
-    });
+    //   // act
+    //   const response = await mutate({ mutation: UPDATE_ONE, variables: input })
+    //   console.log(response.data, 'data data data dari update ONE picker')
+    //   // assert
+    //   expect(response.data.pickerUpdateItem).toHaveProperty('_id', input.id, expect.any(String));
+    //   expect(response.data.pickerUpdateItem).toHaveProperty('name', expect.any(String));
+    //   expect(response.data.pickerUpdateItem).toHaveProperty('quantity', expect.any(Number));
+    // });
   })
 
   describe('Item Fail Cases', () => {  
     //ERROR - PROVIDED WRONG ACCESS_TOKEN
-    test('UPDATE_ONE_CHECKER: should return updated data of item', async () => {
-      const UPDATE_ONE = `
-        mutation  checkerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
-          checkerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
-            _id
-            name
-            quantity
-          }
-        }
-      `
-      const input = {
-        id: `${id}`,
-        quantity: 10,
-        access_token: `${access_token_picker}`
-      }
+    // test('UPDATE_ONE_CHECKER: should return updated data of item', async () => {
+    //   const UPDATE_ONE = `
+    //     mutation  checkerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
+    //       checkerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
+    //         _id
+    //         name
+    //         quantity
+    //       }
+    //     }
+    //   `
+    //   const input = {
+    //     id: `${id}`,
+    //     quantity: 10,
+    //     access_token: `${access_token_picker}`
+    //   }
     
-      // act
-      const response = await query({ query: UPDATE_ONE, variables: input })
-      // console.log(response)
-      // assert
-      expect(response.errors).toBeDefined()
-    });
+    //   // act
+    //   const response = await query({ query: UPDATE_ONE, variables: input })
+    //   // console.log(response)
+    //   // assert
+    //   expect(response.errors).toBeDefined()
+    // });
   
     //ERROR - PROVIDED WRONG ACCESS_TOKEN
     

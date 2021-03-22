@@ -30,7 +30,7 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(args.id, payload)
-          console.log(updatedStatusPurchasingOrder)
+          // console.log(updatedStatusPurchasingOrder)
           return updatedStatusPurchasingOrder.value
         } catch(err) {
           console.log(err)
@@ -49,15 +49,15 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(foundPurchasingOrder._id, payload)
-          console.log(updatedStatusPurchasingOrder)
+          // console.log(updatedStatusPurchasingOrder)
 
-          console.log(foundPurchasingOrder)
+          // console.log(foundPurchasingOrder)
           const broadcast = {
             purchasingOrder: updatedStatusPurchasingOrder.value,
             role: args.role
           }
           const newBroadcast = await Broadcast.create(broadcast)
-          console.log(broadcast)
+          // console.log(broadcast)
           return newBroadcast.ops[0]
         } catch(err) {
           console.log(err)

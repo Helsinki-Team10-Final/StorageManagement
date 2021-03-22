@@ -1,6 +1,6 @@
 const { gql, ApolloError } = require('apollo-server')
 const Item = require('../models/item')
-const {checkerAuth, pickerAuth} = require('../helpers/authorize')
+const { authorization } = require('../helpers/authorize')
 
 module.exports = {
   typeDefs: gql`
@@ -40,7 +40,7 @@ module.exports = {
       item: async (_, args) => {
         try {
           // console.log(args, '------')
-          const res = await Item.findOne(args.itemId)
+          const res = await Item.findOneById(args.itemId)
           // console.log(res)
           return res
         } catch (error) {
@@ -66,7 +66,7 @@ module.exports = {
       pickerUpdateItem: async(_, args) => {
         try {
           // console.log(args,'-------')
-          if (!await pickerAuth(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
+          if (!await authorization(args.access_token)) throw {type: "CustomError", message: "Not authorize"}
           let item = await Item.findOne(args.id)
           item.quantity -= args.quantity
           let updatedItem = await Item.updateOne(args.id, {quantity: item.quantity})
