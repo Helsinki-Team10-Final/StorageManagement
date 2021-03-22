@@ -1,6 +1,7 @@
 const { gql, ApolloError } = require('apollo-server')
 const Item = require('../models/item')
 const {checkerAuth, pickerAuth} = require('../helpers/authorize')
+const StoreModel = require('../models/store')
 
 module.exports = {
   typeDefs: gql`
@@ -10,6 +11,11 @@ module.exports = {
       quantity: Int
     }
 
+    type Store {
+      _id: ID!
+      name: String!
+    }
+
     input CreateItemInput {
       name: String
     }
@@ -17,6 +23,7 @@ module.exports = {
     extend type Query {
       items: [Item]
       item(itemId: ID!): Item
+      stores: [Store]
     }
 
     extend type Mutation{
@@ -32,6 +39,15 @@ module.exports = {
           // console.log(resDB)
           return res
         } catch (error) {console.log(error, '---> error')
+          return new ApolloError(error)
+        }
+      },
+
+      stores: async () => {
+        try {
+          const storeList = await StoreModel.findAll()
+          return storeList
+        } catch (error) {
           return new ApolloError(error)
         }
       },

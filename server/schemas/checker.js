@@ -5,6 +5,7 @@ const Broadcast = require('../models/broadcast')
 const PurchasingOrder = require('../models/purchasingOrder')
 const Item = require('../models/item')
 const { updateStatus } = require('../models/purchasingOrder')
+const POHistory = require('../models/pohistories')
 
 module.exports = {
   typeDefs: gql`
@@ -19,12 +20,12 @@ module.exports = {
     }
 
     extend type Query {
-      broadcastChecker(access_token: String) : AllBroadCast
-      broadcastCheckerById(access_token: String, id: ID!) : BroadCast
+      broadcastChecker(access_token: String!) : AllBroadCast
+      broadcastCheckerById(access_token: String!, id: ID!) : BroadCast
     }
 
     extend type Mutation {
-      checkerUpdateItem(items: [ItemInputUpdate], access_token: String, idPO: String, idBroadCast: String): String 
+      checkerUpdateItem(items: [ItemInputUpdate]!, access_token: String!, idPO: String!, idBroadCast: String!): String 
       updateStatusPurchasingOrderChecker(id: ID!, access_token: String) : PurchasingOrder
     }
   `,
@@ -32,7 +33,6 @@ module.exports = {
     Query: {
       async broadcastChecker(_, args) {
         try {
-          console.log(args)
           const authorize = await authorization(args.access_token, "checker")
           // console.log(authorize)
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
@@ -55,7 +55,6 @@ module.exports = {
               } else {
                 broadcastForCheckers.push(broadcast)
               }
-
             }
           })
           return { broadcasts: broadcastForCheckers, unfinishedBroadcast }
@@ -101,7 +100,6 @@ module.exports = {
             }
           }
           // 
-
         } catch(err) {
           console.log(err)
           return new ApolloError("bad request","404",err)
@@ -116,7 +114,7 @@ module.exports = {
 
           // Update / Create Collection Item
           args.items.forEach(async (item) => {
-            console.log(item)
+            // console.log(item)
             const foundItem = await Item.findOneByName(item.name.toLowerCase()) //mangga , pisang
             // if not found then create new item
             if (!foundItem) {
@@ -139,7 +137,15 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.idPO, payload)
-          // console.log(updatedPurchasingOrder)
+          // console.log(updatedPurchasingOrder,'-----update')
+
+          //create history
+          let payloadHis = updatedPurchasingOrder.value
+          payloadHis.poId = payloadHis._id
+          delete payloadHis._id
+          const createPOHistory = await POHistory.create(payloadHis)
+          //end create history
+
           const deletedBroadcast = await Broadcast.deleteOne(args.idBroadCast)
           return "Successfully Checking Purchasing Order"
         } catch (error) {
