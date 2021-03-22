@@ -1,25 +1,9 @@
 import {Form, Button, Container} from 'react-bootstrap'
-import { gql, useMutation } from '@apollo/client'
+import { GET_PO, ADD_PO } from "../config/queries";
+import { useMutation } from '@apollo/client'
 import {useState} from 'react'
 import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify';
-
-const AddPO = gql`
-  mutation createPO ($input: CreatePurchasingOrderInput, $access_token: String!){
-    createPurchasingOrder(input: $input, access_token: $access_token) {
-      vendorName,
-      status,
-      items {
-        name
-        quantity
-      }
-      createdAt,
-      updatedAt,
-      expiredDate
-    }
-  }
-
-`;
 
 const dateString = (date) => {
   const offsetMs = date.getTimezoneOffset() * 60 * 1000;
@@ -31,7 +15,7 @@ const dateString = (date) => {
 
 export default function CreatePO(props) {
   const history = useHistory()
-  const [handleCreatePO, {data}] = useMutation(AddPO);
+  const [handleCreatePO, {data}] = useMutation(ADD_PO);
   const [formData, setFormData] = useState({
     vendorName: '',
     expiredDate: dateString(new Date()),
@@ -40,7 +24,6 @@ export default function CreatePO(props) {
       quantity: 1
     }]
   })
-  console.log(formData)
 
   const addNewItem = () => {
     setFormData({...formData, items: [...formData.items, { name: '', quantity: 1}]})
@@ -52,7 +35,7 @@ export default function CreatePO(props) {
 
       // console.log(formData)
       if (!formData.vendorName) throw ({message: `Vendor's name is required.`})
-      await handleCreatePO({variables: {input: formData, access_token: localStorage.getItem('access_token')}})
+      await handleCreatePO({variables: {input: formData, access_token: localStorage.getItem('access_token')}, refetchQueries: [{query: GET_PO}]})
       history.push('/main')
     } catch (err) {
       console.log(err)
