@@ -103,7 +103,7 @@ module.exports = {
 
       async requestsWithPO(_, args) {
         try {
-          const authorize = await authorization(args.access_token, "picker")
+          const authorize = await authorization(args.access_token, "warehouseadmin")
           // console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
