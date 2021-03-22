@@ -6,8 +6,12 @@ class Item {
     return getDatabase().collection('items').find().toArray()
   }
 
-  static findOne(id) {
+  static findOneById(id) {
     return getDatabase().collection('items').findOne({_id: new mongodb.ObjectID(id)})
+  }
+
+  static findOneByName(name) {
+    return getDatabase().collection('items').findOne({ name })
   }
 
   static create(obj) {
@@ -17,9 +21,8 @@ class Item {
   static updateOne(id, updateDoc) {
     const filterId = {_id: new mongodb.ObjectID(id)}
     const options = { "returnNewDocument": true };
-    const data =  getDatabase().collection('items').findOneAndUpdate(filterId, {$set: updateDoc})
+    const data =  getDatabase().collection('items').findOneAndUpdate(filterId, {$set: {quantity:updateDoc}})
     return getDatabase().collection('items').findOne({_id: new mongodb.ObjectID(id)})
-
   }
 
   static deleteOne(id) {

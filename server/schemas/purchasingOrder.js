@@ -7,8 +7,6 @@ const { authorization } = require('../helpers/authorize')
 module.exports = {
   typeDefs: gql`
 
-    scalar Date
-
     type PurchasingOrder {
       _id: ID!
       vendorName: String!
@@ -85,7 +83,7 @@ module.exports = {
       async createPurchasingOrder(_, args) {
         try {
           //buyer
-          const authorize = authorization(args.access_token, "buyer")
+          const authorize = await authorization(args.access_token, "buyer")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
 
           let dataInput = {...args.input}
@@ -101,9 +99,10 @@ module.exports = {
           return new ApolloError("bad request","404",err)
         }
       },
+      // add key currentQuantity to Item PO
       async updateCurrentQuantityPurchasingOrder(_, args) {
         try {
-          const authorize = authorization(args.access_token, "checker")
+          const authorize = await authorization(args.access_token, "checker")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
           const payload = {
             items: args.input.items,

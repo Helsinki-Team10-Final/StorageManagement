@@ -28,12 +28,6 @@ if (loading) {
           {data.purchasingOrders.map((el) => {
             return (
             <tr>
-              {/* <td >id</td>
-              <td>tes</td>
-              <td>tanggal</td>
-              <td>dstus</td>
-              <td>pak rozak</td>
-              <td>detail</td> */}
               <td key={el._id}>{el._id}</td>
               <td>{el.vendorName}</td>
               <td>tanggal</td>
