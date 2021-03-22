@@ -38,18 +38,15 @@ module.exports = {
     }
 
     extend type Mutation {
-<<<<<<< HEAD
       pickerUpdateItem(input: BroadcastPickerInput!, access_token: String!, idStoreReq: ID!): String 
-=======
-      pickerUpdateItem(input: BroadcastPickerInput, access_token: String, idStoreReq: ID!): String 
->>>>>>> ed1a8857a98ec4e389bc6dcd532627d3debbcaed
+
     }
   `,
   resolvers: {
     Query: {
       async broadcastPicker(_, args) {
         try {
-          console.log(args)
+          // console.log(args)
           const authorize = await authorization(args.access_token, "picker")
           // console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
@@ -125,6 +122,10 @@ module.exports = {
     Mutation: {
       async pickerUpdateItem(_, args) {
         try {
+          const authorize = await authorization(args.access_token, "picker")
+          // console.log(authorize)
+          if (!authorize) throw { type: "CustomError", message: "Not authorize" }
+
           const listItem = args.input.listItem
           // console.log(listItem)
           //looping per item => pisang, semangka,durian
@@ -159,7 +160,7 @@ module.exports = {
                   delete payload._id
                   const createPOHistory = await POHistory.create(payload)
                   //end create history
-                  
+
                 }
                 // console.log(itemPO)
               }

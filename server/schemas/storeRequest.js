@@ -56,7 +56,7 @@ module.exports = {
   extend type Query {
     requests: [Request]
     requestById(id: ID!): Request
-    requestsWithPO(idStoreReq: ID!, access_token: String): DataRequestBroadCastPicker
+    requestsWithPO(idStoreReq: ID!, access_token: String!): DataRequestBroadCastPicker
   }
 
   extend type Mutation {
@@ -102,6 +102,10 @@ module.exports = {
 
       async requestsWithPO(_, args) {
         try {
+          const authorize = await authorization(args.access_token, "picker")
+          // console.log(authorize)
+          if (!authorize) throw { type: "CustomError", message: "Not authorize" }
+
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const listItem = foundStoreReq.items
           // console.log(listItem)
