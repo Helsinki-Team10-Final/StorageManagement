@@ -6,6 +6,7 @@ const Item = require('../models/item')
 
 describe('Item Test', () => {
   let id;
+  let name;
   let access_token_checker;
   let access_token_picker;
   
@@ -103,7 +104,8 @@ describe('Item Test', () => {
       // act
       const response = await mutate({ mutation: CREATE_ITEM, variables: {input} });
       id = response.data.createItem._id
-      console.log(response.data.createItem.quantity, 'ini dari item')
+      name = response.data.createItem.name
+      // console.log(response.data.createItem, 'ini dari item')
       // assert
       expect(response.data.createItem).toHaveProperty('_id');
       expect(response.data.createItem).toHaveProperty('name', input.name);
@@ -155,6 +157,31 @@ describe('Item Test', () => {
       expect(response.data.item).toHaveProperty('name');
       expect(response.data.item).toHaveProperty('quantity');
     });
+
+    test('UPDATE_ONE: should return updated data with specific detail', async () => {
+      const input  = 12
+
+      const response = await Item.updateOne(id, input)
+      console.log(response, 'update item')
+      expect(response).toHaveProperty('_id')
+      expect(response).toHaveProperty('name', expect.any(String))
+      expect(response).toHaveProperty('quantity', expect.any(Number))
+    })
+
+    test('FIND_BY_NAME: should return item data with specific detail', async () => {
+      
+      const response = await Item.findOneByName(name)
+      // console.log(response, 'find by name')
+      expect(response).toHaveProperty('_id');
+      expect(response).toHaveProperty('name');
+      expect(response).toHaveProperty('quantity');
+    })
+
+    test('DELETE: response.result.ok should return 1', async () => {
+      const response = await Item.deleteOne(id)
+      console.log(response.result, 'ini dari delete')
+      expect(response.result.ok).toBeTruthy()
+    })
   
     // test('UPDATE_ONE_CHECKER: should return updated data of item', async () => {
     //   const UPDATE_ONE = `
@@ -209,6 +236,23 @@ describe('Item Test', () => {
   })
 
   describe('Item Fail Cases', () => {  
+    test('FIND_ONE', async () => {
+      const FIND_ONE = `
+        query findOneItem{
+          item (itemId: "60583c59ce327d3dee4803ff"){
+            _id
+            name
+            quantity
+          }
+        }
+      `
+      
+      // act
+      const response = await query({ query: FIND_ONE, variables: {} })
+      console.log(response, 'dari findone ITEM')
+      // assert
+      expect(response.data.item).toEqual(null)  
+    })
     //ERROR - PROVIDED WRONG ACCESS_TOKEN
     // test('UPDATE_ONE_CHECKER: should return updated data of item', async () => {
     //   const UPDATE_ONE = `
@@ -235,28 +279,28 @@ describe('Item Test', () => {
   
     //ERROR - PROVIDED WRONG ACCESS_TOKEN
     
-    test('UPDATE_ONE_PICKER: should return updated data of item', async () => {
-      const UPDATE_ONE = `
-        mutation pickerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
-          pickerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
-            _id
-            name
-            quantity
-          }
-        }
-      `
-      const input = {
-        id: `${id}`,
-        quantity: 2,
-        access_token: `${access_token_checker}`
-      }
+    // test('UPDATE_ONE_PICKER: should return updated data of item', async () => {
+    //   const UPDATE_ONE = `
+    //     mutation pickerUpdateItem($id: ID!, $quantity: Int, $access_token: String){
+    //       pickerUpdateItem(id:$id, quantity: $quantity, access_token: $access_token){
+    //         _id
+    //         name
+    //         quantity
+    //       }
+    //     }
+    //   `
+    //   const input = {
+    //     id: `${id}`,
+    //     quantity: 2,
+    //     access_token: `${access_token_checker}`
+    //   }
     
-      // act
-      const response = await mutate({ mutation: UPDATE_ONE, variables: input })
-      // console.log(response, 'data data data dari update ONE ERROR')
-      // asserty('quantity', expect.any(Number));
-      expect(response.errors).toBeDefined()
-    });
+    //   // act
+    //   const response = await mutate({ mutation: UPDATE_ONE, variables: input })
+    //   // console.log(response, 'data data data dari update ONE ERROR')
+    //   // asserty('quantity', expect.any(Number));
+    //   expect(response.errors).toBeDefined()
+    // });
   })
 })
 

@@ -7,8 +7,6 @@ const { authorization } = require('../helpers/authorize')
 module.exports = {
   typeDefs: gql`
 
-    scalar Date
-
     type PurchasingOrder {
       _id: ID!
       vendorName: String!

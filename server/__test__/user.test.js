@@ -48,7 +48,7 @@ describe('User Success Case', () => {
     // act
     const response = await mutate({ mutation: USER_REGISTER, variables: {user} });
     // console.log(response)
-    // id = response.data.createUser._id
+    id = response.data.createUser._id
     // console.log(response.data.createUser.name, 'ini dari register')
     // assert
     expect(response.data.createUser).toHaveProperty('_id');
@@ -85,26 +85,26 @@ describe('User Success Case', () => {
     expect(response.data.login).toHaveProperty('access_token');
   });
   
-  // test('UPDATE_USER: should return updated user data with specific detail', async () => {
+  test('UPDATE_USER: should return updated user data with specific detail', async () => {
   
-  //   // graphl query
-  //   const input = {
-  //     "email": "picker@mail.com",
-  //     "password": "123456",
-  //     "role": "picker",
-  //     "name": "user123"
-  //   }
+    // graphl query
+    const input = {
+      "email": "picker@mail.com",
+      "password": "123456",
+      "role": "picker",
+      "name": "user123"
+    }
     
-  //   // act
-  //   const response = await User.updateOne(id, input)
-  //   console.log(response.name, 'ini dari update')
-  //   // console.log(response, 'dari updateeeeeeeeeeeeeeeeee')
-  //   // assert
-  //   expect(response).toHaveProperty('_id');
-  //   expect(response).toHaveProperty('name', input.name);
-  //   expect(response).toHaveProperty('role', input.role);
-  //   expect(response).toHaveProperty('email', input.email);
-  // });
+    // act
+    const response = await User.updateOne(id, input)
+    // console.log(response, 'ini dari update')
+    // console.log(response, 'dari updateeeeeeeeeeeeeeeeee')
+    // assert
+    expect(response).toHaveProperty('_id');
+    expect(response).toHaveProperty('name', input.name);
+    expect(response).toHaveProperty('role', input.role);
+    expect(response).toHaveProperty('email', input.email);
+  });
 
   test('FIND_ALL_USER: should return list data of user', async () => {
   

@@ -18,10 +18,10 @@ class User {
     return getDatabase().collection('users').insertOne(obj)
   }
 
-  static updateOne(id, updateDoc) {
+  static async updateOne(id, updateDoc) {
     const filterId = {_id: new mongodb.ObjectID(id)}
     const options = { "returnNewDocument": true };
-    const data =  getDatabase().collection('users').findOneAndUpdate(filterId, {$set: updateDoc})
+    const data =  await getDatabase().collection('users').findOneAndUpdate(filterId, {$set: updateDoc})
     return getDatabase().collection('users').findOne({_id: new mongodb.ObjectID(id)})
 
   }

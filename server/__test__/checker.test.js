@@ -72,28 +72,28 @@ describe('Checker test', () => {
       "password": "123456"
     }
     
-    const CREATE_BROADCAST = `
-      mutation createBroadcast($idPurchasingOrder: ID!, $access_token: String!, $role: String!) {
-        createBroadcast(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token, role: $role) {
+    const CREATE_BROADCAST_CHECKER = `
+    mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String) {
+      createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
+        _id
+        purchasingOrder {
           _id,
-          purchasingOrder {
-            _id
-            vendorName
-            status,
-            items {
-              name
+          vendorName,
+          status,
+          items {
+            name
               quantity
               currentQuantity
             },
-            createdAt
-            updatedAt
+            createdAt,
+            updatedAt,
             expiredDate
-          },
+          }
           role
           checkerId
         }
       }
-    `;
+    `
 
     const CREATE_PURCHASING_ORDER = `
       mutation createPurchasingOrder($input: CreatePurchasingOrderInput, $access_token: String!) {
@@ -166,19 +166,17 @@ describe('Checker test', () => {
 
     const inputBroadcast1 = {
       idPurchasingOrder: idPo1,
-      access_token: access_token_warehouseadmin,
-      role: 'checker'
+      access_token: access_token_warehouseadmin
     }
 
     const inputBroadcast2 = {
       idPurchasingOrder: idPo2,
-      access_token: access_token_warehouseadmin,
-      role: 'checker'
+      access_token: access_token_warehouseadmin
     }
 
-    const responseBroadcast1 = await mutate({ mutation: CREATE_BROADCAST, variables: inputBroadcast1 });
-    await mutate({ mutation: CREATE_BROADCAST, variables: inputBroadcast2 });
-    idBroadCast = responseBroadcast1.data.createBroadcast._id
+    const responseBroadcast1 = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: inputBroadcast1 });
+    await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: inputBroadcast2 });
+    idBroadCast = responseBroadcast1.data.createBroadcastChecker._id
     // console.log(idBroadCast, 'ini id broad')
     // console.log(responseChecker.data.login.access_token, 'iini dari beforeall token token punya CHECKER')
     // console.log(responsePicker.data.login.access_token, 'iini dari beforeall token token punya PICKER')

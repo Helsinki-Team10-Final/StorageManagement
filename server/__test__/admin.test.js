@@ -4,10 +4,14 @@ const { createTestClient } = require('apollo-server-testing')
 const { query, mutate } = createTestClient(server);
 
 describe('Admin Success Case', () => {
-  let id;
+  let idPO1;
+  let idPO2
+  let idStoreReq;
   let access_token_warehouseadmin;
   let access_token_buyer;
   let statusBefore
+  let itemData1;
+  let itemData2;
 
   beforeAll(async () => {
     // console.log('ini before All')
@@ -74,16 +78,58 @@ describe('Admin Success Case', () => {
         "expiredDate": "2021-03-20T04:55:17.064Z",
         "items": [
           {
-            "name": "yamin",
+            "name": "lemper",
             "quantity": 20
           },
           {
-            "name": "lemper",
+            "name": "jeruk",
             "quantity": 10
           }
         ]
     }
-  
+
+    const input2 = {
+        "vendorName": "warung mamang",
+        "expiredDate": "2021-03-20T04:55:17.064Z",
+        "items": [
+          {
+            "name": "lemper",
+            "quantity": 25
+          },
+          {
+            "name": "yamin",
+            "quantity": 30
+          }
+        ]
+    }
+
+    
+
+    const CREATE_ITEM = `
+        mutation createItem($input: CreateItemInput) {
+          createItem(item: $input) {
+            _id
+            name
+            quantity
+          }
+        }
+      `;
+      
+    const itemInput1 = {
+      name: "lemper"
+    }
+
+    const itemInput2 = {
+      name: "yamin"
+    }
+      
+    
+    // const { name } = itemInput1
+    // console.log(name)
+    //Create Item
+    
+    
+    
     // act
     
     // act
@@ -96,11 +142,57 @@ describe('Admin Success Case', () => {
     access_token_warehouseadmin = responsewarehouseadmin.data.login.access_token
     access_token_buyer = responsebuyer.data.login.access_token
     
-    const responsePO = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input1, access_token: access_token_buyer} });
-    id = responsePO.data.createPurchasingOrder._id
-    createdAt = responsePO.data.createPurchasingOrder.createdAt
-    statusBefore = responsePO.data.createPurchasingOrder.status
-    // console.log(access_token_warehouseadmin, 'punya admin')
+    const responsePO1 = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input1, access_token: access_token_buyer} });
+    const responsePO2 = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input2, access_token: access_token_buyer} });
+
+    const responseItem1 = await mutate({ mutation: CREATE_ITEM, variables: { input: itemInput1 } });
+    const responseItem2 = await mutate({ mutation: CREATE_ITEM, variables: { input: itemInput2 } });
+
+    // console.log(responseItem1, 'ini response item')
+    // console.log(responsePO, 'ini PO nya ya')
+    itemData1 = responseItem1.data.createItem
+    itemData2 = responseItem2.data.createItem
+
+    const CREATE_STORE_REQUEST = `
+        mutation createRequest($request: RequestInput, $access_token: String){
+          createRequest(request: $request, access_token: $access_token) {
+            _id
+            storeName
+            items {
+              itemId
+              itemName
+              quantityRequest
+            },
+            createdAt
+            updatedAt
+            status
+          }
+        }
+      `
+
+    const inputStoreReq = {
+      storeName: 'Toko Di Depan',
+      items: [
+        {
+          itemId: itemData1._id,
+          itemName: itemData1.name,
+          quantityRequest: 10
+        },
+        {
+          itemId: itemData2._id,
+          itemName: itemData2.name,
+          quantityRequest: 8
+        }
+      ]
+    }
+
+    const responseStoreReq = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: inputStoreReq, access_token: access_token_buyer }})
+    idStoreReq = responseStoreReq.data.createRequest._id
+    idPO1 = responsePO1.data.createPurchasingOrder._id
+    idPO2 = responsePO2.data.createPurchasingOrder._id
+    createdAt = responsePO1.data.createPurchasingOrder.createdAt
+    statusBefore = responsePO1.data.createPurchasingOrder.status
+      // console.log(access_token_warehouseadmin, 'punya admin')
     // console.log(access_token_buyer, 'punya chekcer')
     // console.log('ini before All')
   })
@@ -110,6 +202,8 @@ describe('Admin Success Case', () => {
     await getDatabase().collection('users').deleteMany({})
     await getDatabase().collection('productorders').deleteMany({})
     await getDatabase().collection('broadcasts').deleteMany({})
+    await getDatabase().collection('storerequests').deleteMany({})
+    await getDatabase().collection('items').deleteMany({})
   })
   
   test('UPDATE_STATUS_PO: should return data with specific properties', async () => {
@@ -138,15 +232,22 @@ describe('Admin Success Case', () => {
       }
     `;
     
-    const input = {
-      id,
+    const input1 = {
+      id: idPO1,
+      status: 'clear',
+      access_token: access_token_warehouseadmin
+    }
+
+    const input2 = {
+      id: idPO1,
       status: 'clear',
       access_token: access_token_warehouseadmin
     }
   
     // act
     // console.log(statusBefore, 'ini before')
-    const response = await mutate({ mutation: UPDATE_STATUS_PO, variables: input });
+    const response = await mutate({ mutation: UPDATE_STATUS_PO, variables: input1 });
+    const response2 = await mutate({ mutation: UPDATE_STATUS_PO, variables: input2 });
     // console.log(response.data.updateStatusPurchasingOrderAdmin.status, 'ini after')
     // id = response.data.createUser._id
     // console.log(response.data.createUser.name, 'ini dari register')
@@ -158,11 +259,48 @@ describe('Admin Success Case', () => {
     expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('createdAt', expect.any(String));
     expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('updatedAt', expect.any(String));
     expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('expiredDate', expect.any(String));
-    expect(response.data.updateStatusPurchasingOrderAdmin._id).toEqual(input.id);
-    expect(response.data.updateStatusPurchasingOrderAdmin.status).toEqual(input.status);
+    expect(response.data.updateStatusPurchasingOrderAdmin._id).toEqual(input1.id);
+    expect(response.data.updateStatusPurchasingOrderAdmin.status).toEqual(input1.status);
   });
   
-  test('CREATE_BROADCAST: should return data with specific properties', async () => {
+  test('CREATE_BROADCAST_CHECKER: should return data with specific properties', async () => {
+    const CREATE_BROADCAST_CHECKER = `
+    mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String) {
+      createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
+        _id
+        purchasingOrder {
+          _id,
+          vendorName,
+          status,
+          items {
+            name
+              quantity
+              currentQuantity
+            },
+            createdAt,
+            updatedAt,
+            expiredDate
+          }
+          role
+          checkerId
+        }
+      }
+    `
+
+    const input = {
+      idPurchasingOrder: idPO1,
+      access_token: access_token_warehouseadmin
+    }
+
+    const response = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: input })
+    // console.log(response.data)
+    expect(response.data.createBroadcastChecker).toHaveProperty('_id')
+    expect(response.data.createBroadcastChecker).toHaveProperty('purchasingOrder')
+    expect(response.data.createBroadcastChecker).toHaveProperty('role')
+    expect(response.data.createBroadcastChecker).toHaveProperty('checkerId')
+  })
+  
+  test('CREATE_BROADCAST_PICKER: should return data with specific properties', async () => {
     // create a new instance of our server (not listening on any port)
     // await connect()
   
@@ -170,48 +308,85 @@ describe('Admin Success Case', () => {
     // in order to execute graphql queries on that server
   
     // graphl query
-    const CREATE_BROADCAST = `
-      mutation createBroadcast($idPurchasingOrder: ID!, $access_token: String!, $role: String!) {
-        createBroadcast(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token, role: $role) {
-          _id,
-          purchasingOrder {
-            _id
-            vendorName
-            status,
-            items {
-              name
+
+    const PICKER_BROADCAST = `
+      mutation createBroadcastPicker($idStoreReq: ID!, $access_token: String, $itemsToPick:[itemToPickInput]) {
+        createBroadcastPicker(idStoreReq: $idStoreReq, access_token: $access_token, itemsToPick: $itemsToPick) {
+          _id
+          role
+          listItem {
+            idItem
+            itemName
+            listPO {
+              idPO
               quantity
-              currentQuantity
-            },
+            }
+          }
+          pickerId
+          StoreReq {
+            _id
+            storeName
+            items {
+              itemId
+              itemName
+              quantityRequest
+            }
             createdAt
             updatedAt
-            expiredDate
-          },
-          role
-          checkerId
+            status
+          }
         }
       }
-    `;
+    `
   
     const input = {
-      idPurchasingOrder: id,
+      idStoreReq,
       access_token: access_token_warehouseadmin,
-      role: 'checker'
+      itemsToPick: [
+        {
+          idItem: itemData1._id,
+          itemName: itemData1.name,
+          listPO: [
+            {
+              idPO: idPO1,
+              quantity: 10
+            },
+            {
+              idPO: idPO2,
+              quantity: 4
+            }
+          ]
+        },
+        {
+          idItem: itemData2._id,
+          itemName: itemData2.name,
+          listPO: [
+            {
+              idPO: idPO2,
+              quantity: 8
+            }
+          ]
+        }
+      ]
     }
   
     // act
-    const response = await mutate({ mutation: CREATE_BROADCAST, variables: input });
-    console.log(response, 'INI RESPONSE LOGIN BERHASIL')
-    // console.log(respo, 'INI RESPONSE LOGIN BERHASIL')
+    const response = await mutate({ mutation: PICKER_BROADCAST, variables: input });
+    // console.log(response, 'INI RESPONSE BERHASIL')
+    // console.log(response.data.createBroadcastPicker.listItem, 'list item')
+    // console.log(response.data.createBroadcastPicker.listItem[0].listPO, 'list PO on item 1')
+    // console.log(response.data.createBroadcastPicker.listItem[1].listPO, 'list PO on item 2')
+    // console.log(response.data.createBroadcastPicker.StoreReq, 'storeRequest')
     // assert
-    expect(response.data.createBroadcast).toHaveProperty('_id');
-    expect(response.data.createBroadcast).toHaveProperty('purchasingOrder');
-    expect(response.data.createBroadcast).toHaveProperty('role', input.role, expect.any(String));
-    expect(response.data.createBroadcast).toHaveProperty('checkerId');
+    expect(response.data.createBroadcastPicker).toHaveProperty('_id');
+    expect(response.data.createBroadcastPicker).toHaveProperty('listItem');
+    expect(response.data.createBroadcastPicker).toHaveProperty('role');
+    expect(response.data.createBroadcastPicker).toHaveProperty('pickerId');
+    expect(response.data.createBroadcastPicker).toHaveProperty('StoreReq');
   });
-
-  describe('Admin Fail Case', () => {
   
+  describe('Admin Fail Case', () => {
+    
     test('UPDATE_STATUS_PO: should return Error', async () => {
       // create a new instance of our server (not listening on any port)
       // await connect()
@@ -239,7 +414,7 @@ describe('Admin Success Case', () => {
     `;
     
     const input = {
-      id,
+      id: idPO1,
       status: 'clear',
       access_token: access_token_buyer
     }
@@ -249,6 +424,121 @@ describe('Admin Success Case', () => {
     const response = await mutate({ mutation: UPDATE_STATUS_PO, variables: input });
     
     expect(response.errors).toBeDefined();
+    });
+
+    test('CREATE_BROADCAST_CHECKER: should return data with specific properties', async () => {
+      const CREATE_BROADCAST_CHECKER = `
+      mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String) {
+        createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
+          _id
+          purchasingOrder {
+            _id,
+            vendorName,
+            status,
+            items {
+              name
+                quantity
+                currentQuantity
+              },
+              createdAt,
+              updatedAt,
+              expiredDate
+            }
+            role
+            checkerId
+          }
+        }
+      `
+
+      const input = {
+        idPurchasingOrder: idPO1,
+        access_token: access_token_buyer
+      }
+
+      const response = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: input })
+      // console.log(response.data)
+      expect(response.errors).toBeDefined()
+    })
+
+    test('CREATE_BROADCAST_PICKER: should return data with specific properties', async () => {
+      // create a new instance of our server (not listening on any port)
+      // await connect()
+    
+      // apollo-server-testing provides a query function
+      // in order to execute graphql queries on that server
+    
+      // graphl query
+
+      const PICKER_BROADCAST = `
+        mutation createBroadcastPicker($idStoreReq: ID!, $access_token: String, $itemsToPick:[itemToPickInput]) {
+          createBroadcastPicker(idStoreReq: $idStoreReq, access_token: $access_token, itemsToPick: $itemsToPick) {
+            _id
+            role
+            listItem {
+              idItem
+              itemName
+              listPO {
+                idPO
+                quantity
+              }
+            }
+            pickerId
+            StoreReq {
+              _id
+              storeName
+              items {
+                itemId
+                itemName
+                quantityRequest
+              }
+              createdAt
+              updatedAt
+              status
+            }
+          }
+        }
+      `
+    
+      const input = {
+        idStoreReq,
+        access_token: access_token_buyer,
+        itemsToPick: [
+          {
+            idItem: itemData1._id,
+            itemName: itemData1.name,
+            listPO: [
+              {
+                idPO: idPO1,
+                quantity: 10
+              },
+              {
+                idPO: idPO2,
+                quantity: 4
+              }
+            ]
+          },
+          {
+            idItem: itemData2._id,
+            itemName: itemData2.name,
+            listPO: [
+              {
+                idPO: idPO2,
+                quantity: 8
+              }
+            ]
+          }
+        ]
+      }
+    
+      // act
+      const response = await mutate({ mutation: PICKER_BROADCAST, variables: input });
+      // console.log(response, 'INI RESPONSE BERHASIL')
+      // console.log(response.data.createBroadcastPicker.listItem, 'list item')
+      // console.log(response.data.createBroadcastPicker.listItem[0].listPO, 'list PO on item 1')
+      // console.log(response.data.createBroadcastPicker.listItem[1].listPO, 'list PO on item 2')
+      // console.log(response.data.createBroadcastPicker.StoreReq, 'storeRequest')
+      // assert
+      expect(response.errors).toBeDefined()
     });
   })
 })
