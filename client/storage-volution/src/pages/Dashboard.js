@@ -4,6 +4,7 @@ import '../assets/css/dashboard.css'
 import Navigation from '../components/Navigation' //masih belom seelesai
 import Sidebar from '../components/Sidebar' //masih belom seelesai
 import CreatePO from './CreatePO'
+import ListPO from './ListPO'
 import ListPOK from './ListPOK'
 import DetailPO from './DetailPO'
 import ListBroadcast from './ListBroadcast'
@@ -153,6 +154,9 @@ export default function Dashboard(props) {
         <div className="container-fluid mx-4 my-3">
           {/* Lokasi SwitchRoute Child */}
           <Switch>
+            <Route path={`${path}/listPO`}>
+              <ListPO />
+            </Route>
             <Route path={`${path}/addPO`}>
               <CreatePO />
             </Route>
@@ -160,13 +164,19 @@ export default function Dashboard(props) {
               <DetailPO />
             </Route>
             <Route exact path={`${path}`}>
-              <ListPOK />
+              <h1 className="mb-5">Masuk Dashboard</h1>
+              <Link className="btn btn-primary" to="/main/addPO">
+                Create PO
+              </Link>
+              <br />
+              <br />
+              <Link className="btn btn-primary" to="/main/listPO">
+                list PO
+              </Link>
             </Route>
           </Switch>
         </div>
       </div>
-      
     </>
-   
-  )
+  );
 }
