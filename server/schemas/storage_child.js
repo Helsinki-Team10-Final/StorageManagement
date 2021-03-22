@@ -28,9 +28,6 @@ module.exports = {
       item: [inputItem]
     }
 
-    extend type Query {
-      stores: [StorageChild]
-    }
 
     extend type Mutation {
       createStore(store: CreateStorageChild): StorageChild
@@ -39,15 +36,7 @@ module.exports = {
 
   resolvers: {
     Query: {
-      stores: async () => {
-        try {
-          const respone = await StorageChild.findAll();
-          return respone;
-        } catch (error) {
-          console.log(error, "---> error");
-          return new ApolloError(error);
-        }
-      },
+      
     },
 
     Mutation: {

@@ -2,7 +2,7 @@ const { gql, ApolloError } = require('apollo-server')
 const PurchasingOrder = require('../models/purchasingOrder')
 const { adminWarehouseAuth, buyerAuth } = require('../helpers/authorize')
 const { authorization } = require('../helpers/authorize')
-
+const POHistory = require('../models/pohistories')
 
 module.exports = {
   typeDefs: gql`
@@ -87,19 +87,27 @@ module.exports = {
           if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
 
           let dataInput = {...args.input}
-          console.log(args.input)
+          // console.log(args.input)
           dataInput.status = "process"
           dataInput.createdAt = new Date()
           dataInput.updatedAt = new Date()
 
           const newPurchasingOrder = await PurchasingOrder.create(dataInput)
+
+          //create history
+          let payload = newPurchasingOrder.ops[0]
+          payload.poId = payload._id
+          delete payload._id
+          const createPOHistory = await POHistory.create(payload)
+          //end create history
+
           return newPurchasingOrder.ops[0]
         } catch(err) {
           console.log(err)
           return new ApolloError("bad request","404",err)
         }
       },
-      // add key currentQuantity to Item PO
+      // add key currentQuantity to Item PO // maybe this mutation no needed anymore
       async updateCurrentQuantityPurchasingOrder(_, args) {
         try {
           const authorize = await authorization(args.access_token, "checker")
@@ -110,7 +118,12 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.id, payload)
-          console.log(updatedPurchasingOrder)
+          // console.log(updatedPurchasingOrder)
+
+          // //create history
+          // const createPOHistory = await POHistory.create(updatedPurchasingOrder.value)
+          // //end create history
+
           return updatedPurchasingOrder.value
         } catch (err) {
           console.log(err)

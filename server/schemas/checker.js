@@ -5,6 +5,7 @@ const Broadcast = require('../models/broadcast')
 const PurchasingOrder = require('../models/purchasingOrder')
 const Item = require('../models/item')
 const { updateStatus } = require('../models/purchasingOrder')
+const POHistory = require('../models/pohistories')
 
 module.exports = {
   typeDefs: gql`
@@ -138,7 +139,15 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.idPO, payload)
-          // console.log(updatedPurchasingOrder)
+          // console.log(updatedPurchasingOrder,'-----update')
+
+          //create history
+          let payloadHis = updatedPurchasingOrder.value
+          payloadHis.poId = payloadHis._id
+          delete payloadHis._id
+          const createPOHistory = await POHistory.create(payloadHis)
+          //end create history
+
           const deletedBroadcast = await Broadcast.deleteOne(args.idBroadCast)
           return "Successfully Checking Purchasing Order"
         } catch (error) {

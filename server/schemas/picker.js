@@ -121,7 +121,7 @@ module.exports = {
     Mutation: {
       async pickerUpdateItem(_, args) {
         try {
-          
+          console.log(args)
         } catch (error) {
           console.log(err)
           return new ApolloError("bad request", "404", err)

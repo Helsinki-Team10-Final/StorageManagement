@@ -1,6 +1,5 @@
 const { ApolloServer, gql } = require('apollo-server')
 const Schemas = require('./schemas/index')
-const { connect } = require('./config/mongodb')
 const purchasingOrderSchema = require('./schemas/purchasingOrder')
 const adminSchema = require('./schemas/admin')
 const checkerSchema = require('./schemas/checker')
@@ -18,8 +17,4 @@ const server = new ApolloServer({
     resolvers: [customScalarResolver, Schemas.resolvers, storeRequestSchema.resolvers, adminSchema.resolvers, purchasingOrderSchema.resolvers, checkerSchema.resolvers, itemSchema.resolvers, userSchema.resolvers, pickerSchema.resolvers]
 })
 
-connect().then(async (db) => {
-    console.log('database connected')
-    server.listen().then(({ url }) => console.log('Apolo running in url: ', url))
-})
-
+module.exports = server
