@@ -6,13 +6,9 @@ class POHistory {
     return getDatabase().collection('pohistories').find().toArray()
   }
 
-  static findOneById(id) {
-    return getDatabase().collection('pohistories').findOne({_id: new mongodb.ObjectID(id)})
+  static findAllByPoId (inputPO) {
+    return getDatabase().collection('pohistories').find({poId: new mongodb.ObjectID(inputPO)}, {"sort" : [['updatedAt', 'asc']]}).toArray()
   }
-
-//   static findOneByPOId(idPO {
-//     return getDatabase().collection('pohistories').findOne({ idPO })
-//   }
 
   static create(obj) {
     return getDatabase().collection('pohistories').insertOne(obj)
