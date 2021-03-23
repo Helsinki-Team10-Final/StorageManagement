@@ -70,6 +70,7 @@ module.exports = {
           let payloadHis = updatedStatusPurchasingOrder.value
           payloadHis.poId = payloadHis._id
           delete payloadHis._id
+          payloadHis.user = authorize
           const createPOHistory = await POHistory.create(payloadHis)
           //end create history
 
@@ -111,13 +112,6 @@ module.exports = {
           const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(foundPurchasingOrder._id, payload)
           // console.log(updatedStatusPurchasingOrder)
 
-          //create history
-          let payloadHis = updatedStatusPurchasingOrder.value
-          payloadHis.poId = payloadHis._id
-          delete payloadHis._id
-          const createPOHistory = await POHistory.create(payloadHis)
-          //end create history
-
           console.log(foundPurchasingOrder)
           const broadcast = {
             purchasingOrder: updatedStatusPurchasingOrder.value,
@@ -125,6 +119,16 @@ module.exports = {
           }
           const newBroadcast = await Broadcast.create(broadcast)
           console.log(broadcast)
+
+          
+          //create history
+          let payloadHis = updatedStatusPurchasingOrder.value
+          payloadHis.poId = payloadHis._id
+          payloadHis.user = authorize
+          delete payloadHis._id
+          const createPOHistory = await POHistory.create(payloadHis)
+          //end create history
+
           return newBroadcast.ops[0]
         } catch (err) {
           console.log(err)
@@ -142,7 +146,7 @@ module.exports = {
             status: 'picking',
             updatedAt: new Date()
           }
-          const updatedStatusStoreReq = await StoreRequest.updateStatusFromAdmin(foundStoreReq._id, payload)
+          const updatedStatusStoreReq = await StoreRequest.updateStatus(foundStoreReq._id, payload)
           // console.log(updatedStatusStoreReq)
 
           const broadcastPayload = {
@@ -155,8 +159,8 @@ module.exports = {
           // console.log(newBroadcast)
           return newBroadcast.ops[0]
         } catch (error) {
-          console.log(err)
-          return new ApolloError("bad request", "404", err)
+          console.log(error)
+          return new ApolloError("bad request", "404", error)
         }
       }
       
