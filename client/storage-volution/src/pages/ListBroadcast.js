@@ -47,13 +47,13 @@ export default function ListPOK({type}) {
           <tbody>
             {data.broadcastPicker.broadcasts.map((el) => {
               return (
-                <tr key={el.StoreReq._id}>
-                  <td>{el.StoreReq._id}</td>
-                  <td>{el.StoreReq.storeName}</td>
+                <tr key={el._id}>
+                  <td>{el._id}</td>
+                  <td style={{textTransform:"capitalize"}}>{el.StoreReq.storeName}</td>
                   <td>{new Date(el.StoreReq.createdAt).toLocaleString().slice(0,9)}</td>
                   <td style={{textTransform:"capitalize"}}>{el.StoreReq.status}</td>
                   <td>
-                    <Link to={`/main/picking/${el._id}`}>Check PO</Link>
+                    <Link to={`/main/picking/${el._id}`}>Pick Request</Link>
                   </td>
                 </tr>
               );
@@ -61,13 +61,13 @@ export default function ListPOK({type}) {
           </tbody>
         </Table>
       </div>
-      {/* {
-        data.broadcastChecker.unfinishedBroadcast && (
+      {
+        data.broadcastPicker.unfinishedBroadcast && (
           <>
-            <Link className="btn btn-primary" to={`/main/checking/${data.broadcastChecker.unfinishedBroadcast._id}`}>Back to previous check</Link>
+            <Link className="btn btn-primary" to={`/main/picking/${data.broadcastPicker.unfinishedBroadcast._id}`}>Back to previous Task</Link>
           </>
         )
-      } */}
+      }
     </div>
     </>
   )

@@ -195,6 +195,37 @@ export const GET_BROADCAST_CHECKER_BY_ID = gql`
   }
 `;
 
+export const GET_BROADCAST_PICKER_BY_ID = gql`
+  query broadcastPickerById($access_token: String!, $id: ID!){
+    broadcastPickerById(access_token: $access_token, id: $id){
+      _id
+            role
+      listItem{
+        idItem
+        itemName
+        listPO{
+                idPO
+          quantity
+      }
+      }
+        pickerId
+        StoreReq{
+          _id
+              storeName
+              items{
+                itemId
+                      itemName
+                      quantityRequest
+              }
+              createdAt
+              updatedAt
+              status
+        }
+    }
+  }
+`;
+
+
 export const SUBMIT_CHECKER = gql`
   mutation checkerClickDone ($input: [ItemInputUpdate]!, $access_token: String!, $idPO: String!, $idBroadcast: String!) {
     checkerUpdateItem(items: $input, access_token: $access_token, idPO: $idPO, idBroadCast: $idBroadcast)

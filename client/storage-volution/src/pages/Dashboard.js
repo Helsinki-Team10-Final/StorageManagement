@@ -9,6 +9,7 @@ import ListPOK from './ListPOK'
 import DetailPO from './DetailPO'
 import ListBroadcast from './ListBroadcast'
 import Checking from './Checking'
+import Picking from './Picking'
 import ListRequest from './ListRequest'
 import DetailRequest from './DetailRequest'
 import CreateRequestBroadcast from './CreateRequestBroadcast'
@@ -70,6 +71,10 @@ export default function Dashboard(props) {
           {/* <Route path={`${path}/listBroadcast`}>
             
           </Route> */}
+          <Route path={`${path}/picking/:id`}>
+            {/* <h1>Broadcast Detail</h1> */}
+            <Picking />
+          </Route>
           <Route exact path={`${path}`}>
             <ListBroadcast type="picker"/>
           </Route>
