@@ -53,13 +53,14 @@ module.exports = {
                   unfinishedBroadcast = broadcast
                 }
               } else {
+                // console.log('test')
                 broadcastForCheckers.push(broadcast)
               }
             }
           })
           return { broadcasts: broadcastForCheckers, unfinishedBroadcast }
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       },
@@ -101,7 +102,7 @@ module.exports = {
           }
           // 
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       }
@@ -124,11 +125,11 @@ module.exports = {
                 quantity: item.currentQuantity
               }
               const newItem = await Item.create(payload)
-              console.log(newItem, '-------new item')
+              // console.log(newItem, '-------new item')
             } else {
               // if found then update quantity of that item
               const updatedQuantity = await Item.updateOne(foundItem._id, (+foundItem.quantity + +item.currentQuantity))
-              console.log(updatedQuantity, '-------update item')
+              // console.log(updatedQuantity, '-------update item')
             }
           })
 
@@ -152,7 +153,7 @@ module.exports = {
           const deletedBroadcast = await Broadcast.deleteOne(args.idBroadCast)
           return "Successfully Checking Purchasing Order"
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError("bad request","404",err)
         }
       }

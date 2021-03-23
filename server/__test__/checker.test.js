@@ -7,7 +7,11 @@ const { query, mutate } = createTestClient(server);
 describe('Checker test', () => {
   let idPo1;
   let idPo2;
+  let idPo3
   let idBroadCast
+  let idBroadCast2
+  let broadcast2
+  let checkerData
   let access_token_buyer
   let access_token_checker
   let access_token_warehouseadmin
@@ -128,8 +132,8 @@ describe('Checker test', () => {
         ]
     }
 
-    const input2 = {
-        "vendorName": "warung babeh",
+    const input3 = {
+        "vendorName": "warung belakang",
         "expiredDate": "2021-03-20T04:55:17.064Z",
         "items": [
           {
@@ -142,13 +146,16 @@ describe('Checker test', () => {
           }
         ]
     }
+
+    
   
     // act
     // act
     //Register
+    const responseRegisterChecker = await mutate({ mutation: USER_REGISTER, variables: {input: checker} });
     await mutate({ mutation: USER_REGISTER, variables: {input: buyer} });
-    await mutate({ mutation: USER_REGISTER, variables: {input: checker} });
     await mutate({ mutation: USER_REGISTER, variables: {input: warehouseadmin} });
+    checkerData = responseRegisterChecker.data.createUser
     //Login
     const responseBuyer = await mutate({ mutation: USER_LOGIN, variables: {input: buyer_login} });
     const responseChecker = await mutate({ mutation: USER_LOGIN, variables: {input: checker_login} });
@@ -157,11 +164,27 @@ describe('Checker test', () => {
     access_token_checker = responseChecker.data.login.access_token
     access_token_warehouseadmin = responseWarehouseadmin.data.login.access_token
     //Create Broadcast
+    const input2 = {
+        "vendorName": "warung babeh",
+        "expiredDate": "2021-03-20T04:55:17.064Z",
+        "items": [
+          {
+            "name": "yamin",
+            "quantity": 20
+          },
+          {
+            "name": "lemper",
+            "quantity": 10
+          }
+        ]
+    }
     // console.log(access_token_buyer)
     const responsePO1 = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input1, access_token: access_token_buyer} });
     const responsePO2 = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input2, access_token: access_token_buyer} });
+    const responsePO3 = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input3, access_token: access_token_buyer} });
     idPo1 = responsePO1.data.createPurchasingOrder._id
     idPo2 = responsePO2.data.createPurchasingOrder._id
+    idPo3 = responsePO3.data.createPurchasingOrder._id
     createdAt = responsePO1.data.createPurchasingOrder.createdAt
 
     const inputBroadcast1 = {
@@ -174,9 +197,19 @@ describe('Checker test', () => {
       access_token: access_token_warehouseadmin
     }
 
+    const inputBroadcast3 = {
+      idPurchasingOrder: idPo2,
+      access_token: access_token_warehouseadmin
+    }
+
     const responseBroadcast1 = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: inputBroadcast1 });
-    await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: inputBroadcast2 });
+    const responseBroadcast2 = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: inputBroadcast2 });
+    const responseBroadcast3 = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: inputBroadcast3 });
     idBroadCast = responseBroadcast1.data.createBroadcastChecker._id
+    idBroadCast2 = responseBroadcast2.data.createBroadcastChecker._id
+
+    // console.log(checkerData, 'ini checker data')
+    // console.log(broadCast2, 'ini bc 2222')
     // console.log(idBroadCast, 'ini id broad')
     // console.log(responseChecker.data.login.access_token, 'iini dari beforeall token token punya CHECKER')
     // console.log(responsePicker.data.login.access_token, 'iini dari beforeall token token punya PICKER')
@@ -190,9 +223,46 @@ describe('Checker test', () => {
     await getDatabase().collection('users').deleteMany({})
     await getDatabase().collection('purchasingorder').deleteMany({})
     await getDatabase().collection('broadcasts').deleteMany({})
+    await getDatabase().collection('items').deleteMany({})
   })
 
   describe('Checker success case', () => {
+    
+
+    test('FIND_BY_ID: should return broadcast data with specific properties', async () => {
+      const FIND_BROADCAST_BY_ID = `
+        query broadcastCheckerById($access_token: String!, $id: ID!) {
+          broadcastCheckerById(access_token: $access_token, id: $id) {
+            _id,
+            purchasingOrder {
+              _id
+              vendorName
+              status,
+              items {
+                name
+                quantity
+                currentQuantity
+              },
+              createdAt
+              updatedAt
+              expiredDate
+            },
+            role
+            checkerId
+          }
+        }  
+      `
+
+      const response = await query({ query: FIND_BROADCAST_BY_ID, variables: { access_token: access_token_checker, id: idBroadCast }})
+      const response2 = await query({ query: FIND_BROADCAST_BY_ID, variables: { access_token: access_token_checker, id: idBroadCast }})
+      await query({ query: FIND_BROADCAST_BY_ID, variables: { access_token: access_token_checker, id: idBroadCast2 }})
+      // console.log(response, 'ini dari fin id')
+      expect(response.data.broadcastCheckerById).toHaveProperty('_id', expect.any(String))
+      expect(response.data.broadcastCheckerById).toHaveProperty('purchasingOrder')
+      expect(response.data.broadcastCheckerById).toHaveProperty('role', expect.any(String))
+      expect(response.data.broadcastCheckerById).toHaveProperty('checkerId', expect.any(String))        
+    })
+
     test('FIND_ALL: should return list of all broadcast for checker data', async () => {
       const FIND_BROADCAST_CHECKER = `
         query broadcastChecker($access_token: String!) {
@@ -238,40 +308,8 @@ describe('Checker test', () => {
       `
 
       const response = await query({ query: FIND_BROADCAST_CHECKER, variables: { access_token: access_token_checker }})
-        // console.log(response)
+        console.log(response)
       expect(response.data.broadcastChecker).toHaveProperty('broadcasts')
-    })
-
-    test('FIND_BY_ID: should return broadcast data with specific properties', async () => {
-      const FIND_BROADCAST_BY_ID = `
-        query broadcastCheckerById($access_token: String!, $id: ID!) {
-          broadcastCheckerById(access_token: $access_token, id: $id) {
-            _id,
-            purchasingOrder {
-              _id
-              vendorName
-              status,
-              items {
-                name
-                quantity
-                currentQuantity
-              },
-              createdAt
-              updatedAt
-              expiredDate
-            },
-            role
-            checkerId
-          }
-        }  
-      `
-
-      const response = await query({ query: FIND_BROADCAST_BY_ID, variables: { access_token: access_token_checker, id: idBroadCast }})
-      // console.log(response, 'ini dari fin id')
-      expect(response.data.broadcastCheckerById).toHaveProperty('_id', expect.any(String))
-      expect(response.data.broadcastCheckerById).toHaveProperty('purchasingOrder')
-      expect(response.data.broadcastCheckerById).toHaveProperty('role', expect.any(String))
-      expect(response.data.broadcastCheckerById).toHaveProperty('checkerId', expect.any(String))        
     })
 
     test('CHECKER_UPDATE_ITEM: should return success message', async () => {
@@ -295,7 +333,9 @@ describe('Checker test', () => {
         ]
 
       const response = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_checker, idPO: idPo1, idBroadCast}})
-      console.log(response.data, 'ini dari update')
+      const response2 = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_checker, idPO: idPo2, idBroadCast}})
+      const response3 = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_checker, idPO: idPo3, idBroadCast}})
+      // console.log(response.data, 'ini dari update')
       expect(typeof response.data.checkerUpdateItem).toEqual('string')
     })
   })
@@ -346,7 +386,7 @@ describe('Checker test', () => {
       `
 
       const response = await query({ query: FIND_BROADCAST_CHECKER, variables: { access_token: access_token_buyer }})
-      console.log(response)
+      // console.log(response)
       expect(response.errors).toBeDefined()
     })
 

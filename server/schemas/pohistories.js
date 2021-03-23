@@ -38,17 +38,17 @@ module.exports = {
           const histories = await POHistory.find()
           return histories
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       },
       poHistoriesByPoId: async (_,args) => {
         try {
-          console.log(args)
+          // console.log(args)
           const histories = await POHistory.findAllByPoId(args.poId)
           return histories
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       }
