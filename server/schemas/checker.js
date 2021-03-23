@@ -53,7 +53,7 @@ module.exports = {
                   unfinishedBroadcast = broadcast
                 }
               } else {
-                console.log('test')
+                // console.log('test')
                 broadcastForCheckers.push(broadcast)
               }
             }

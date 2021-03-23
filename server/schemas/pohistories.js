@@ -44,7 +44,7 @@ module.exports = {
       },
       poHistoriesByPoId: async (_,args) => {
         try {
-          console.log(args)
+          // console.log(args)
           const histories = await POHistory.findAllByPoId(args.poId)
           return histories
         } catch (error) {

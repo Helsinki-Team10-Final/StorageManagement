@@ -102,8 +102,6 @@ module.exports = {
           let foundBroadCast = await Broadcast.findOne(args.id)
           if (foundBroadCast.pickerId) {
             if (decoded._id === foundBroadCast.pickerId) {
-              console.log('masuk sini ga')
-              console.log(foundBroadCast, 'foundboradcast sssssssssssssssssssssssssss')
               return foundBroadCast
             }
           } else {
@@ -111,8 +109,6 @@ module.exports = {
               delete foundBroadCast._id
               foundBroadCast.pickerId = decoded._id
               const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
-              
-              console.log(updatedBroadcast, 'dari skema by id')
               return updatedBroadcast
             } else {
               throw { type: "CheckerError", message: "Redundant Task" }
