@@ -7,7 +7,8 @@ import CreatePO from './CreatePO'
 import ListPO from './ListPO'
 import ListPOK from './ListPOK'
 import DetailPO from './DetailPO'
-import RequestStore from './RequestStore';
+import ListBroadcast from './ListBroadcast'
+import Checking from './Checking'
 
 export default function Dashboard(props) {
   const [currentRole, setCurrentRole] = useState('')
@@ -54,8 +55,11 @@ export default function Dashboard(props) {
       <div className="container-fluid mx-4 my-3">
         {/* Lokasi SwitchRoute Child */}
         <Switch>
+          {/* <Route path={`${path}/listBroadcast`}>
+            
+          </Route> */}
           <Route exact path={`${path}`}>
-            <h1>List BroadCast dari Picker</h1>
+            <ListBroadcast  type="picker"/>
           </Route>
           <Route>
             <h1>Page Not Found</h1>
@@ -99,8 +103,12 @@ export default function Dashboard(props) {
       <div className="container-fluid mx-4 my-3">
         {/* Lokasi SwitchRoute Child */}
         <Switch>
+          <Route path={`${path}/checking/:id`}>
+            {/* <h1>Broadcast Detail</h1> */}
+            <Checking />
+          </Route>
           <Route exact path={`${path}`}>
-            <h1>List BroadCast dari checker</h1>
+            <ListBroadcast type="checker"/>
           </Route>
           <Route>
             <h1>Page Not Found</h1>

@@ -30,9 +30,9 @@ module.exports = {
     }
 
     input CreateUserInput {
-      email: String
-      name: String
-      password: String
+      email: String!
+      name: String!
+      password: String!
       role: String
     }
 
@@ -53,7 +53,7 @@ module.exports = {
           // console.log(resDB)
           return resDB
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       }
@@ -62,13 +62,14 @@ module.exports = {
       createUser: async (_, args) => {
         try {
           // await redis.del("users:data")
+          // console.log(args, 'ini dari create')
           let {name, email, password, role} = args.user
           password = hashPassword(password)
           const user = await User.create({name, email, password, role})
           // console.log(user.ops[0])
           return user.ops[0]
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       },
@@ -84,7 +85,7 @@ module.exports = {
           // console.log(access_token)
           return {access_token, name: res.name, role: res.role}
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError("bad request","404",error)
         }
       }
