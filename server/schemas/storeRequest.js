@@ -34,6 +34,7 @@ module.exports = {
   }
 
   type RequestWithPO {
+    idItem: String
     name: String
     PO: [PO]
   }
@@ -127,6 +128,7 @@ module.exports = {
             })
 
             let obj = {
+              idItem: listItem[i].itemId,
               name: listItem[i].itemName,
               PO: poPerItem
             }

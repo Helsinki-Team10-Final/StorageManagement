@@ -119,6 +119,63 @@ export const GET_BROADCASTS_CHECKER = gql`
 
 `;
 
+export const GET_BROADCASTS_PICKER = gql`
+  query getbroadcastPicker($access_token: String!){
+    broadcastPicker(access_token: $access_token){
+      broadcasts{
+        _id
+        role
+        listItem{
+          idItem
+          itemName
+          listPO{
+            idPO
+            quantity
+          }
+        }
+        pickerId
+        StoreReq{
+          _id
+                      storeName
+                      items{
+            itemId
+                              itemName
+                              quantityRequest
+          }
+              createdAt
+              updatedAt
+              status
+        }
+      }
+      unfinishedBroadcast{
+        _id
+        role
+        listItem{
+          idItem
+          itemName
+          listPO{
+            idPO
+            quantity
+          }
+        }
+        pickerId
+        StoreReq{
+          _id
+                      storeName
+                      items{
+            itemId
+                              itemName
+                              quantityRequest
+          }
+              createdAt
+              updatedAt
+              status
+        }
+      }
+    }
+  }
+`;
+
 export const GET_BROADCAST_CHECKER_BY_ID = gql`
   query broadcastCheckerById($idBroadcast: ID!, $access_token: String!) {
     broadcastCheckerById(id: $idBroadcast ,access_token: $access_token) {
@@ -191,12 +248,35 @@ export const GET_REQUEST_WITH_PO = gql`
         }
       }
       dropdown {
+        idItem
         name
         PO {
           _id
           current_quantity
         }
       }
+    }
+  }
+`;
+
+export const SUBMIT_BROADCAST_REQUEST = gql`
+  mutation createBroadcastPicker($itemsToPick: [itemToPickInput]!, $idStoreReq: ID!, $access_token: String!){
+    createBroadcastPicker(idStoreReq:$idStoreReq, access_token:$access_token, itemsToPick: $itemsToPick){
+      _id
+      role
+      StoreReq{
+        _id
+        status
+      }
+      listItem{
+        idItem
+        itemName
+        listPO{
+          idPO
+          quantity
+        }
+      }
+      pickerId
     }
   }
 `;

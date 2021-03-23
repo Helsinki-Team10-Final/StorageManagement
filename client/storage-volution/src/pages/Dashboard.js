@@ -71,7 +71,7 @@ export default function Dashboard(props) {
             
           </Route> */}
           <Route exact path={`${path}`}>
-            <ListBroadcast  type="picker"/>
+            <ListBroadcast type="picker"/>
           </Route>
           <Route>
             <h1>Page Not Found</h1>
