@@ -80,7 +80,7 @@ module.exports = {
 
       requestById: async (_, args) => {
         try {
-          console.log(args)
+          // console.log(args)
           const foundRequest = await StoreRequest.findById(args.id)
           const tempArr = []
           const result = JSON.parse(JSON.stringify(foundRequest))
@@ -99,26 +99,27 @@ module.exports = {
           // console.log(result)
           return result          
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError(error)
         }
       },
 
       async requestsWithPO(_, args) {
         try {
+          // console.log(args)
           const authorize = await authorization(args.access_token, "warehouseadmin")
-          // console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const listItem = foundStoreReq.items
-          // console.log(listItem)
+          console.log(foundStoreReq, 'ini list item')
           const allItemsWithPO = []
 
           for (let i = 0; i < listItem.length; i++) {
             console.log(listItem[i].itemName, '<<<<<<<<<<<<<<<<<<')
             let poPerItem = []
             const foundPO = await PurchasingOrder.findAllByItemName(listItem[i].itemName)
+            console.log(foundPO, 'ini found PO')
             foundPO.forEach(po => {
               const item = po.items.filter(item => item.name === listItem[i].itemName)
               poPerItem.push({
@@ -138,7 +139,7 @@ module.exports = {
           return {request: foundStoreReq, dropdown: allItemsWithPO}
           // console.log(foundStoreReq)
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError(err)
         }
       }
@@ -147,6 +148,7 @@ module.exports = {
       createRequest: async (_, args) => {
         try {
           const authorize = await authorization(args.access_token, "buyer")
+          console.log(authorize, 'ini authorize create request')
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
           //create request
@@ -164,6 +166,7 @@ module.exports = {
 
         } catch (error) {
           // console.log(error, '---> error')
+          // console.log('masuk ke error store request')
           return new ApolloError(error)
         }
       },

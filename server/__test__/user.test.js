@@ -212,15 +212,15 @@ describe('User Fail Case', () => {
     `;
     
     const user = {
-        email: "picker@mail.com",
-        password: "",
-        role: "",
-        name: ""
+        email: "picker@.com",
+        password: null,
+        role: null,
+        name: undefined
     }
     
   
     // act
-    const response = await mutate({ mutation: USER_REGISTER, variables: {user} });
+    const response = await mutate({ mutation: USER_REGISTER, variables: user });
     console.log(response, 'ini dari create error')
     // expect(response.errors).toBeDefined()
   })

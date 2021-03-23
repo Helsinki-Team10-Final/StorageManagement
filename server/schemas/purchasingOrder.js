@@ -77,7 +77,7 @@ module.exports = {
           const purchasingOrderById = await PurchasingOrder.findById(args.id)
           return purchasingOrderById
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       }
@@ -108,6 +108,7 @@ module.exports = {
           return newPurchasingOrder.ops[0]
         } catch(err) {
           // console.log(err)
+          console.log('masuk ke error PO')
           return new ApolloError("bad request","404",err)
         }
       }
