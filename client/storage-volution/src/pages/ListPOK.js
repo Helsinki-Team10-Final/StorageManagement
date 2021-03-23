@@ -13,7 +13,6 @@ export default function ListPOK(props) {
   }
   console.log(data)
 
-
   return (
     <>
       <Table striped bordered hover>
@@ -34,7 +33,7 @@ export default function ListPOK(props) {
               <tr>
                 <td key={el._id}>{el._id}</td>
                 <td>{el.vendorName}</td>
-                <td>tanggal</td>
+                <td>{el.createdAt}</td>
                 <td>{el.status}</td>
                 <td>pak rozak</td>
                 <td>detail</td>

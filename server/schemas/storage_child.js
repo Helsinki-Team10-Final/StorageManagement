@@ -1,5 +1,6 @@
 const { gql, ApolloError } = require("apollo-server");
 const StorageChild = require("../models/storage_child");
+const { authorization } = require("../helpers/authorize");
 
 module.exports = {
   typeDefs: gql`
@@ -53,6 +54,9 @@ module.exports = {
     Mutation: {
       createStore: async (_, args) => {
         try {
+          const authorize = await authorization(args.access_token, "buyer");
+          if (!authorize) throw { type: "CustomError", message: "Not authorize" }; //throw err
+
           let dataInput = { ...args.store };
           console.log("masuk");
           console.log(args.store);

@@ -112,17 +112,19 @@ export const ADD_MOVIE = gql`
   }
 `;
 
-export const GET_PO =gql`
-query getPO{
-  purchasingOrders {
-    _id,
-    vendorName,
-    items {
-      name,
-      quantity,
-      currentQuantity
+export const GET_PO = gql`
+  query getPO {
+    purchasingOrders {
+      _id
+      vendorName
+      items {
+        name
+        quantity
+        currentQuantity
+      }
+      status
+      createdAt
+      expiredDate
     }
-    status
   }
-}
 `;
