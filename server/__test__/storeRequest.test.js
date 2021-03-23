@@ -137,7 +137,7 @@ describe('Store Request Test', () => {
       }
   
       const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_buyer }})
-      console.log(response.data.createRequest.items, 'iini dari create req')
+      // console.log(response.data.createRequest.items, 'iini dari create req')
       requestId = response.data.createRequest._id
       expect(response.data.createRequest).toHaveProperty('_id', expect.any(String))
       expect(response.data.createRequest).toHaveProperty('storeName', expect.any(String))
@@ -187,10 +187,49 @@ describe('Store Request Test', () => {
           }
         }
       `
+      
   
       const response = await query({ query: FIND_BY_ID, variables: {id: requestId}})
-      console.log(response.data, 'ini dari findbyid')
+      // console.log(response.data, 'ini dari findbyid')
       expect(typeof response.data.request).toEqual('object')
+    })
+
+    test('REQUEST_WITH_PO: should return specific data', async () => {
+      const REQUEST_WITH_PO = `
+        query requestsWithPO($idStoreReq: ID!, $access_token: String) {
+          requestsWithPO(idStoreReq: $idStoreReq, access_token: $access_token) {
+            request {
+              _id
+              storeName
+              items {
+                itemId
+                itemName
+                quantityRequest
+              }
+              createdAt
+              updatedAt
+              status
+            }
+            dropdown {
+              name
+              PO {
+                _id
+                current_quantity
+              }
+            }
+          }
+        }
+      `
+
+      const input = {
+        idStoreReq: requestId,
+        access_token: access_token_buyer
+      }
+
+      const response = await query({ query: REQUEST_WITH_PO, variables: input})
+      // console.log(response, 'ini dari test terbaru 2021')
+      expect(response.data.requestsWithPO).toHaveProperty('request')
+      expect(response.data.requestsWithPO).toHaveProperty('dropdown')
     })
   })
 
@@ -230,9 +269,70 @@ describe('Store Request Test', () => {
       }
   
       const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_checker }})
-      console.log(response.errors)
+      // console.log(response.errors)
+      expect(response.errors).toBeDefined()
+    })
+
+    test('FIND_BY_ID: should return specific store request data', async () => {
+      const FIND_BY_ID = `
+        query request($id: ID!) {
+          request(id: $id) {
+            _id
+            storeName
+            items {
+              itemId
+              itemName
+              quantityRequest
+            },
+            createdAt
+            updatedAt
+            status
+          }
+        }
+      `
+      
+  
+      const response = await query({ query: FIND_BY_ID, variables: {id: "askdlaskdl"}})
+      // console.log(response, 'ini dari findbyid yg gagal')
+      // expect(typeof response.data.request).toEqual('object')
+      expect(response.data.request).toEqual(null)
+    })
+
+    test('REQUEST_WITH_PO: should return error', async () => {
+      const REQUEST_WITH_PO = `
+        query requestsWithPO($idStoreReq: ID!, $access_token: String) {
+          requestsWithPO(idStoreReq: $idStoreReq, access_token: $access_token) {
+            request {
+              _id
+              storeName
+              items {
+                itemId
+                itemName
+                quantityRequest
+              }
+              createdAt
+              updatedAt
+              status
+            }
+            dropdown {
+              name
+              PO {
+                _id
+                current_quantity
+              }
+            }
+          }
+        }
+      `
+
+      const input = {
+        idStoreReq: requestId,
+        access_token: access_token_checker
+      }
+
+      const response = await query({ query: REQUEST_WITH_PO, variables: input})
+      // console.log(response, 'ini dari test terbaru 2021 dari yg error')
       expect(response.errors).toBeDefined()
     })
   })
-
 })

@@ -100,7 +100,9 @@ module.exports = {
       async createBroadcastPicker(_, args) {
         try {
           const authorize = await authorization(args.access_token, "warehouseadmin")
+          console.log(authorize, 'authhhhhhhhhhhhhhhhhhh')
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
+          console.log('masuk ke sini')
 
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const payload = {
@@ -120,8 +122,8 @@ module.exports = {
           // console.log(newBroadcast)
           return newBroadcast.ops[0]
         } catch (error) {
-          console.log(error)
-          return new ApolloError("bad request", "404", error)
+          console.log(err)
+          return new ApolloError("bad request", "404", err)
         }
       }
       // async createBroadcastPicker(_,args) {

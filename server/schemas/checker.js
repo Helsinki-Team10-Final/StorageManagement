@@ -128,7 +128,7 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.idPO, payload)
-          // console.log(updatedPurchasingOrder)
+          console.log(updatedPurchasingOrder.value, 'ini dari checker')
           const deletedBroadcast = await Broadcast.deleteOne(args.idBroadCast)
           return "Successfully Checking Purchasing Order"
         } catch (error) {

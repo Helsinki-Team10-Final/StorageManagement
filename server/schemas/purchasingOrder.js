@@ -67,7 +67,8 @@ module.exports = {
           const allPurchasingOrders = await PurchasingOrder.findAll()
           return allPurchasingOrders
         } catch(err) {
-          console.log(err)
+          // console.log(err)
+          return new ApolloError(err)
         }
       },
       async purchasingOrderById(_, args) {
@@ -75,7 +76,8 @@ module.exports = {
           const purchasingOrderById = await PurchasingOrder.findById(args.id)
           return purchasingOrderById
         } catch(err) {
-          console.log(err)
+          // console.log(err)
+          return new ApolloError(err)
         }
       }
     },
@@ -95,7 +97,7 @@ module.exports = {
           const newPurchasingOrder = await PurchasingOrder.create(dataInput)
           return newPurchasingOrder.ops[0]
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       },

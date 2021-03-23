@@ -14,6 +14,11 @@ class PurchasingOrder{
     return getDatabase().collection('purchasingorder').findOne({ _id: ObjectId(id) })
   }
 
+  static findAllByItemName (name) {
+    console.log(name)
+    return getDatabase().collection('purchasingorder').find({status: 'clear', items: {$elemMatch: {name: name}}}).toArray()
+  }
+
   static updateStatus(id, payload) {
     return getDatabase().collection('purchasingorder').findOneAndUpdate(
       { _id: ObjectId(id) },

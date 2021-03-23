@@ -532,7 +532,7 @@ describe('Admin Success Case', () => {
     
       // act
       const response = await mutate({ mutation: PICKER_BROADCAST, variables: input });
-      // console.log(response, 'INI RESPONSE BERHASIL')
+      console.log(response, 'INI RESPONSE BERHASIL')
       // console.log(response.data.createBroadcastPicker.listItem, 'list item')
       // console.log(response.data.createBroadcastPicker.listItem[0].listPO, 'list PO on item 1')
       // console.log(response.data.createBroadcastPicker.listItem[1].listPO, 'list PO on item 2')

@@ -122,8 +122,10 @@ describe('User Success Case', () => {
   
     // act
     const response = await query({ query: FIND_USER })
+    // console.log(response.data.users, 'user find all')
     // assert
     expect(response.data).toBeDefined()
+    expect(typeof response.data.users).toEqual('object')
   });
 })
 

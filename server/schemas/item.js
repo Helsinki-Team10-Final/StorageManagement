@@ -31,7 +31,8 @@ module.exports = {
           const res = await Item.find()
           // console.log(resDB)
           return res
-        } catch (error) {console.log(error, '---> error')
+        } catch (error) {
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       },
@@ -43,7 +44,7 @@ module.exports = {
           // console.log(res)
           return res
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       }
@@ -58,7 +59,7 @@ module.exports = {
           // console.log(item.ops[0])
           return item.ops[0]
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       },

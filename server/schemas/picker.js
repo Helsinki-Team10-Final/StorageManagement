@@ -45,8 +45,9 @@ module.exports = {
     Query: {
       async broadcastPicker(_, args) {
         try {
-          // console.log(args)
+          console.log(args)
           const authorize = await authorization(args.access_token, "picker")
+          // console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
           const pickerData = decodedToken(args.access_token)
           // console.log(pickerData, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
@@ -111,7 +112,6 @@ module.exports = {
     Mutation: {
       pickerUpdateItem: async (_, args) => {
         try {
-          // console.log(args.input, 'dari skemaa')
           const authorize = await authorization(args.access_token, "picker")
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
@@ -120,10 +120,9 @@ module.exports = {
             let n = 0
             item.listPO.forEach(async (po,indexPO) => {
               let foundItem = await Item.findOneById(item.idItem)
-              // console.log(foundItem, 'index: ',indexPO)
+              console.log(foundItem, 'index: ',indexPO)
               let foundPO = await PurchasingOrder.findById(po.idPO)
               let arrItems = [...foundPO.items]
-              // console.log(arrItems, 'dari skememaskm')
 
               foundPO.items.forEach(async (itemPO, index) => {
                 if (itemPO.name.toLowerCase() === item.itemName.toLowerCase()){
