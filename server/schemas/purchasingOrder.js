@@ -2,7 +2,7 @@ const { gql, ApolloError } = require('apollo-server')
 const PurchasingOrder = require('../models/purchasingOrder')
 const { adminWarehouseAuth, buyerAuth } = require('../helpers/authorize')
 const { authorization } = require('../helpers/authorize')
-
+const POHistory = require('../models/pohistories')
 
 module.exports = {
   typeDefs: gql`
@@ -56,7 +56,7 @@ module.exports = {
     }
 
     extend type Mutation {
-      createPurchasingOrder(input: CreatePurchasingOrderInput, access_token: String!) : PurchasingOrder
+      createPurchasingOrder(input: CreatePurchasingOrderInput!, access_token: String!) : PurchasingOrder
       updateCurrentQuantityPurchasingOrder(id: ID!, input: UpdateCurrentQuantityPurchasingOrderInput, access_token: String) : PurchasingOrder
     }
   `,
@@ -73,10 +73,11 @@ module.exports = {
       },
       async purchasingOrderById(_, args) {
         try {
+          console.log(args.id, 'ini dari skema')
           const purchasingOrderById = await PurchasingOrder.findById(args.id)
           return purchasingOrderById
         } catch(err) {
-          // console.log(err)
+          console.log(err)
           return new ApolloError(err)
         }
       }
@@ -95,13 +96,21 @@ module.exports = {
           dataInput.updatedAt = new Date()
 
           const newPurchasingOrder = await PurchasingOrder.create(dataInput)
+          // console.log(newPurchasingOrder.ops[0], 'ini sebelum history')
+          //create history
+          let payload = {...newPurchasingOrder.ops[0]}
+          payload.poId = payload._id
+          delete payload._id
+          const createPOHistory = await POHistory.create(payload)
+          //end create history
+          // console.log(newPurchasingOrder.ops[0], 'ini setelah history')
           return newPurchasingOrder.ops[0]
         } catch(err) {
           // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       },
-      // add key currentQuantity to Item PO
+      // add key currentQuantity to Item PO // maybe this mutation no needed anymore
       async updateCurrentQuantityPurchasingOrder(_, args) {
         try {
           const authorize = await authorization(args.access_token, "checker")
@@ -112,7 +121,12 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.id, payload)
-          console.log(updatedPurchasingOrder)
+          // console.log(updatedPurchasingOrder)
+
+          // //create history
+          // const createPOHistory = await POHistory.create(updatedPurchasingOrder.value)
+          // //end create history
+
           return updatedPurchasingOrder.value
         } catch (err) {
           console.log(err)

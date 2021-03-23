@@ -62,7 +62,7 @@ module.exports = {
       createUser: async (_, args) => {
         try {
           // await redis.del("users:data")
-          console.log(args, 'ini dari create')
+          // console.log(args, 'ini dari create')
           let {name, email, password, role} = args.user
           password = hashPassword(password)
           const user = await User.create({name, email, password, role})

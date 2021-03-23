@@ -73,7 +73,7 @@ describe('Checker test', () => {
     }
     
     const CREATE_BROADCAST_CHECKER = `
-    mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String) {
+    mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String!) {
       createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
         _id
         purchasingOrder {
@@ -96,7 +96,7 @@ describe('Checker test', () => {
     `
 
     const CREATE_PURCHASING_ORDER = `
-      mutation createPurchasingOrder($input: CreatePurchasingOrderInput, $access_token: String!) {
+      mutation createPurchasingOrder($input: CreatePurchasingOrderInput!, $access_token: String!) {
         createPurchasingOrder(input: $input, access_token: $access_token) {
           _id
           vendorName
@@ -195,7 +195,7 @@ describe('Checker test', () => {
   describe('Checker success case', () => {
     test('FIND_ALL: should return list of all broadcast for checker data', async () => {
       const FIND_BROADCAST_CHECKER = `
-        query broadcastChecker($access_token: String) {
+        query broadcastChecker($access_token: String!) {
           broadcastChecker(access_token: $access_token) {
             broadcasts {
               _id
@@ -238,7 +238,7 @@ describe('Checker test', () => {
       `
 
       const response = await query({ query: FIND_BROADCAST_CHECKER, variables: { access_token: access_token_checker }})
-
+        // console.log(response)
       expect(response.data.broadcastChecker).toHaveProperty('broadcasts')
     })
 
@@ -276,7 +276,7 @@ describe('Checker test', () => {
 
     test('CHECKER_UPDATE_ITEM: should return success message', async () => {
       const CHECKER_UPDATE_ITEM = `
-        mutation checkerUpdateItem($items: [ItemInputUpdate], $access_token: String, $idPO: String, $idBroadCast: String) {
+        mutation checkerUpdateItem($items: [ItemInputUpdate]!, $access_token: String!, $idPO: String!, $idBroadCast: String!) {
           checkerUpdateItem(items: $items, access_token: $access_token, idPO: $idPO, idBroadCast: $idBroadCast)
         }
       `
@@ -295,7 +295,7 @@ describe('Checker test', () => {
         ]
 
       const response = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_checker, idPO: idPo1, idBroadCast}})
-      // console.log(response.data, 'ini dari update')
+      console.log(response.data, 'ini dari update')
       expect(typeof response.data.checkerUpdateItem).toEqual('string')
     })
   })
@@ -303,7 +303,7 @@ describe('Checker test', () => {
   describe('Checker fail case', () => {
     test(`FIND_ALL: should return error when provided wrong access_token`, async () => {
       const FIND_BROADCAST_CHECKER = `
-        query broadcastChecker($access_token: String) {
+        query broadcastChecker($access_token: String!) {
           broadcastChecker(access_token: $access_token) {
             broadcasts {
               _id
@@ -381,7 +381,7 @@ describe('Checker test', () => {
 
     test('CHECKER_UPDATE_ITEM: should return error when provided wrong access_token', async () => {
       const CHECKER_UPDATE_ITEM = `
-        mutation checkerUpdateItem($items: [ItemInputUpdate], $access_token: String, $idPO: String, $idBroadCast: String) {
+        mutation checkerUpdateItem($items: [ItemInputUpdate]!, $access_token: String!, $idPO: String!, $idBroadCast: String!) {
           checkerUpdateItem(items: $items, access_token: $access_token, idPO: $idPO, idBroadCast: $idBroadCast)
         }
       `
@@ -400,7 +400,7 @@ describe('Checker test', () => {
         ]
 
       const response = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_buyer, idPO: idPo1, idBroadCast}})
-      console.log(response, 'ini dari update')
+      // console.log(response, 'ini dari update')
       expect(response.errors).toBeDefined()
     })
   })

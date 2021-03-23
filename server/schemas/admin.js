@@ -3,6 +3,7 @@ const { authorization } = require('../helpers/authorize')
 const PurchasingOrder = require('../models/purchasingOrder')
 const StoreRequest = require('../models/storeRequest')
 const Broadcast = require('../models/broadcast')
+const POHistory = require("../models/pohistories")
 
 
 module.exports = {
@@ -45,26 +46,53 @@ module.exports = {
     }
 
     extend type Mutation {
-      updateStatusPurchasingOrderAdmin(id: ID!, status: String, access_token: String!): PurchasingOrder
-      createBroadcastChecker(idPurchasingOrder: ID!, access_token: String) : BroadCast
-      createBroadcastPicker(idStoreReq: ID!, access_token: String, itemsToPick:[itemToPickInput]): BroadcastPickerResult
+      rejectPurchasingOrder(id: ID!, access_token: String!): PurchasingOrder
+      rejectStoreRequest(id: ID!, access_token: String!): Request
+      createBroadcastChecker(idPurchasingOrder: ID!, access_token: String!) : BroadCast
+      createBroadcastPicker(idStoreReq: ID!, access_token: String!, itemsToPick:[itemToPickInput]!): BroadcastPickerResult
     }
 
   `,
   resolvers: {
     Mutation: {
-      async updateStatusPurchasingOrderAdmin(_, args) {
+      async rejectPurchasingOrder(_, args) {
         try {
           const authorize = await authorization(args.access_token, "warehouseadmin")
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
           const payload = {
-            status: args.status,
+            status: "rejected",
             updatedAt: new Date()
           }
           const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(args.id, payload)
           // console.log(updatedStatusPurchasingOrder)
+          
+          //create history
+          let payloadHis = updatedStatusPurchasingOrder.value
+          payloadHis.poId = payloadHis._id
+          delete payloadHis._id
+          const createPOHistory = await POHistory.create(payloadHis)
+          //end create history
+
           return updatedStatusPurchasingOrder.value
         } catch (err) {
+          console.log(err)
+          return new ApolloError("bad request", "404", err)
+        }
+      },
+      async rejectStoreRequest(_, args) {
+        try {
+          const authorize = await authorization(args.access_token, "warehouseadmin")
+          if (!authorize) throw { type: "CustomError", message: "Not authorize" }
+
+          const payload = {
+            status: "rejected",
+            updatedAt: new Date()
+          }
+          const updatedStatusUpdateStatus = await StoreRequest.updateStatus(args.id, payload)
+          // console.log(updatedStatusUpdateStatus)
+          
+          return updatedStatusUpdateStatus.value
+        } catch (error) {
           console.log(err)
           return new ApolloError("bad request", "404", err)
         }
@@ -83,6 +111,13 @@ module.exports = {
           const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(foundPurchasingOrder._id, payload)
           // console.log(updatedStatusPurchasingOrder)
 
+          //create history
+          let payloadHis = updatedStatusPurchasingOrder.value
+          payloadHis.poId = payloadHis._id
+          delete payloadHis._id
+          const createPOHistory = await POHistory.create(payloadHis)
+          //end create history
+
           // console.log(foundPurchasingOrder)
           const broadcast = {
             purchasingOrder: updatedStatusPurchasingOrder.value,
@@ -100,19 +135,18 @@ module.exports = {
       async createBroadcastPicker(_, args) {
         try {
           const authorize = await authorization(args.access_token, "warehouseadmin")
-          console.log(authorize, 'authhhhhhhhhhhhhhhhhhh')
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-          console.log('masuk ke sini')
 
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const payload = {
             status: 'picking',
             updatedAt: new Date()
           }
-          const updatedStatusStoreReq = await StoreRequest.updateStatusFromAdmin(foundStoreReq._id, payload)
-          // console.log(updatedStatusStoreReq)
+          
+          const updatedStatusStoreReq = await StoreRequest.updateStatus(foundStoreReq._id, payload)
 
           const broadcastPayload = {
+            pickerId: 'aaa', //nambahin ini
             role: "picker",
             listItem: args.itemsToPick,
             StoreReq: updatedStatusStoreReq.value
@@ -126,33 +160,7 @@ module.exports = {
           return new ApolloError("bad request", "404", err)
         }
       }
-      // async createBroadcastPicker(_,args) {
-      //   try {
-      //     const authorize = await authorization(args.access_token, "warehouseadmin")
-      //     if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-      //     const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
-
-      //     //update status PO to checking
-      //     const payload = {
-      //       status: 'picking',
-      //       updatedAt: new Date()
-      //     }
-      //     const updatedStatusStoreReq = await StoreRequest.updateStatusFromAdmin(foundStoreReq._id, payload)
-      //     console.log(updatedStatusStoreReq)
-
-      //     console.log(foundStoreReq)
-      //     const broadcast = {
-      //       storeRequest: updatedStatusStoreReq.value,
-      //       role: "picker"
-      //     }
-      //     const newBroadcast = await Broadcast.create(broadcast)
-      //     console.log(broadcast)
-      //     return newBroadcast.ops[0]
-      //   } catch (err) {
-      //     console.log(err)
-      //     return new ApolloError("bad request", "404", err)
-      //   }
-      // }
+      
     }
   }
 }

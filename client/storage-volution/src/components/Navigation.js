@@ -30,8 +30,8 @@ export default function Navigation({showSidebar, setShowSidebar}) {
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
             <Row>
-              <h4 className="mx-4">
-                Logged as <h4 className="text-white" style={{display: 'inline'}}>{localStorage.getItem("name")}</h4> - <h4 className="text-white" style={{display: 'inline'}}>{localStorage.getItem("role")}</h4>
+              <h4 className="mx-4 text-light">
+                Logged as <span style={{textTransform: "capitalize"}}>{localStorage.getItem("name")}</span> - <span style={{textTransform: "capitalize"}}>{localStorage.getItem("role")}</span>
               </h4>
             </Row>
             

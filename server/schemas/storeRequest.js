@@ -4,6 +4,8 @@ const PurchasingOrder = require('../models/purchasingOrder')
 const Broadcast = require('../models/broadcast')
 const StoreRequest = require('../models/storeRequest')
 const { decodedToken } = require('../helpers/jwt')
+const Store = require("../models/store")
+const Item = require("../models/item")
 
 
 module.exports = {
@@ -13,6 +15,7 @@ module.exports = {
     itemId: ID!
     itemName: String
     quantityRequest: Int
+    storageQuantity: Int
   }
 
   type Request {
@@ -52,12 +55,12 @@ module.exports = {
 
   extend type Query {
     requests: [Request]
-    request(id: ID!): Request
-    requestsWithPO(idStoreReq: ID!, access_token: String): DataRequestBroadCastPicker
+    requestById(id: ID!): Request
+    requestsWithPO(idStoreReq: ID!, access_token: String!): DataRequestBroadCastPicker
   }
 
   extend type Mutation {
-    createRequest(request: RequestInput, access_token: String): Request
+    createRequest(request: RequestInput!, access_token: String!): Request
   }
   `,
   resolvers: {
@@ -73,18 +76,38 @@ module.exports = {
         }
       },
 
-      request: async (_, args) => {
+      requestById: async (_, args) => {
         try {
+          console.log(args)
           const foundRequest = await StoreRequest.findById(args.id)
-          return foundRequest
+          const tempArr = []
+          const result = JSON.parse(JSON.stringify(foundRequest))
+          for (i=0; i<foundRequest.items.length; i++){
+            let item = foundRequest.items[i]
+            let foundItem = await Item.findOneById(item.itemId)
+            const tempItem = {
+              itemId : item.itemId,
+              itemName: item.itemName,
+              quantityRequest: item.quantityRequest,
+              storageQuantity: foundItem.quantity
+            }
+            tempArr.push(tempItem)
+            result.items = [...tempArr]
+          }
+          // console.log(result)
+          return result          
         } catch(err) {
+          console.log(err)
           return new ApolloError(error)
         }
       },
+
       async requestsWithPO(_, args) {
         try {
-          const authorize = await authorization(args.access_token, "buyer")
+          const authorize = await authorization(args.access_token, "picker")
+          // console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
+
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const listItem = foundStoreReq.items
           // console.log(listItem)
@@ -109,6 +132,7 @@ module.exports = {
 
             allItemsWithPO.push({...obj})
           }
+
           return {request: foundStoreReq, dropdown: allItemsWithPO}
           // console.log(foundStoreReq)
         } catch(err) {
@@ -139,7 +163,7 @@ module.exports = {
           // console.log(error, '---> error')
           return new ApolloError(error)
         }
-      }
+      },
     }
   }
 }

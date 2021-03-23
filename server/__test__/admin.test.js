@@ -3,7 +3,7 @@ const { connect, getDatabase } = require('../config/mongodb')
 const { createTestClient } = require('apollo-server-testing')
 const { query, mutate } = createTestClient(server);
 
-describe('Admin Success Case', () => {
+describe('Admin Test', () => {
   let idPO1;
   let idPO2
   let idStoreReq;
@@ -61,7 +61,7 @@ describe('Admin Success Case', () => {
     }
 
     const CREATE_PURCHASING_ORDER = `
-      mutation createPurchasingOrder($input: CreatePurchasingOrderInput, $access_token: String!) {
+      mutation createPurchasingOrder($input: CreatePurchasingOrderInput!, $access_token: String!) {
         createPurchasingOrder(input: $input, access_token: $access_token) {
           _id
           vendorName
@@ -154,7 +154,7 @@ describe('Admin Success Case', () => {
     itemData2 = responseItem2.data.createItem
 
     const CREATE_STORE_REQUEST = `
-        mutation createRequest($request: RequestInput, $access_token: String){
+        mutation createRequest($request: RequestInput!, $access_token: String!){
           createRequest(request: $request, access_token: $access_token) {
             _id
             storeName
@@ -188,6 +188,7 @@ describe('Admin Success Case', () => {
 
     const responseStoreReq = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: inputStoreReq, access_token: access_token_buyer }})
     idStoreReq = responseStoreReq.data.createRequest._id
+
     idPO1 = responsePO1.data.createPurchasingOrder._id
     idPO2 = responsePO2.data.createPurchasingOrder._id
     createdAt = responsePO1.data.createPurchasingOrder.createdAt
@@ -206,184 +207,199 @@ describe('Admin Success Case', () => {
     await getDatabase().collection('items').deleteMany({})
   })
   
-  test('UPDATE_STATUS_PO: should return data with specific properties', async () => {
-    // create a new instance of our server (not listening on any port)
-    // await connect()
-    
-    // apollo-server-testing provides a query function
-    // in order to execute graphql queries on that server
-    
-    // graphl query
-    const UPDATE_STATUS_PO = `
-      mutation updateStatusPurchasingOrderAdmin($id: ID!, $status: String, $access_token: String!) {
-        updateStatusPurchasingOrderAdmin(id: $id, status: $status, access_token: $access_token) {
-          _id
-          vendorName
-          status,
-          items {
-            name
-            quantity
-            currentQuantity
-          },
-          createdAt
-          updatedAt
-          expiredDate
-        }
-      }
-    `;
-    
-    const input1 = {
-      id: idPO1,
-      status: 'clear',
-      access_token: access_token_warehouseadmin
-    }
+  describe('Admin Success Case', () => {
 
-    const input2 = {
-      id: idPO1,
-      status: 'clear',
-      access_token: access_token_warehouseadmin
-    }
-  
-    // act
-    // console.log(statusBefore, 'ini before')
-    const response = await mutate({ mutation: UPDATE_STATUS_PO, variables: input1 });
-    const response2 = await mutate({ mutation: UPDATE_STATUS_PO, variables: input2 });
-    // console.log(response.data.updateStatusPurchasingOrderAdmin.status, 'ini after')
-    // id = response.data.createUser._id
-    // console.log(response.data.createUser.name, 'ini dari register')
-    // assert
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('_id', expect.any(String))
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('vendorName', expect.any(String));
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('status', expect.any(String));
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('items');
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('createdAt', expect.any(String));
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('updatedAt', expect.any(String));
-    expect(response.data.updateStatusPurchasingOrderAdmin).toHaveProperty('expiredDate', expect.any(String));
-    expect(response.data.updateStatusPurchasingOrderAdmin._id).toEqual(input1.id);
-    expect(response.data.updateStatusPurchasingOrderAdmin.status).toEqual(input1.status);
-  });
-  
-  test('CREATE_BROADCAST_CHECKER: should return data with specific properties', async () => {
-    const CREATE_BROADCAST_CHECKER = `
-    mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String) {
-      createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
-        _id
-        purchasingOrder {
-          _id,
-          vendorName,
-          status,
-          items {
-            name
+    test('REJECT_PO: should return data with specific properties', async () => {
+      const REJECT_PO = `
+        mutation rejectPurchasingOrder($id: ID!, $access_token: String!) {
+          rejectPurchasingOrder(id: $id, access_token: $access_token) {
+            _id
+            vendorName
+            status,
+            items {
+              name
               quantity
               currentQuantity
             },
-            createdAt,
-            updatedAt,
-            expiredDate
-          }
-          role
-          checkerId
-        }
-      }
-    `
-
-    const input = {
-      idPurchasingOrder: idPO1,
-      access_token: access_token_warehouseadmin
-    }
-
-    const response = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: input })
-    // console.log(response.data)
-    expect(response.data.createBroadcastChecker).toHaveProperty('_id')
-    expect(response.data.createBroadcastChecker).toHaveProperty('purchasingOrder')
-    expect(response.data.createBroadcastChecker).toHaveProperty('role')
-    expect(response.data.createBroadcastChecker).toHaveProperty('checkerId')
-  })
-  
-  test('CREATE_BROADCAST_PICKER: should return data with specific properties', async () => {
-    // create a new instance of our server (not listening on any port)
-    // await connect()
-  
-    // apollo-server-testing provides a query function
-    // in order to execute graphql queries on that server
-  
-    // graphl query
-
-    const PICKER_BROADCAST = `
-      mutation createBroadcastPicker($idStoreReq: ID!, $access_token: String, $itemsToPick:[itemToPickInput]) {
-        createBroadcastPicker(idStoreReq: $idStoreReq, access_token: $access_token, itemsToPick: $itemsToPick) {
-          _id
-          role
-          listItem {
-            idItem
-            itemName
-            listPO {
-              idPO
-              quantity
-            }
-          }
-          pickerId
-          StoreReq {
-            _id
-            storeName
-            items {
-              itemId
-              itemName
-              quantityRequest
-            }
             createdAt
             updatedAt
-            status
+            expiredDate
           }
         }
+      `
+      const input = {
+        id: idPO2,
+        access_token: access_token_warehouseadmin
       }
-    `
-  
-    const input = {
-      idStoreReq,
-      access_token: access_token_warehouseadmin,
-      itemsToPick: [
-        {
-          idItem: itemData1._id,
-          itemName: itemData1.name,
-          listPO: [
-            {
-              idPO: idPO1,
-              quantity: 10
-            },
-            {
-              idPO: idPO2,
-              quantity: 4
-            }
-          ]
-        },
-        {
-          idItem: itemData2._id,
-          itemName: itemData2.name,
-          listPO: [
-            {
-              idPO: idPO2,
-              quantity: 8
-            }
-          ]
+
+      const response = await mutate({ mutation: REJECT_PO, variables: input})
+      // console.log(response, 'ini dari reject')
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('_id', idPO2, expect.any(String))
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('vendorName', expect.any(String))
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('status', 'rejected', expect.any(String))
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('items')
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('createdAt', expect.any(String))
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('updatedAt', expect.any(String))
+      expect(response.data.rejectPurchasingOrder).toHaveProperty('expiredDate', expect.any(String))
+
+    })
+
+    test('REJECT_STORE_REQUEST: should return data with specific properties', async () => {
+      const REJECT_STORE_REQUEST = `
+        mutation rejectStoreRequest($id: ID!, $access_token: String!) {
+          rejectStoreRequest(id: $id, access_token: $access_token) {
+            _id
+              storeName
+              items {
+                itemId
+                itemName
+                quantityRequest
+              },
+              createdAt
+              updatedAt
+              status
+          }
         }
-      ]
-    }
-  
-    // act
-    const response = await mutate({ mutation: PICKER_BROADCAST, variables: input });
-    // console.log(response, 'INI RESPONSE BERHASIL')
-    // console.log(response.data.createBroadcastPicker.listItem, 'list item')
-    // console.log(response.data.createBroadcastPicker.listItem[0].listPO, 'list PO on item 1')
-    // console.log(response.data.createBroadcastPicker.listItem[1].listPO, 'list PO on item 2')
-    // console.log(response.data.createBroadcastPicker.StoreReq, 'storeRequest')
-    // assert
-    expect(response.data.createBroadcastPicker).toHaveProperty('_id');
-    expect(response.data.createBroadcastPicker).toHaveProperty('listItem');
-    expect(response.data.createBroadcastPicker).toHaveProperty('role');
-    expect(response.data.createBroadcastPicker).toHaveProperty('pickerId');
-    expect(response.data.createBroadcastPicker).toHaveProperty('StoreReq');
-  });
+      `
+
+      const input = {
+        id: idStoreReq,
+        access_token: access_token_warehouseadmin
+      }
+
+      const response = await mutate({ mutation: REJECT_STORE_REQUEST, variables: input})
+
+      console.log(response, 'dara reject store')
+      expect(response.data.rejectStoreRequest).toHaveProperty('_id', expect.any(String))
+      expect(response.data.rejectStoreRequest).toHaveProperty('storeName', expect.any(String))
+      expect(response.data.rejectStoreRequest).toHaveProperty('items')
+      expect(response.data.rejectStoreRequest).toHaveProperty('createdAt', expect.any(String))
+      expect(response.data.rejectStoreRequest).toHaveProperty('updatedAt', expect.any(String))
+      expect(response.data.rejectStoreRequest).toHaveProperty('status', 'rejected', expect.any(String))
+    })
+    
+    test('CREATE_BROADCAST_CHECKER: should return data with specific properties', async () => {
+      const CREATE_BROADCAST_CHECKER = `
+      mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String!) {
+        createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
+          _id
+          purchasingOrder {
+            _id,
+            vendorName,
+            status,
+            items {
+              name
+                quantity
+                currentQuantity
+              },
+              createdAt,
+              updatedAt,
+              expiredDate
+            }
+            role
+            checkerId
+          }
+        }
+      `
+
+      const input = {
+        idPurchasingOrder: idPO1,
+        access_token: access_token_warehouseadmin
+      }
+
+      const response = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: input })
+      // console.log(response.data)
+      expect(response.data.createBroadcastChecker).toHaveProperty('_id')
+      expect(response.data.createBroadcastChecker).toHaveProperty('purchasingOrder')
+      expect(response.data.createBroadcastChecker).toHaveProperty('role')
+      expect(response.data.createBroadcastChecker).toHaveProperty('checkerId')
+    })
+    
+    test('CREATE_BROADCAST_PICKER: should return data with specific properties', async () => {
+      // create a new instance of our server (not listening on any port)
+      // await connect()
+    
+      // apollo-server-testing provides a query function
+      // in order to execute graphql queries on that server
+    
+      // graphl query
+
+      const PICKER_BROADCAST = `
+        mutation createBroadcastPicker($idStoreReq: ID!, $access_token: String!, $itemsToPick:[itemToPickInput]!) {
+          createBroadcastPicker(idStoreReq: $idStoreReq, access_token: $access_token, itemsToPick: $itemsToPick) {
+            _id
+            role
+            listItem {
+              idItem
+              itemName
+              listPO {
+                idPO
+                quantity
+              }
+            }
+            pickerId
+            StoreReq {
+              _id
+              storeName
+              items {
+                itemId
+                itemName
+                quantityRequest
+              }
+              createdAt
+              updatedAt
+              status
+            }
+          }
+        }
+      `
+    
+      const input = {
+        idStoreReq,
+        access_token: access_token_warehouseadmin,
+        itemsToPick: [
+          {
+            idItem: itemData1._id,
+            itemName: itemData1.name,
+            listPO: [
+              {
+                idPO: idPO1,
+                quantity: 10
+              },
+              {
+                idPO: idPO2,
+                quantity: 4
+              }
+            ]
+          },
+          {
+            idItem: itemData2._id,
+            itemName: itemData2.name,
+            listPO: [
+              {
+                idPO: idPO2,
+                quantity: 8
+              }
+            ]
+          }
+        ]
+      }
+    
+      // act
+      const response = await mutate({ mutation: PICKER_BROADCAST, variables: input });
+      // console.log(response, 'INI RESPONSE BERHASIL')
+      // console.log(response.data.createBroadcastPicker.listItem, 'list item')
+      // console.log(response.data.createBroadcastPicker.listItem[0].listPO, 'list PO on item 1')
+      // console.log(response.data.createBroadcastPicker.listItem[1].listPO, 'list PO on item 2')
+      // console.log(response.data.createBroadcastPicker.StoreReq, 'storeRequest')
+      // assert
+      expect(response.data.createBroadcastPicker).toHaveProperty('_id');
+      expect(response.data.createBroadcastPicker).toHaveProperty('listItem');
+      expect(response.data.createBroadcastPicker).toHaveProperty('role');
+      expect(response.data.createBroadcastPicker).toHaveProperty('pickerId');
+      expect(response.data.createBroadcastPicker).toHaveProperty('StoreReq');
+    });
+  })
   
   describe('Admin Fail Case', () => {
     
@@ -396,7 +412,7 @@ describe('Admin Success Case', () => {
       
       // graphl query
     const UPDATE_STATUS_PO = `
-      mutation updateStatusPurchasingOrderAdmin($id: ID!, $status: String, $access_token: String!) {
+      mutation updateStatusPurchasingOrderAdmin($id: ID!, $status: String!, $access_token: String!) {
         updateStatusPurchasingOrderAdmin(id: $id, status: $status, access_token: $access_token) {
           _id
           vendorName
@@ -428,7 +444,7 @@ describe('Admin Success Case', () => {
 
     test('CREATE_BROADCAST_CHECKER: should return data with specific properties', async () => {
       const CREATE_BROADCAST_CHECKER = `
-      mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String) {
+      mutation createBroadcastChecker($idPurchasingOrder: ID!, $access_token: String!) {
         createBroadcastChecker(idPurchasingOrder: $idPurchasingOrder, access_token: $access_token) {
           _id
           purchasingOrder {
@@ -470,7 +486,7 @@ describe('Admin Success Case', () => {
       // graphl query
 
       const PICKER_BROADCAST = `
-        mutation createBroadcastPicker($idStoreReq: ID!, $access_token: String, $itemsToPick:[itemToPickInput]) {
+        mutation createBroadcastPicker($idStoreReq: ID!, $access_token: String!, $itemsToPick:[itemToPickInput]!) {
           createBroadcastPicker(idStoreReq: $idStoreReq, access_token: $access_token, itemsToPick: $itemsToPick) {
             _id
             role
@@ -532,7 +548,6 @@ describe('Admin Success Case', () => {
     
       // act
       const response = await mutate({ mutation: PICKER_BROADCAST, variables: input });
-      console.log(response, 'INI RESPONSE BERHASIL')
       // console.log(response.data.createBroadcastPicker.listItem, 'list item')
       // console.log(response.data.createBroadcastPicker.listItem[0].listPO, 'list PO on item 1')
       // console.log(response.data.createBroadcastPicker.listItem[1].listPO, 'list PO on item 2')
@@ -540,6 +555,63 @@ describe('Admin Success Case', () => {
       // assert
       expect(response.errors).toBeDefined()
     });
+
+    test('REJECT_PO: should return data with specific properties', async () => {
+      const REJECT_PO = `
+        mutation rejectPurchasingOrder($id: ID!, $access_token: String!) {
+          rejectPurchasingOrder(id: $id, access_token: $access_token) {
+            _id
+            vendorName
+            status,
+            items {
+              name
+              quantity
+              currentQuantity
+            },
+            createdAt
+            updatedAt
+            expiredDate
+          }
+        }
+      `
+      const input = {
+        id: idPO2,
+        access_token: access_token_buyer
+      }
+
+      const response = await mutate({ mutation: REJECT_PO, variables: input})
+      // console.log(response, 'ini dari reject')
+      expect(response.errors).toBeDefined()
+    })
+
+    test('REJECT_STORE_REQUEST: should return data with specific properties', async () => {
+      const REJECT_STORE_REQUEST = `
+        mutation rejectStoreRequest($id: ID!, $access_token: String!) {
+          rejectStoreRequest(id: $id, access_token: $access_token) {
+            _id
+              storeName
+              items {
+                itemId
+                itemName
+                quantityRequest
+              },
+              createdAt
+              updatedAt
+              status
+          }
+        }
+      `
+
+      const input = {
+        id: idStoreReq,
+        access_token: access_token_buyer
+      }
+
+      const response = await mutate({ mutation: REJECT_STORE_REQUEST, variables: input})
+
+      console.log(response, 'dara reject store')
+      expect(response.errors).toBeDefined()
+    })
   })
 })
 

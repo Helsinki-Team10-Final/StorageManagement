@@ -5,7 +5,7 @@ const { query, mutate } = createTestClient(server);
 const Item = require('../models/item')
 
 describe('Item Success Cases', () => {
-  let id;
+  let idPO;
   let access_token_buyer
   let access_token_checker
   let createdAt
@@ -56,37 +56,42 @@ describe('Item Success Cases', () => {
       "email": "checker@mail.com",
       "password": "123456"
     }
+
+
+  
+    // act
     
     // act
-      //Register
+    //Register
     await mutate({ mutation: USER_REGISTER, variables: {input: buyer} });
     await mutate({ mutation: USER_REGISTER, variables: {input: checker} });
-      //Login
+    //Login
     const responseBuyer = await mutate({ mutation: USER_LOGIN, variables: {input: buyer_login} });
     const responseChecker = await mutate({ mutation: USER_LOGIN, variables: {input: checker_login} });
     // console.log(responseChecker.data.login.access_token, 'iini dari beforeall token token punya CHECKER')
     // console.log(responsePicker.data.login.access_token, 'iini dari beforeall token token punya PICKER')
     access_token_buyer = responseBuyer.data.login.access_token
     access_token_checker = responseChecker.data.login.access_token
-    // console.log('ini before All')
   })
 
   afterAll(async () => {
     // console.log('ini after all')
     await getDatabase().collection('users').deleteMany({})
     await getDatabase().collection('purchasingorder').deleteMany({})
+    await getDatabase().collection('pohistories').deleteMany({})
   })
   
   test('CREATE: should return item data with specific property', async () => {
     // create a new instance of our server (not listening on any port)
     // await connect()
     
+    
     // apollo-server-testing provides a query function
     // in order to execute graphql queries on that server
     
     // graphl query
     const CREATE_PURCHASING_ORDER = `
-      mutation createPurchasingOrder($input: CreatePurchasingOrderInput, $access_token: String!) {
+      mutation createPurchasingOrder($input: CreatePurchasingOrderInput!, $access_token: String!) {
         createPurchasingOrder(input: $input, access_token: $access_token) {
           _id
           vendorName
@@ -136,11 +141,12 @@ describe('Item Success Cases', () => {
     // act
     const response = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input1, access_token: access_token_buyer} });
     await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input2, access_token: access_token_buyer} });
-    id = response.data.createPurchasingOrder._id
+    idPO = response.data.createPurchasingOrder._id
+    console.log(response.data, 'ini dari test createPO')
+    // console.log()
     createdAt = response.data.createPurchasingOrder.createdAt
     // console.log(response, 'ini dari create PO')
-    // console.log(response.data.createItem.quantity, 'ini dari item')
-    // // assert
+    // assert
     expect(response.data.createPurchasingOrder).toHaveProperty('_id', expect.any(String));
     expect(response.data.createPurchasingOrder).toHaveProperty('vendorName', input1.vendorName);
     expect(response.data.createPurchasingOrder).toHaveProperty('status');
@@ -178,6 +184,7 @@ describe('Item Success Cases', () => {
   
     // act
     const response = await query({ query: FIND_PURCHASING_ORDER, variables: {} });
+    // console.log(response, 'ini dari findall')
     // assert
       //masih bingung. disini
     // expect(typeof response.data.items).toEqual('array');
@@ -186,26 +193,42 @@ describe('Item Success Cases', () => {
   
   test('FIND_ONE: should return purchasing order data with specific detail', async () => {
     const FIND_ONE = `
-      query purchasingOrderById{
-        purchasingOrderById (id: "${id}"){
-          _id,
-          vendorName,
-          status,
+      query purchasingOrderById($id: ID!){
+        purchasingOrderById(id: $id) {
+          _id
+          vendorName
           items {
             name
             quantity
             currentQuantity
-          },
-          createdAt,
-          updatedAt,
+          }
+          status
+          createdAt
+          updatedAt
           expiredDate
         }
       }
     `
+    // type PurchasingOrder {
+    //   _id: ID!
+    //   vendorName: String!
+    //   items: [ItemPO]
+    //   status: String
+    //   createdAt: Date
+    //   updatedAt: Date
+    //   expiredDate: Date
+    // }
+
+    // type ItemPO {
+    //   name: String
+    //   quantity: Int
+    //   currentQuantity: Int
+    // }
     
     // act
-    const response = await query({ query: FIND_ONE, variables: {} })
-    // console.log(response.data.purchasingOrderById.items, 'dari findone ITEM')
+    // console.log(idPO, 'ini id dari setelah create PO')
+    const response = await query({ query: FIND_ONE, variables: {id: idPO} })
+    // console.log(response.data.purchasingOrderById, 'dari findone ITEM')
     // assert
     expect(response.data.purchasingOrderById).toHaveProperty('_id', expect.any(String));
     expect(response.data.purchasingOrderById).toHaveProperty('vendorName', expect.any(String));
@@ -236,7 +259,7 @@ describe('Item Success Cases', () => {
     `
 
     const input = {
-      _id: id,
+      _id: idPO,
       vendorName: 'warung mamang',
       items: [
           {
@@ -257,7 +280,7 @@ describe('Item Success Cases', () => {
     }
   
     // act
-    const response = await mutate({ mutation: UPDATE_ONE, variables: {id, input, access_token: access_token_checker} })
+    const response = await mutate({ mutation: UPDATE_ONE, variables: {id: idPO, input, access_token: access_token_checker} })
     // console.log(response, 'update one checker')
     // console.log(response.data.updateCurrentQuantityPurchasingOrder.items, 'update one checker')
     // console.log(response.data, 'data data data dari update ONE')
@@ -331,7 +354,7 @@ describe('Item Fail Cases', () => {
     }
 
     const CREATE_PURCHASING_ORDER = `
-      mutation createPurchasingOrder($input: CreatePurchasingOrderInput, $access_token: String!) {
+      mutation createPurchasingOrder($input: CreatePurchasingOrderInput!, $access_token: String!) {
         createPurchasingOrder(input: $input, access_token: $access_token) {
           _id
           vendorName
@@ -373,15 +396,13 @@ describe('Item Fail Cases', () => {
     access_token_checker = responseChecker.data.login.access_token
     
     const responsePO = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input1, access_token: access_token_buyer} });
-    id = responsePO.data.createPurchasingOrder._id
-    createdAt = responsePO.data.createPurchasingOrder.createdAt
     // console.log('ini before All')
   })
 
   afterAll(async () => {
-    // console.log('ini after all')
-    await getDatabase().collection('users').deleteMany({})
-    await getDatabase().collection('purchasingorder').deleteMany({})
+    // // console.log('ini after all')
+    // await getDatabase().collection('users').deleteMany({})
+    // await getDatabase().collection('purchasingorder').deleteMany({})
   })
 
   //ERROR - PROVIDED WRONG ACCESS_TOKEN

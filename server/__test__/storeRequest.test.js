@@ -30,10 +30,10 @@ describe('Store Request Test', () => {
         "name": "user1"
     }
 
-    const checker = {
-        "email": "checker@mail.com",
+    const picker = {
+        "email": "picker@mail.com",
         "password": "123456",
-        "role": "checker",
+        "role": "picker",
         "name": "user2"
     }
 
@@ -51,8 +51,8 @@ describe('Store Request Test', () => {
       "password": "123456"
     }
 
-    const checker_login = {
-      "email": "checker@mail.com",
+    const picker_login = {
+      "email": "picker@mail.com",
       "password": "123456"
     }
     
@@ -86,14 +86,14 @@ describe('Store Request Test', () => {
     // act
       //Register
     await mutate({ mutation: USER_REGISTER, variables: {input: buyer} });
-    await mutate({ mutation: USER_REGISTER, variables: {input: checker} });
+    await mutate({ mutation: USER_REGISTER, variables: {input: picker} });
       //Login
     const responseBuyer = await mutate({ mutation: USER_LOGIN, variables: {input: buyer_login} });
-    const responseChecker = await mutate({ mutation: USER_LOGIN, variables: {input: checker_login} });
+    const responseChecker = await mutate({ mutation: USER_LOGIN, variables: {input: picker_login} });
     // console.log(responseChecker.data.login.access_token, 'iini dari beforeall token token punya CHECKER')
     // console.log(responsePicker.data.login.access_token, 'iini dari beforeall token token punya PICKER')
     access_token_buyer = responseBuyer.data.login.access_token
-    access_token_checker = responseChecker.data.login.access_token
+    access_token_picker = responseChecker.data.login.access_token
   })
 
   afterAll(async () => {
@@ -105,7 +105,7 @@ describe('Store Request Test', () => {
   describe('Store request success case', () => {
     test('CREATE_REQUEST: should return store request data with specific property', async () => {
       const CREATE_STORE_REQUEST = `
-        mutation createRequest($request: RequestInput, $access_token: String){
+        mutation createRequest($request: RequestInput!, $access_token: String!){
           createRequest(request: $request, access_token: $access_token) {
             _id
             storeName
@@ -137,7 +137,7 @@ describe('Store Request Test', () => {
       }
   
       const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_buyer }})
-      // console.log(response.data.createRequest.items, 'iini dari create req')
+      // console.log(response.data, 'iini dari create req')
       requestId = response.data.createRequest._id
       expect(response.data.createRequest).toHaveProperty('_id', expect.any(String))
       expect(response.data.createRequest).toHaveProperty('storeName', expect.any(String))
@@ -172,8 +172,8 @@ describe('Store Request Test', () => {
   
     test('FIND_BY_ID: should return specific store request data', async () => {
       const FIND_BY_ID = `
-        query request($id: ID!) {
-          request(id: $id) {
+        query requestById($id: ID!) {
+          requestById(id: $id) {
             _id
             storeName
             items {
@@ -190,13 +190,19 @@ describe('Store Request Test', () => {
       
   
       const response = await query({ query: FIND_BY_ID, variables: {id: requestId}})
-      // console.log(response.data, 'ini dari findbyid')
-      expect(typeof response.data.request).toEqual('object')
+      console.log(response.data, 'ini dari findbyid')
+      // expect(typeof response.data.request).toEqual('object')
+      expect(response.data.requestById).toHaveProperty('_id', expect.any(String))
+      expect(response.data.requestById).toHaveProperty('storeName', expect.any(String))
+      expect(response.data.requestById).toHaveProperty('items')
+      expect(response.data.requestById).toHaveProperty('createdAt')
+      expect(response.data.requestById).toHaveProperty('updatedAt')
+      expect(response.data.requestById).toHaveProperty('status', expect.any(String))
     })
 
     test('REQUEST_WITH_PO: should return specific data', async () => {
       const REQUEST_WITH_PO = `
-        query requestsWithPO($idStoreReq: ID!, $access_token: String) {
+        query requestsWithPO($idStoreReq: ID!, $access_token: String!) {
           requestsWithPO(idStoreReq: $idStoreReq, access_token: $access_token) {
             request {
               _id
@@ -223,7 +229,7 @@ describe('Store Request Test', () => {
 
       const input = {
         idStoreReq: requestId,
-        access_token: access_token_buyer
+        access_token: access_token_picker
       }
 
       const response = await query({ query: REQUEST_WITH_PO, variables: input})
@@ -268,15 +274,15 @@ describe('Store Request Test', () => {
         ]
       }
   
-      const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_checker }})
+      const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_picker }})
       // console.log(response.errors)
       expect(response.errors).toBeDefined()
     })
 
     test('FIND_BY_ID: should return specific store request data', async () => {
       const FIND_BY_ID = `
-        query request($id: ID!) {
-          request(id: $id) {
+        query requestById($id: ID!) {
+          requestById(id: $id) {
             _id
             storeName
             items {
@@ -292,10 +298,11 @@ describe('Store Request Test', () => {
       `
       
   
-      const response = await query({ query: FIND_BY_ID, variables: {id: "askdlaskdl"}})
+      const response = await query({ query: FIND_BY_ID, variables: {id: itemData1._id}})
+
       // console.log(response, 'ini dari findbyid yg gagal')
       // expect(typeof response.data.request).toEqual('object')
-      expect(response.data.request).toEqual(null)
+      expect(response.data.requestById).toEqual(null)
     })
 
     test('REQUEST_WITH_PO: should return error', async () => {
@@ -327,7 +334,7 @@ describe('Store Request Test', () => {
 
       const input = {
         idStoreReq: requestId,
-        access_token: access_token_checker
+        access_token: access_token_buyer
       }
 
       const response = await query({ query: REQUEST_WITH_PO, variables: input})
