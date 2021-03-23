@@ -20,6 +20,7 @@ module.exports = {
 
   type Request {
     _id: ID!
+    storeId: String
     storeName: String
     items: [ItemReq]
     createdAt: Date
@@ -50,6 +51,7 @@ module.exports = {
 
   input RequestInput {
     storeName: String
+    storeId: String
     items: [ItemReqInput]
   }
 
@@ -103,7 +105,7 @@ module.exports = {
 
       async requestsWithPO(_, args) {
         try {
-          const authorize = await authorization(args.access_token, "picker")
+          const authorize = await authorization(args.access_token, "warehouseadmin")
           // console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
@@ -149,6 +151,7 @@ module.exports = {
           //create request
           const payload = {
             storeName: args.request.storeName,
+            storeId: args.request.storeId,
             items: args.request.items,
             updatedAt: new Date(),
             createdAt: new Date(),

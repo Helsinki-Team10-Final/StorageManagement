@@ -7,7 +7,9 @@ async function authorization(access_token, role) {
   const findUser = await User.findOneById(user._id)
   if (!findUser) return false
   if (findUser.role !== role) return false
-  return true
+  delete user.password
+  delete user.iat
+  return user
 }
 
 module.exports= {

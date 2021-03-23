@@ -123,10 +123,11 @@ module.exports = {
                 quantity: item.currentQuantity
               }
               const newItem = await Item.create(payload)
+              console.log(newItem, '-------new item')
             } else {
               // if found then update quantity of that item
-              const updatedQuantity = await Item.updateOne(foundItem._id, {quantity: foundItem.quantity + item.currentQuantity})
-              
+              const updatedQuantity = await Item.updateOne(foundItem._id, (+foundItem.quantity + +item.currentQuantity))
+              console.log(updatedQuantity, '-------update item')
             }
           })
 
@@ -143,6 +144,7 @@ module.exports = {
           let payloadHis = updatedPurchasingOrder.value
           payloadHis.poId = payloadHis._id
           delete payloadHis._id
+          payloadHis.user = authorize
           const createPOHistory = await POHistory.create(payloadHis)
           //end create history
 
