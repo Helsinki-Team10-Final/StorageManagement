@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 
 export default function Sidebar({showSidebar}) {
+  const role = localStorage.getItem("role");
   return (
     <>
       <nav id="sidebar" className={showSidebar ? "active" : null}>
@@ -13,9 +14,23 @@ export default function Sidebar({showSidebar}) {
           <li>
             <Link to="/main">Dashboard</Link>
           </li>
-          <li>
-            <Link to="/main/addPO">Create PO</Link>
-          </li>
+          { role === "buyer" && 
+            <>
+              <li>
+                <Link to="/main/addPO">Create PO</Link>
+              </li>
+              <li>
+                <Link to="/main/addRequest">Create Request</Link>
+              </li>
+            </>
+          }
+          { role === "warehouseadmin" && 
+            <>
+              <li>
+                <Link to="/main/request">Requests</Link>
+              </li> 
+            </>
+          }
         </ul>
       </nav>
     </>

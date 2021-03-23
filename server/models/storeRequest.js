@@ -15,7 +15,7 @@ class StoreRequest{
   }
 
   static updateStatus(id, payload) {
-    return getDatabase().collection('purchasingorder').findOneAndUpdate(
+    return getDatabase().collection('storerequests').findOneAndUpdate(
       { _id: ObjectId(id) },
       { $set: {status: payload.status, updatedAt: payload.updatedAt} },
       { returnNewDocument: true , returnOriginal: false }

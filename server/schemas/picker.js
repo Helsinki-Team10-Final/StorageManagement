@@ -155,10 +155,10 @@ module.exports = {
                   // console.log(clonePO, '--------------------line 171')
 
                   //create history
-                  let payload = updatedPO.value
-                  payload.poId = payload._id
-                  delete payload._id
-                  const createPOHistory = await POHistory.create(payload)
+                  let payload_hist = updatedPO.value
+                  payload_hist.poId = payload_hist._id
+                  delete payload_hist._id
+                  const createPOHistory = await POHistory.create(payload_hist)
                   //end create history
 
                 }

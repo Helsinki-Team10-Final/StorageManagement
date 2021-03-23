@@ -9,6 +9,9 @@ import ListPOK from './ListPOK'
 import DetailPO from './DetailPO'
 import ListBroadcast from './ListBroadcast'
 import Checking from './Checking'
+import ListRequest from './ListRequest'
+import DetailRequest from './DetailRequest'
+import CreateRequestBroadcast from './CreateRequestBroadcast'
 
 export default function Dashboard(props) {
   const [currentRole, setCurrentRole] = useState('')
@@ -35,6 +38,15 @@ export default function Dashboard(props) {
         <Switch>
           <Route path={`${path}/addPO`}>
             <CreatePO />
+          </Route>
+          <Route path={`${path}/request/createBroadcast/:id`}>
+            <CreateRequestBroadcast />
+          </Route>
+          <Route path={`${path}/request/:id`}>
+            <DetailRequest />
+          </Route>
+          <Route path={`${path}/request`}>
+            <ListRequest />
           </Route>
           <Route path={`${path}/:id`}>
             <DetailPO />

@@ -143,3 +143,60 @@ export const SUBMIT_CHECKER = gql`
     checkerUpdateItem(items: $input, access_token: $access_token, idPO: $idPO, idBroadCast: $idBroadcast)
   }
 `;
+
+export const GET_REQUESTS = gql`
+  query findAllRequest{
+    requests{
+      _id
+      storeName
+      items{
+        itemId
+        itemName
+        quantityRequest
+      }
+      createdAt
+      updatedAt
+      status
+    }
+  }
+`;
+
+export const GET_REQUEST_DETAIL = gql`
+  query findRequestById($id: ID!){
+    requestById(id: $id){
+      _id
+      storeName
+      items{
+        itemId
+        itemName
+        quantityRequest
+        storageQuantity
+      }
+      createdAt
+      updatedAt
+      status
+    }
+  }
+`;
+
+export const GET_REQUEST_WITH_PO = gql`
+  query getRequestWithPO($id: ID!, $access_token: String!) {
+    requestsWithPO(idStoreReq: $id, access_token: $access_token) {
+      request {
+        _id
+        storeName
+        items {
+          itemName
+          quantityRequest
+        }
+      }
+      dropdown {
+        name
+        PO {
+          _id
+          current_quantity
+        }
+      }
+    }
+  }
+`;
