@@ -109,6 +109,7 @@ module.exports = {
     Mutation: {
       checkerUpdateItem: async(_, args) => {
         try {
+          // console.log(args, 'dari skema')
           const authorize = await authorization(args.access_token, "checker")
           if (!authorize) throw {type: "CustomError", message: "Not authorize"}
 

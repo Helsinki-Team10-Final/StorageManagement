@@ -67,11 +67,13 @@ module.exports = {
           const allPurchasingOrders = await PurchasingOrder.findAll()
           return allPurchasingOrders
         } catch(err) {
-          console.log(err)
+          // console.log(err)
+          return new ApolloError(err)
         }
       },
       async purchasingOrderById(_, args) {
         try {
+          console.log(args.id, 'ini dari skema')
           const purchasingOrderById = await PurchasingOrder.findById(args.id)
           return purchasingOrderById
         } catch(err) {
@@ -94,7 +96,7 @@ module.exports = {
           dataInput.updatedAt = new Date()
 
           const newPurchasingOrder = await PurchasingOrder.create(dataInput)
-
+          // console.log(newPurchasingOrder.ops[0], 'ini sebelum history')
           //create history
           let payload = {...newPurchasingOrder.ops[0]}
           payload.poId = payload._id
@@ -102,10 +104,10 @@ module.exports = {
           payload.user = authorize
           const createPOHistory = await POHistory.create(payload)
           //end create history
-
+          // console.log(newPurchasingOrder.ops[0], 'ini setelah history')
           return newPurchasingOrder.ops[0]
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       }

@@ -74,13 +74,14 @@ module.exports = {
           // console.log(requests)
           return requests
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       },
 
       requestById: async (_, args) => {
         try {
+          console.log(args)
           const foundRequest = await StoreRequest.findById(args.id)
           const tempArr = []
           const result = JSON.parse(JSON.stringify(foundRequest))
@@ -112,7 +113,6 @@ module.exports = {
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const listItem = foundStoreReq.items
           // console.log(listItem)
-
           const allItemsWithPO = []
 
           for (let i = 0; i < listItem.length; i++) {
@@ -139,6 +139,7 @@ module.exports = {
           // console.log(foundStoreReq)
         } catch(err) {
           console.log(err)
+          return new ApolloError(err)
         }
       }
     },
@@ -162,7 +163,7 @@ module.exports = {
           return newStoreReq.ops[0]
 
         } catch (error) {
-          console.log(error, '---> error')
+          // console.log(error, '---> error')
           return new ApolloError(error)
         }
       },

@@ -150,6 +150,7 @@ module.exports = {
           // console.log(updatedStatusStoreReq)
 
           const broadcastPayload = {
+            pickerId: 'aaa', //nambahin ini
             role: "picker",
             listItem: args.itemsToPick,
             StoreReq: updatedStatusStoreReq.value

@@ -97,9 +97,11 @@ module.exports = {
               }
             }
           })
-
+          
+          
           //add key to brodcast
           let foundBroadCast = await Broadcast.findOne(args.id)
+          console.log(foundBroadCast, 'dari skema by id')
           if (foundBroadCast.pickerId) {
             if (decoded._id === foundBroadCast.pickerId) {
               return foundBroadCast
@@ -109,6 +111,7 @@ module.exports = {
               delete foundBroadCast._id
               foundBroadCast.pickerId = decoded._id
               const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
+
               return updatedBroadcast
             } else {
               throw { type: "CheckerError", message: "Redundant Task" }
