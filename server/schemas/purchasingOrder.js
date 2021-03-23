@@ -78,7 +78,7 @@ module.exports = {
           return purchasingOrderById
         } catch(err) {
           console.log(err)
-          return new ApolloError(err)
+          return new ApolloError("bad request","404",err)
         }
       }
     },
@@ -101,6 +101,7 @@ module.exports = {
           let payload = {...newPurchasingOrder.ops[0]}
           payload.poId = payload._id
           delete payload._id
+          payload.user = authorize
           const createPOHistory = await POHistory.create(payload)
           //end create history
           // console.log(newPurchasingOrder.ops[0], 'ini setelah history')
@@ -109,30 +110,8 @@ module.exports = {
           // console.log(err)
           return new ApolloError("bad request","404",err)
         }
-      },
-      // add key currentQuantity to Item PO // maybe this mutation no needed anymore
-      async updateCurrentQuantityPurchasingOrder(_, args) {
-        try {
-          const authorize = await authorization(args.access_token, "checker")
-          if (!authorize) throw {type: "CustomError", message: "Not authorize"} //throw err
-          const payload = {
-            items: args.input.items,
-            status: 'clear',
-            updatedAt: new Date()
-          }
-          const updatedPurchasingOrder = await PurchasingOrder.updateCurrentQuantity(args.id, payload)
-          // console.log(updatedPurchasingOrder)
-
-          // //create history
-          // const createPOHistory = await POHistory.create(updatedPurchasingOrder.value)
-          // //end create history
-
-          return updatedPurchasingOrder.value
-        } catch (err) {
-          console.log(err)
-          return new ApolloError("bad request","404",err)
-        }
       }
+      
     }
   }
 }

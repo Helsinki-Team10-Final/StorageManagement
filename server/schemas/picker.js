@@ -66,12 +66,13 @@ module.exports = {
               if (broadcast.pickerId) {
                 if (broadcast.pickerId === pickerData._id) {
                   unfinishedBroadcast = broadcast
-                } else {
-                  broadcastForPickers.push(broadcast)
-                }
+                } 
+              } else {
+                broadcastForPickers.push(broadcast)
               }
             }
           })
+          // console.log(broadcastForPickers)
           return { broadcasts: broadcastForPickers, unfinishedBroadcast }
         } catch (err) {
           console.log(err)
@@ -162,6 +163,7 @@ module.exports = {
                   let payloadHis = updatedPO.value
                   payloadHis.poId = payloadHis._id
                   delete payloadHis._id
+                  payloadHis.user = authorize
                   const createPOHistory = await POHistory.create(payloadHis)
                   //end create history
 
@@ -184,6 +186,7 @@ module.exports = {
             updatedAt: new Date()
           }
           const updatedStoreReq = await StoreRequest.updateStatus(args.idStoreReq, storeReqPayload)
+          const deleteBroadcast = await Broadcast.deleteOne(args.input.idBroadcast)
           return 'Items Picked Successfully'
         } catch (err) {
           console.log(err)
