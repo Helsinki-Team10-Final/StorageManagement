@@ -138,25 +138,24 @@ export const GET_BROADCAST_CHECKER_BY_ID = gql`
   }
 `;
 
-<<<<<<< HEAD
-export const GET_PO = gql`
-  query getPO {
-    purchasingOrders {
-      _id
-      vendorName
-      items {
-        name
-        quantity
-        currentQuantity
-      }
-      status
-      createdAt
-      expiredDate
-    }
-=======
 export const SUBMIT_CHECKER = gql`
   mutation checkerClickDone ($input: [ItemInputUpdate]!, $access_token: String!, $idPO: String!, $idBroadcast: String!) {
     checkerUpdateItem(items: $input, access_token: $access_token, idPO: $idPO, idBroadCast: $idBroadcast)
->>>>>>> e3fa405bad147a09649eff9f074adfb5d498e767
+  }
+`;
+
+export const SUBMIT_REQUEST = gql`
+  mutation createRequest($input: RequestInput!, $access_token: String!) {
+    createRequest(request: $input, access_token: $access_token) {
+      _id
+      storeName
+      items {
+        itemId
+        itemName
+        quantityRequest
+      }
+      createdAt
+      updatedAt
+    }
   }
 `;

@@ -9,7 +9,7 @@ async function connect() {
 
     await client.connect()
 
-    db = client.db('storagevolution-test')
+    db = client.db('storagevolution')
     database = db
 
     return database
