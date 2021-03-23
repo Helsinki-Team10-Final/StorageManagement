@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const ADD_PO = gql`
-  mutation createPO ($input: CreatePurchasingOrderInput, $access_token: String!){
+  mutation createPO ($input: CreatePurchasingOrderInput!, $access_token: String!){
     createPurchasingOrder(input: $input, access_token: $access_token) {
       vendorName,
       status,

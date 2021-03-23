@@ -21,15 +21,6 @@ class StoreRequest{
       { returnNewDocument: true , returnOriginal: false }
     )
   }
-
-  static updateCurrentQuantity(id, payload) {
-    return getDatabase().collection('storerequests').findOneAndUpdate(
-      { _id: ObjectId(id) },
-      { $set: {items: payload} },
-      { returnNewDocument: true , returnOriginal: false }
-    )
-  }
-
 }
 
 module.exports = StoreRequest

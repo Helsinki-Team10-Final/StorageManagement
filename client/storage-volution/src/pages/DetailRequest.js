@@ -11,15 +11,17 @@ export default function ListPOK(props) {
   const {id} = useParams()
   const {loading, error, data} = useQuery(GET_REQUEST_DETAIL, {variables: {id}})
 
+  
+  console.log(data, "<<<<<<<<<<<<<<<<<<<<<<< data")
   if (loading) {
     return (
       <h1>Loading...</h1>
-    )
-  } else if (error) {
-    console.log(error.graphQLErrors)
-    return <h1>Error..</h1>
-  }
-  // console.log(data.purchasingOrderById)
+      )
+    } else if (error) {
+      console.log(error.graphQLErrors)
+      return <h1>Error..</h1>
+    }
+    // console.log(data.purchasingOrderById)
   console.log(data.requestById.status)
 
   return (

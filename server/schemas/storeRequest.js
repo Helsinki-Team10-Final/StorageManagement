@@ -128,7 +128,6 @@ module.exports = {
               name: listItem[i].itemName,
               PO: poPerItem
             }
-
             allItemsWithPO.push({...obj})
           }
 

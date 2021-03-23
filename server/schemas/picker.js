@@ -5,6 +5,7 @@ const Broadcast = require('../models/broadcast')
 const StoreRequest = require('../models/storeRequest')
 const Item = require('../models/item')
 const PurchasingOrder = require('../models/purchasingOrder')
+const POHistory = require("../models/pohistories")
 
 module.exports = {
   typeDefs: gql`
@@ -155,10 +156,10 @@ module.exports = {
                   // console.log(clonePO, '--------------------line 171')
 
                   //create history
-                  let payload_hist = updatedPO.value
-                  payload_hist.poId = payload_hist._id
-                  delete payload_hist._id
-                  const createPOHistory = await POHistory.create(payload_hist)
+                  let payloadHis = updatedPO.value
+                  payloadHis.poId = payloadHis._id
+                  delete payloadHis._id
+                  const createPOHistory = await POHistory.create(payloadHis)
                   //end create history
 
                 }
@@ -179,7 +180,7 @@ module.exports = {
             status: 'picked',
             updatedAt: new Date()
           }
-          const updatedStoreReq = await StoreRequest.updateStatusFromAdmin(args.idStoreReq, storeReqPayload)
+          const updatedStoreReq = await StoreRequest.updateStatus(args.idStoreReq, storeReqPayload)
           return 'Items Picked Successfully'
         } catch (err) {
           console.log(err)
