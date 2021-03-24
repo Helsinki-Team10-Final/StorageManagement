@@ -92,7 +92,7 @@ describe('PO History test', () => {
 
     // act
     const responsePO = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input: input1, access_token: access_token_buyer} });
-    console.log(responsePO)
+    // console.log(responsePO)
     purchasingOrder = responsePO.data.createPurchasingOrder
     idPO = responsePO.data.createPurchasingOrder._id
 
@@ -151,11 +151,11 @@ describe('PO History test', () => {
       `
 
       const response = await query ({ query: FIND_ALL, variables: {}})
-      console.log(response, 'ini dari find all')
+      // console.log(response, 'ini dari find all')
       expect(typeof response.data.poHistories).toEqual('object')
     })
 
-    test('FIND_BY_ID: should return data with specific properties', async () => {
+    test('FIND_BY_ID: should return all po histories data with specific po id', async () => {
       const FIND_BY_ID = `
         query poHistoriesByPoId($poId: ID!) {
           poHistoriesByPoId(poId: $poId) {
@@ -183,7 +183,7 @@ describe('PO History test', () => {
 
 
       const response = await query({ query: FIND_BY_ID, variables: {poId: idPO}})
-      console.log(response, 'aowkoawk')
+      // console.log(response, 'aowkoawk')
 
 
       expect(response.data.poHistoriesByPoId[0]).toHaveProperty('vendorName')
@@ -195,6 +195,42 @@ describe('PO History test', () => {
       expect(response.data.poHistoriesByPoId[0]).toHaveProperty('poId')
       expect(response.data.poHistoriesByPoId[0]).toHaveProperty('user')
       expect(response.data.poHistoriesByPoId[0]).toHaveProperty('_id')
+    })
+  })
+
+  describe('PO History fail case', () => {
+    test('FIND_BY_ID: data poHistoriesByPoId to be null', async () => {
+      const FIND_BY_ID = `
+        query poHistoriesByPoId($poId: ID!) {
+          poHistoriesByPoId(poId: $poId) {
+            _id
+            vendorName
+            items {
+              name
+              quantity
+              currentQuantity
+            }
+            status
+            createdAt
+            updatedAt
+            expiredDate
+            user {
+              _id
+              name
+              role
+              email
+            }
+            poId
+          }
+        }
+      `
+
+      idPO ='60580e99384f742bccf26391'
+      
+      const response = await query({ query: FIND_BY_ID, variables: {poId: idPO}})
+
+      // console.log(response, 'ini apa error')
+      expect(response.data.poHistoriesByPoId.length).toEqual(0)
     })
   })
 })

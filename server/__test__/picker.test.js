@@ -383,8 +383,6 @@ describe('Picker Test', () => {
       const response = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker, id: idBroadCast2 }})
       const response2 = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker, id: idBroadCast1 }})
       const response3 = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker, id: idBroadCast2 }})
-      console.log(response3, 'aaaaaaaaaakkkoooooo')
-      console.log(response2, ' <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<fwafwafwas')
       // console.log(response)
       expect(response.data.broadcastPickerById).toHaveProperty('_id')
       expect(response.data.broadcastPickerById).toHaveProperty('role')
@@ -452,9 +450,9 @@ describe('Picker Test', () => {
       `
 
       const response = await query({ query: FIND_ALL, variables:{ access_token: access_token_picker }})
-      console.log(response.data, 'ini yang betulan')
-      // expect(response.data.broadcastPicker).toHaveProperty('broadcasts')
-      // expect(response.data.broadcastPicker).toHaveProperty('unfinishedBroadcast')
+      // console.log(response.data)
+      expect(response.data.broadcastPicker).toHaveProperty('broadcasts')
+      expect(response.data.broadcastPicker).toHaveProperty('unfinishedBroadcast')
     })
 
     
@@ -523,9 +521,7 @@ describe('Picker Test', () => {
 
   describe('Picker fail case', () => {
 
-    
-
-    test('FIND_ALL: should return errors', async () => {
+    test('FIND_ALL: should return error when provided wrong access token', async () => {
       const FIND_ALL = `
         query broadcastPicker($access_token: String) {
           broadcastPicker(access_token: $access_token) {
@@ -589,7 +585,7 @@ describe('Picker Test', () => {
       expect(response.errors).toBeDefined()
     })
 
-    test('FIND_BY_ID: should return picker broadcast detail data with specific properties', async () => {
+    test('FIND_BY_ID: should return error when provided wrong access token', async () => {
       const FIND_BY_ID = `
         query broadcastPickerById($access_token: String, $id: ID!) {
           broadcastPickerById(access_token: $access_token, id: $id) {
@@ -625,7 +621,7 @@ describe('Picker Test', () => {
       expect(response.errors).toBeDefined()
     })
 
-    test('UPDATE_ITEM: should return updated broadcast data with specific properties', async () => {
+    test('UPDATE_ITEM: should return error when provided wrong access token', async () => {
       const UPDATE_ITEM = `
         mutation pickerUpdateItem($input: BroadcastPickerInput!, $access_token: String!, $idStoreReq: ID!) {
           pickerUpdateItem(input: $input, access_token: $access_token, idStoreReq: $idStoreReq)

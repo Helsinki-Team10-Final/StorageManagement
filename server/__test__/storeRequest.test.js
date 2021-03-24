@@ -434,7 +434,7 @@ describe('Store Request Test', () => {
       }
   
       const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_checker }})
-      console.log(response.errors, 'error create store request')
+      // console.log(response.errors, 'error create store request')
       expect(response.errors).toBeDefined()
     })
 

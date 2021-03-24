@@ -112,14 +112,14 @@ module.exports = {
 
           const foundStoreReq = await StoreRequest.findById(args.idStoreReq)
           const listItem = foundStoreReq.items
-          console.log(foundStoreReq, 'ini list item')
+          // console.log(foundStoreReq, 'ini list item')
           const allItemsWithPO = []
 
           for (let i = 0; i < listItem.length; i++) {
-            console.log(listItem[i].itemName, '<<<<<<<<<<<<<<<<<<')
+            // console.log(listItem[i].itemName, '<<<<<<<<<<<<<<<<<<')
             let poPerItem = []
             const foundPO = await PurchasingOrder.findAllByItemName(listItem[i].itemName)
-            console.log(foundPO, 'ini found PO')
+            // console.log(foundPO, 'ini found PO')
             foundPO.forEach(po => {
               const item = po.items.filter(item => item.name === listItem[i].itemName)
               poPerItem.push({
@@ -148,7 +148,6 @@ module.exports = {
       createRequest: async (_, args) => {
         try {
           const authorize = await authorization(args.access_token, "buyer")
-          console.log(authorize, 'ini authorize create request')
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
           //create request

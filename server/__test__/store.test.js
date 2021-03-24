@@ -42,10 +42,22 @@ describe('Store Test', () => {
     test('FIND_BY_ID: should return data with specific detail', async () => {
 
       const response = await Store.findById(id)
-      console.log(response)
+      // console.log(response)
       // expect(typeof response).toEqual('object')
       expect(response).toHaveProperty('name', expect.any(String))
       expect(response).toHaveProperty('_id', id)
+      
+    })
+  })
+
+  describe('Store fail case', () => {
+    test('FIND_BY_ID: should return data with specific detail', async () => {
+      id = '60580e99384f742bccf26391'
+      const response = await Store.findById(id)
+      // console.log(response, 'dari fail case')
+      expect(response).toEqual(null)
+      // expect(response).toHaveProperty('name', expect.any(String))
+      // expect(response).toHaveProperty('_id', id)
       
     })
   })
