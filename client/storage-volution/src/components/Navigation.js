@@ -28,14 +28,6 @@ export default function Navigation({showSidebar, setShowSidebar}) {
           />
         </Navbar.Brand>
         <Navbar.Collapse className="justify-content-end">
-          <Navbar.Text>
-            <Row>
-              <h4 className="mx-4 text-light">
-                Logged as <span style={{textTransform: "capitalize"}}>{localStorage.getItem("name")}</span> - <span style={{textTransform: "capitalize"}}>{localStorage.getItem("role")}</span>
-              </h4>
-            </Row>
-            
-          </Navbar.Text>
           <Nav.Item className="ml-3">
             <Nav.Link className="btn btn-danger" onClick={logout}>Logout</Nav.Link>
           </Nav.Item>

@@ -75,8 +75,7 @@ a:focus {
 }
 
 #sidebar ul li a {
-  padding: 10px;
-  padding-left: 40px;
+  padding: 20px;
   font-size: 1.1em;
   display: block;
 }
