@@ -4,6 +4,7 @@ import { GET_REQUEST_WITH_PO, SUBMIT_BROADCAST_REQUEST, GET_REQUESTS } from "../
 import { useQuery, useMutation, gql } from '@apollo/client'
 import {useState, useEffect, useRef, createRef} from 'react'
 import { toast } from 'react-toastify';
+import { MDBContainer, MDBInput } from "mdbreact";
 
 export default function CreateRequestBroadcast (props) {
   const history = useHistory()
@@ -121,25 +122,22 @@ export default function CreateRequestBroadcast (props) {
     <>
       <div>
         <div className="mb-5 row d-flex align-items-center">
-          <h1 className="col-md-4">Broadcast Request</h1>
-          <h3 className="col-md-6">ID: {id}</h3>
+          <div className="col-md-8">
+            <h4>Store: {data.requestsWithPO.request.storeName}</h4>
+            <h4>ID: {id}</h4>
+          </div>
+          <h2 className="col-md-4">Broadcast Request</h2>
         </div>
         <div>
           {/* {JSON.stringify(data)} */}
           {/* {JSON.stringify(formInput)} */}
-            <Form.Row>
-              <Form.Group className="col-md-3" >
-                <Form.Label><h5><i className="fa fa-user"/> Store Name</h5></Form.Label>
-                <Form.Control readOnly value={data.requestsWithPO.request.storeName} type="text" />
-              </Form.Group>
-            </Form.Row>
-            <Form.Label><h5><i className="fa fa-user"/> Items</h5></Form.Label>
+            <Form.Label><h4><i className="fa fa-boxes"/> Items</h4></Form.Label>
               {
                 data.requestsWithPO.request.items.map((item, index) => {
                   return (
                     <>
                       <Form.Group key={index} className="col" >
-                        <Form.Label className="my-3" style={{textTransform:"capitalize"}}><h5><i className="fa fa-user"/> {item.itemName} - {item.quantityRequest} Box</h5></Form.Label>
+                        <Form.Label className="my-3" style={{textTransform:"capitalize"}}><h5><i className="fa fa-box"/> {item.itemName} - {item.quantityRequest} Box</h5></Form.Label>
                         {
                           formInput[index] &&
                           formInput[index].listPO.map((po, idx) => {
@@ -186,20 +184,43 @@ export default function CreateRequestBroadcast (props) {
                               
                               </Form.Control>
                           </Form.Group>
-                          <Form.Group className="col-md-3" >
+                          <div className="col-md-3">
+                            <MDBInput 
+                              className="" 
+                              label="PO Quantity (box)" 
+                              icon="box" 
+                              hint="PO Quantity" 
+                              disabled
+                              value={itemsPOTemp[index].selected ? itemsPOTemp[index].selected.current_quantity : "-"}
+                              type="number" 
+                            />
+                          </div>
+                          
+                          {/* <Form.Group className="col-md-3" >
                             <Form.Label><h5><i className="fa fa-user"/> PO Quantity</h5></Form.Label>
 
                             <Form.Control readOnly value={itemsPOTemp[index].selected ? itemsPOTemp[index].selected.current_quantity : "-"} type="number" />
-                            
-                            
-                          </Form.Group>
-                          <Form.Group className="col-md-3" >
+                          </Form.Group> */}
+                          <div className="col-md-3">
+                            <MDBInput 
+                              className="" 
+                              label="PO Quantity (box)" 
+                              icon="box" 
+                              hint="PO Quantity" 
+                              disabled={itemsPOTemp[index].selected ? false : true}
+                              min="0" 
+                              max={itemsPOTemp[index].selected ? (item.quantityRequest - countAddedPO(index) < itemsPOTemp[index].current_quantity ? itemsPOTemp[index].current_quantity : item.quantityRequest - countAddedPO(index) ) : item.quantityRequest - countAddedPO(index) } 
+                              id={`quantity_${index}`}
+                              type="number" 
+                            />
+                          </div>
+                          {/* <Form.Group className="col-md-3" >
                             <Form.Label><h5><i className="fa fa-user"/> Quantity</h5></Form.Label>
                             <Form.Control disabled={itemsPOTemp[index].selected ? false : true} ref={elementsRef.current[index]} min="0" max={itemsPOTemp[index].selected ? (item.quantityRequest - countAddedPO(index) < itemsPOTemp[index].current_quantity ? itemsPOTemp[index].current_quantity : item.quantityRequest - countAddedPO(index) ) : item.quantityRequest - countAddedPO(index) } id={`quantity_${index}`} type="number" />
-                          </Form.Group>
+                          </Form.Group> */}
                           <Form.Group className="col-md-3" >
                             <br/>
-                            <Button disabled={itemsPOTemp[index].selected ? false : true} type="submit" className="mt-3">+</Button>
+                            <Button disabled={itemsPOTemp[index].selected ? false : true} type="submit" className="mt-2">+</Button>
                           </Form.Group>
                         </Form.Row>
                         </Form>
