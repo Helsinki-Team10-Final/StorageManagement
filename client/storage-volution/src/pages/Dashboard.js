@@ -31,33 +31,34 @@ export default function Dashboard(props) {
     }
   }, [history])
   
-  const warehouseadmin = <>
-    <Navigation showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
-    <div className="wrapper">
-      <Sidebar showSidebar={showSidebar} />
-      <div className="container-fluid mx-4 my-3">
-        {/* Lokasi SwitchRoute Child */}
-        <Switch>
-          <Route path={`${path}/request/createBroadcast/:id`}>
-            <CreateRequestBroadcast />
-          </Route>
-          <Route path={`${path}/request/:id`}>
-            <DetailRequest />
-          </Route>
-          <Route path={`${path}/request`}>
-            <ListRequest />
-          </Route>
-          <Route path={`${path}/:id`}>
-            <DetailPO />
-          </Route>
-          <Route exact path={`${path}`}>
-            <ListPOK />
-          </Route>
-        </Switch>
+  const warehouseadmin = (
+    <>
+      <Navigation showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <div className="wrapper">
+        <Sidebar showSidebar={showSidebar} />
+        <div className="container-fluid mx-4 my-3">
+          {/* Lokasi SwitchRoute Child */}
+          <Switch>
+            <Route path={`${path}/request/createBroadcast/:id`}>
+              <CreateRequestBroadcast />
+            </Route>
+            <Route path={`${path}/request/:id`}>
+              <DetailRequest />
+            </Route>
+            <Route path={`${path}/request`}>
+              <ListRequest />
+            </Route>
+            <Route path={`${path}/:id`}>
+              <DetailPO />
+            </Route>
+            <Route exact path={`${path}`}>
+              <ListPOK />
+            </Route>
+          </Switch>
+        </div>
       </div>
-    </div>
-    
-  </>
+    </>
+  );
 
   const picker = <>
     <Navigation showSidebar={showSidebar} setShowSidebar={setShowSidebar} />

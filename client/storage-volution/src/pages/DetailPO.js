@@ -7,6 +7,7 @@ import {
   Table
 } from "react-bootstrap";
 import {useHistory} from 'react-router-dom'
+import React, { useState, useEffect } from "react";
 
 export default function ListPOK(props) {
   const history = useHistory()

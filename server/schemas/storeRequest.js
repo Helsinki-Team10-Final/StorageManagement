@@ -46,13 +46,13 @@ module.exports = {
 
   input ItemReqInput {
     itemId: ID!
-    itemName: String
-    quantityRequest: Int
+    itemName: String!
+    quantityRequest: Int!
   }
 
   input RequestInput {
-    storeName: String
-    storeId: String
+    storeName: String!
+    storeId: String!
     items: [ItemReqInput]
   }
 

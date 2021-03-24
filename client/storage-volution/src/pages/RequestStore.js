@@ -90,7 +90,7 @@ const onChange = ({ target }) => {
           access_token: localStorage.getItem("access_token"),
         }, refetchQueries: [{query: GET_REQUESTS}]
       });
-      toast.success(`✅ Check Submited`);
+      toast.success(`✅ Request Store Created`);
       history.push("/main/request");
     } catch (err) {
       toast.error(`❌ ${err.message || err.graphQLErrors[0].extensions.message}`, {
