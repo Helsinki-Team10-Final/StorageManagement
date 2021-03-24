@@ -13,6 +13,7 @@ import Picking from './Picking'
 import ListRequest from './ListRequest'
 import DetailRequest from './DetailRequest'
 import CreateRequestBroadcast from './CreateRequestBroadcast'
+import RequestStore from './RequestStore';
 
 export default function Dashboard(props) {
   const [currentRole, setCurrentRole] = useState('')
@@ -37,9 +38,6 @@ export default function Dashboard(props) {
       <div className="container-fluid mx-4 my-3">
         {/* Lokasi SwitchRoute Child */}
         <Switch>
-          <Route path={`${path}/addPO`}>
-            <CreatePO />
-          </Route>
           <Route path={`${path}/request/createBroadcast/:id`}>
             <CreateRequestBroadcast />
           </Route>
@@ -87,27 +85,37 @@ export default function Dashboard(props) {
     
   </>
 
-  const buyer = <>
-    <Navigation showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
-    <div className="wrapper">
-      <Sidebar showSidebar={showSidebar} />
-      <div className="container-fluid mx-4 my-3">
-        {/* Lokasi SwitchRoute Child */}
-        <Switch>
-          <Route path={`${path}/addPO`}>
-            <CreatePO />
+  const buyer = (
+    <>
+      <Navigation showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <div className="wrapper">
+        <Sidebar showSidebar={showSidebar} />
+        <div className="container-fluid mx-4 my-3">
+          {/* Lokasi SwitchRoute Child */}
+          <Switch>
+            <Route path={`${path}/addRequest`}>
+              <RequestStore />
+            </Route>
+            <Route path={`${path}/request/:id`}>
+              <DetailRequest />
+            </Route>
+            <Route path={`${path}/request`}>
+            <ListRequest />
           </Route>
-          <Route path={`${path}/:id`}>
-            <DetailPO />
-          </Route>
-          <Route exact path={`${path}`}>
-            <ListPOK />
-          </Route>
-        </Switch>
+            <Route path={`${path}/addPO`}>
+              <CreatePO />
+            </Route>
+            <Route path={`${path}/:id`}>
+              <DetailPO />
+            </Route>
+            <Route exact path={`${path}`}>
+              <ListPOK />
+            </Route>
+          </Switch>
+        </div>
       </div>
-    </div>
-    
-  </>
+    </>
+  );
 
   const checker = <>
     <Navigation showSidebar={showSidebar} setShowSidebar={setShowSidebar} />

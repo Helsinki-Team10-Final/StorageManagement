@@ -103,8 +103,6 @@ describe('Admin Test', () => {
         ]
     }
 
-    
-
     const CREATE_ITEM = `
         mutation createItem($input: CreateItemInput) {
           createItem(item: $input) {
@@ -123,19 +121,10 @@ describe('Admin Test', () => {
       name: "yamin"
     }
       
-    
-    // const { name } = itemInput1
-    // console.log(name)
-    //Create Item
-    
-    
-    
-    // act
-    
-    // act
     //Register
     await mutate({ mutation: USER_REGISTER, variables: {input: warehouseadmin} });
     await mutate({ mutation: USER_REGISTER, variables: {input: buyer} });
+
     //Login
     const responsewarehouseadmin = await mutate({ mutation: USER_LOGIN, variables: {input: warehouseadmin_login} });
     const responsebuyer = await mutate({ mutation: USER_LOGIN, variables: {input: buyer_login} });
@@ -148,8 +137,6 @@ describe('Admin Test', () => {
     const responseItem1 = await mutate({ mutation: CREATE_ITEM, variables: { input: itemInput1 } });
     const responseItem2 = await mutate({ mutation: CREATE_ITEM, variables: { input: itemInput2 } });
 
-    // console.log(responseItem1, 'ini response item')
-    // console.log(responsePO, 'ini PO nya ya')
     itemData1 = responseItem1.data.createItem
     itemData2 = responseItem2.data.createItem
 
@@ -193,13 +180,9 @@ describe('Admin Test', () => {
     idPO2 = responsePO2.data.createPurchasingOrder._id
     createdAt = responsePO1.data.createPurchasingOrder.createdAt
     statusBefore = responsePO1.data.createPurchasingOrder.status
-      // console.log(access_token_warehouseadmin, 'punya admin')
-    // console.log(access_token_buyer, 'punya chekcer')
-    // console.log('ini before All')
   })
 
   afterAll(async () => {
-    // console.log('ini after all')
     await getDatabase().collection('users').deleteMany({})
     await getDatabase().collection('productorders').deleteMany({})
     await getDatabase().collection('broadcasts').deleteMany({})

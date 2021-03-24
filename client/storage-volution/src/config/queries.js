@@ -319,3 +319,19 @@ export const SUBMIT_BROADCAST_REQUEST = gql`
     }
   }
 `;
+
+export const SUBMIT_REQUEST = gql`
+  mutation createRequest($input: RequestInput!, $access_token: String!) {
+    createRequest(request: $input, access_token: $access_token) {
+      _id
+      storeName
+      items {
+        itemId
+        itemName
+        quantityRequest
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;

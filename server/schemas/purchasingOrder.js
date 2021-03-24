@@ -73,11 +73,10 @@ module.exports = {
       },
       async purchasingOrderById(_, args) {
         try {
-          console.log(args.id, 'ini dari skema')
           const purchasingOrderById = await PurchasingOrder.findById(args.id)
           return purchasingOrderById
         } catch(err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request","404",err)
         }
       }

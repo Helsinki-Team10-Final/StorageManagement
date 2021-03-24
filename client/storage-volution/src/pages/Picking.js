@@ -66,12 +66,18 @@ export default function Picking(params) {
       })
       if (flag) toast.error(`❌ Please pick all items first before submitting task`)
       let temp = JSON.parse(JSON.stringify(data.broadcastPickerById))
-      delete temp.listItem.__typename
       
-      temp.listItem = temp.listItem.map((po) => {
+      
+      temp.listItem = temp.listItem.map((item) => {
         return {
-          idPO: po.idPO,
-          quantity: po.quantity
+          idItem: item.idItem,
+          itemName: item.itemName,
+          listPO: item.listPO.map((po) => {
+            return {
+              idPO: po.idPO,
+              quantity: po.quantity
+            }
+          })
         }
       })
       // console.log(temp.listItem)
@@ -83,11 +89,7 @@ export default function Picking(params) {
       }
       console.log(
         {
-          input: {
-            idBroadcast: data.broadcastPickerById._id,
-            role: data.broadcastPickerById.role,
-            listItem: data.broadcastPickerById.listItem
-          },
+          input,
           access_token: localStorage.getItem('access_token'),
           idStoreReq: data.broadcastPickerById.StoreReq._id,
         }
@@ -111,7 +113,7 @@ export default function Picking(params) {
   return (
     <>
       <h1>Request</h1>
-      {/* {JSON.stringify(data)} */}
+      {JSON.stringify(data)}
       <div>
         <div className="mb-5 row d-flex align-items-center">
           <h1 className="col-md-4">Picking</h1>

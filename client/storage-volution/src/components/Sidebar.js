@@ -20,6 +20,9 @@ export default function Sidebar({showSidebar}) {
                 <Link to="/main/addPO">Create PO</Link>
               </li>
               <li>
+                <Link to="/main/request">Requests</Link>
+              </li> 
+              <li>
                 <Link to="/main/addRequest">Create Request</Link>
               </li>
             </>
