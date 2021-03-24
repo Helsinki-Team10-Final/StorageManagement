@@ -35,18 +35,23 @@ export default function RequestStore(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (!item) return
     const newData = itemsData.filter((el) => {
       return (el._id !== item)
     })
     setItemsData(newData)
-    // console.log(newData, "newData")
+    console.log(newData, "newData")
 
     const itemData = data.items.filter((el) => {
       if (el._id == item) return el;
     });
     // console.log(itemData, "item data");
     //  console.log(data.items);
+    
     setListItem([...listItem, { itemId: itemData[0]._id, itemName: itemData[0].name, quantityRequest: 0 }]);
+    setItem("")
+    document.getElementById("selectItem").value = "";
+
   }
 
  function handleChangeStore({target}){
@@ -68,7 +73,6 @@ const onChange = ({ target }) => {
   const handleSubmit2 = async (e) =>{
     try {
       e.preventDefault();
-      console.log(listItem[0].itemName, "<<<<<<<<<<<<");
       if (!store.name) {
       }
       const input = {
@@ -111,8 +115,10 @@ const onChange = ({ target }) => {
         <Form.Group controlId="exampleForm.ControlSelect1">
           <Form.Label>Barang di gudang</Form.Label>
           <Form.Control
+            id="selectItem"
             as="select"
             onChange={(e) => {
+              console.log(e.target.value, "tergetvalue");
               setItem(e.target.value);
             }}
             defaultValue=""
