@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import {
   Table
 } from "react-bootstrap";
+import { MDBTable, MDBTableBody, MDBTableHead } from 'mdbreact';
 import {useHistory} from 'react-router-dom'
 import React, { useState, useEffect } from "react";
 
@@ -48,39 +49,39 @@ export default function ListPOK(props) {
     <>
       <div>
         <div className="mb-5 row d-flex align-items-center">
-          <h1 className="col-md-4">PO Detail</h1>
+          <h1 className="col-md-4">Purchasing Order Detail</h1>
           <h3 className="col-md-6">ID: {id}</h3>
         </div>
-        <div className="mb-5" style={{height: '70vh', overflowY: 'auto'}}>
-          <Table className="text-center" responsive="md">
-            <thead>
+        <div className="mb-5" style={{ height:"67vh", overflowY: 'auto'}}>
+          <MDBTable className="text-center" responsive="md">
+            <MDBTableHead >
               <tr>
-                <th>QR Code</th>
-                <th>Item</th>
-                <th>PO Quantity</th>
-                <th>Actual Quantity</th>
+                <th style={{fontWeight: 600}}>QR Code</th>
+                <th style={{fontWeight: 600}}>Item</th>
+                <th style={{fontWeight: 600}}>PO Quantity</th>
+                <th style={{fontWeight: 600}}>Actual Quantity</th>
               </tr>
-            </thead>
-            <tbody>
+            </MDBTableHead >
+            <MDBTableBody>
               {
                 data && data.purchasingOrderById.items.map(item => {
                   return (
                     <>
                       <tr>
-                        <td className="align-middle">
+                        <td style={{fontWeight: 400}} className="align-middle">
                           <QRCode value={JSON.stringify({_id: data.purchasingOrderById._id, name: item.name.toLowerCase()})} />
                         </td>
-                        <td className="align-middle">{item.name}</td>
-                        <td className="align-middle">{item.quantity}</td>
-                        <td className="align-middle">{item.currentQuantity ? item.currentQuantity : 0}</td>
+                        <td style={{fontWeight: 400, textTransform:"capitalize"}} className="align-middle">{item.name}</td>
+                        <td style={{fontWeight: 400, textTransform:"capitalize"}} className="align-middle">{item.quantity}</td>
+                        <td style={{fontWeight: 400, textTransform:"capitalize"}} className="align-middle">{item.currentQuantity ? item.currentQuantity : 0}</td>
                       </tr>
                     </>
                   )
                 })
               }
               
-            </tbody>
-          </Table>
+            </MDBTableBody>
+          </MDBTable>
         </div>
           {
             data.purchasingOrderById.status === 'process' && role === "warehouseadmin" &&

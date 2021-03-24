@@ -1,9 +1,8 @@
 import {useQuery, gql} from '@apollo/client'
-import { Table } from "react-bootstrap";
 import {Link, useHistory } from "react-router-dom"
 import {GET_BROADCASTS_CHECKER, GET_BROADCASTS_PICKER} from "../config/queries"
 import React, { useState, useEffect } from "react";
-import { MDBDataTableV5, MDBBtn } from "mdbreact";
+import { MDBDataTableV5, MDBBtn, MDBTypography  } from "mdbreact";
 import Loading from '../components/Loading';
 
 export default function ListPOK({type}) {
@@ -143,11 +142,6 @@ useEffect(() => {
     return <h1>Error..</h1>
   }
 
-    // <>
-    //   <h1 className="mb-3">List Broadcast</h1>
-    //   {JSON.stringify(data.broadcastChecker)}
-    // </>
-
   if (type === "picker") return (
     <>
       <div>
@@ -155,35 +149,6 @@ useEffect(() => {
           <h1 className="col-md-4">List Broadcast</h1>
         </div>
         <div style={{ height: "73vh", overflowY: "auto" }}>
-          {data && JSON.stringify(data.broadcastPicker.broadcasts[0])}
-          <MDBDataTableV5 hover entriesOptions={[10, 15, 20]} entries={10} pagesAmount={4} data={datatable2} />;
-          {/* <Table className="text-center" responsive="md">
-          <thead>
-            <tr>
-              <th>Boadcast ID</th>
-              <th>Store Name</th>
-              <th>Created</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.broadcastPicker.broadcasts.map((el) => {
-              return (
-                <tr key={el._id}>
-                  <td>{el._id}</td>
-                  <td style={{textTransform:"capitalize"}}>{el.StoreReq.storeName}</td>
-                  <td>{new Date(el.StoreReq.createdAt).toLocaleString().slice(0,9)}</td>
-                  <td style={{textTransform:"capitalize"}}>{el.StoreReq.status}</td>
-                  <td>
-                    <Link to={`/main/picking/${el._id}`}>Pick Request</Link>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table> */}
         </div>
         {data.broadcastPicker.unfinishedBroadcast && (
           <>
@@ -204,33 +169,6 @@ useEffect(() => {
         </div>
         <div style={{ height: "73vh", overflowY: "auto" }}>
           <MDBDataTableV5 hover entriesOptions={[10, 15, 20]} entries={10} pagesAmount={4} data={datatable} />;
-          {/* <Table className="text-center" responsive="md">
-          <thead>
-            <tr>
-              <th>Boadcast ID</th>
-              <th>Vendor</th>
-              <th>Created</th>
-              <th>Status</th>
-              <th></th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.broadcastChecker.broadcasts.map((el) => {
-              return (
-                <tr key={el._id}>
-                  <td>{el._id}</td>
-                  <td>{el.purchasingOrder.vendorName}</td>
-                  <td>{new Date(el.purchasingOrder.createdAt).toLocaleString().slice(0,9)}</td>
-                  <td style={{textTransform:"capitalize"}}>{el.purchasingOrder.status}</td>
-                  <td>
-                    <Link to={`/main/checking/${el._id}`}>Check PO</Link>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table> */}
         </div>
         {data.broadcastChecker.unfinishedBroadcast && (
           <>
