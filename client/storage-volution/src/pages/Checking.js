@@ -37,22 +37,26 @@ export default function CreatePO(props) {
   }, [data])
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    console.log({
-      input: itemsData,
-      access_token: localStorage.getItem('access_token'),
-      idPO: data.broadcastCheckerById.purchasingOrder._id,
-      idBroadcast: id
-    })
-    await submitCheck({variables: {
-      input: itemsData,
-      access_token: localStorage.getItem('access_token'),
-      idPO: data.broadcastCheckerById.purchasingOrder._id,
-      idBroadcast: id
-    }})
-    toast.success(`✅ Check Submited`)
-    history.push('/main')
-    // console.log(itemsData)
+    try {
+      e.preventDefault()
+      console.log({
+        input: itemsData,
+        access_token: localStorage.getItem('access_token'),
+        idPO: data.broadcastCheckerById.purchasingOrder._id,
+        idBroadcast: id
+      })
+      await submitCheck({variables: {
+        input: itemsData,
+        access_token: localStorage.getItem('access_token'),
+        idPO: data.broadcastCheckerById.purchasingOrder._id,
+        idBroadcast: id
+      }})
+      toast.success(`✅ Check Submited`)
+      history.push('/main')
+      // console.log(itemsData)
+    } catch (err) {
+      console.log(err.graphQLErrors)
+    }
   }
 
   const onChange = ({target}) => {

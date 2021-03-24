@@ -1,12 +1,12 @@
 import {useQuery, gql} from '@apollo/client'
 import { Table } from "react-bootstrap";
 import {Link } from "react-router-dom"
-import {GET_BROADCASTS_CHECKER} from "../config/queries"
+import {GET_BROADCASTS_CHECKER, GET_BROADCASTS_PICKER} from "../config/queries"
 import {useEffect} from 'react'
 
 
 export default function ListPOK({type}) {
-  const {loading, error, data, refetch } = useQuery(GET_BROADCASTS_CHECKER, { variables: {access_token: localStorage.getItem('access_token')}})
+  const {loading, error, data, refetch } = useQuery(type === 'checker' ? GET_BROADCASTS_CHECKER : GET_BROADCASTS_PICKER, { variables: {access_token: localStorage.getItem('access_token')}})
 
   useEffect(() => {
     refetch()
@@ -24,6 +24,53 @@ export default function ListPOK({type}) {
     //   <h1 className="mb-3">List Broadcast</h1>
     //   {JSON.stringify(data.broadcastChecker)}
     // </>
+
+  if (type === "picker") return (
+    <>
+    <div>
+      <div className="mb-5">
+        <h1 className="col-md-4">List Broadcast</h1>
+      </div>
+      <div style={{height: '73vh', overflowY: 'auto'}}>
+        {/* { data && JSON.stringify(data.broadcastPicker.broadcasts[0])} */}
+        <Table className="text-center" responsive="md">
+          <thead>
+            <tr>
+              <th>Boadcast ID</th>
+              <th>Store Name</th>
+              <th>Created</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {data.broadcastPicker.broadcasts.map((el) => {
+              return (
+                <tr key={el._id}>
+                  <td>{el._id}</td>
+                  <td style={{textTransform:"capitalize"}}>{el.StoreReq.storeName}</td>
+                  <td>{new Date(el.StoreReq.createdAt).toLocaleString().slice(0,9)}</td>
+                  <td style={{textTransform:"capitalize"}}>{el.StoreReq.status}</td>
+                  <td>
+                    <Link to={`/main/picking/${el._id}`}>Pick Request</Link>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </div>
+      {
+        data.broadcastPicker.unfinishedBroadcast && (
+          <>
+            <Link className="btn btn-primary" to={`/main/picking/${data.broadcastPicker.unfinishedBroadcast._id}`}>Back to previous Task</Link>
+          </>
+        )
+      }
+    </div>
+    </>
+  )
 
   return (
     <>

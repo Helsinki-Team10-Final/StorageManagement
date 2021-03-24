@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client'
 
 export const ADD_PO = gql`
-  mutation createPO ($input: CreatePurchasingOrderInput, $access_token: String!){
+  mutation createPO ($input: CreatePurchasingOrderInput!, $access_token: String!){
     createPurchasingOrder(input: $input, access_token: $access_token) {
       vendorName,
       status,
@@ -119,6 +119,63 @@ export const GET_BROADCASTS_CHECKER = gql`
 
 `;
 
+export const GET_BROADCASTS_PICKER = gql`
+  query getbroadcastPicker($access_token: String!){
+    broadcastPicker(access_token: $access_token){
+      broadcasts{
+        _id
+        role
+        listItem{
+          idItem
+          itemName
+          listPO{
+            idPO
+            quantity
+          }
+        }
+        pickerId
+        StoreReq{
+          _id
+                      storeName
+                      items{
+            itemId
+                              itemName
+                              quantityRequest
+          }
+              createdAt
+              updatedAt
+              status
+        }
+      }
+      unfinishedBroadcast{
+        _id
+        role
+        listItem{
+          idItem
+          itemName
+          listPO{
+            idPO
+            quantity
+          }
+        }
+        pickerId
+        StoreReq{
+          _id
+                      storeName
+                      items{
+            itemId
+                              itemName
+                              quantityRequest
+          }
+              createdAt
+              updatedAt
+              status
+        }
+      }
+    }
+  }
+`;
+
 export const GET_BROADCAST_CHECKER_BY_ID = gql`
   query broadcastCheckerById($idBroadcast: ID!, $access_token: String!) {
     broadcastCheckerById(id: $idBroadcast ,access_token: $access_token) {
@@ -138,9 +195,128 @@ export const GET_BROADCAST_CHECKER_BY_ID = gql`
   }
 `;
 
+export const GET_BROADCAST_PICKER_BY_ID = gql`
+  query broadcastPickerById($access_token: String!, $id: ID!){
+    broadcastPickerById(access_token: $access_token, id: $id){
+      _id
+            role
+      listItem{
+        idItem
+        itemName
+        listPO{
+                idPO
+          quantity
+      }
+      }
+        pickerId
+        StoreReq{
+          _id
+              storeName
+              items{
+                itemId
+                      itemName
+                      quantityRequest
+              }
+              createdAt
+              updatedAt
+              status
+        }
+    }
+  }
+`;
+
+
 export const SUBMIT_CHECKER = gql`
   mutation checkerClickDone ($input: [ItemInputUpdate]!, $access_token: String!, $idPO: String!, $idBroadcast: String!) {
     checkerUpdateItem(items: $input, access_token: $access_token, idPO: $idPO, idBroadCast: $idBroadcast)
+  }
+`;
+
+export const SUBMIT_PICKER = gql`
+  mutation pickerUpdateItem($input: BroadcastPickerInput!, $access_token: String!, $idStoreReq: ID!){
+    pickerUpdateItem(input: $input, access_token: $access_token, idStoreReq:$idStoreReq)
+  }
+`;
+
+
+
+export const GET_REQUESTS = gql`
+  query findAllRequest{
+    requests{
+      _id
+      storeName
+      items{
+        itemId
+        itemName
+        quantityRequest
+      }
+      createdAt
+      updatedAt
+      status
+    }
+  }
+`;
+
+export const GET_REQUEST_DETAIL = gql`
+  query findRequestById($id: ID!){
+    requestById(id: $id){
+      _id
+      storeName
+      items{
+        itemId
+        itemName
+        quantityRequest
+        storageQuantity
+      }
+      createdAt
+      updatedAt
+      status
+    }
+  }
+`;
+
+export const GET_REQUEST_WITH_PO = gql`
+  query getRequestWithPO($id: ID!, $access_token: String!) {
+    requestsWithPO(idStoreReq: $id, access_token: $access_token) {
+      request {
+        _id
+        storeName
+        items {
+          itemName
+          quantityRequest
+        }
+      }
+      dropdown {
+        idItem
+        name
+        PO {
+          _id
+          current_quantity
+        }
+      }
+    }
+  }
+`;
+
+export const SUBMIT_BROADCAST_REQUEST = gql`
+  mutation createBroadcastPicker($itemsToPick: [itemToPickInput]!, $idStoreReq: ID!, $access_token: String!){
+    createBroadcastPicker(idStoreReq:$idStoreReq, access_token:$access_token, itemsToPick: $itemsToPick){
+      _id
+      role
+      StoreReq{
+        _id
+        status
+      }
+      listItem{
+        idItem
+        itemName
+        listPO{
+          idPO
+          quantity
+        }
+      }
+      pickerId
+    }
   }
 `;
 
