@@ -112,13 +112,13 @@ module.exports = {
           const updatedStatusPurchasingOrder = await PurchasingOrder.updateStatus(foundPurchasingOrder._id, payload)
           // console.log(updatedStatusPurchasingOrder)
 
-          console.log(foundPurchasingOrder)
+          // console.log(foundPurchasingOrder)
           const broadcast = {
             purchasingOrder: updatedStatusPurchasingOrder.value,
             role: "checker"
           }
           const newBroadcast = await Broadcast.create(broadcast)
-          console.log(broadcast)
+          // console.log(broadcast)
 
           
           //create history
@@ -131,7 +131,7 @@ module.exports = {
 
           return newBroadcast.ops[0]
         } catch (err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request", "404", err)
         }
       },
@@ -150,7 +150,6 @@ module.exports = {
           // console.log(updatedStatusStoreReq)
 
           const broadcastPayload = {
-            pickerId: 'aaa', //nambahin ini
             role: "picker",
             listItem: args.itemsToPick,
             StoreReq: updatedStatusStoreReq.value

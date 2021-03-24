@@ -3,6 +3,7 @@ const { connect, getDatabase } = require('../config/mongodb')
 const { createTestClient } = require('apollo-server-testing')
 const { query, mutate } = createTestClient(server);
 const Item = require('../models/item')
+const Store = require('../models/store')
 
 describe('Item Test', () => {
   let id;
@@ -56,6 +57,18 @@ describe('Item Test', () => {
       "email": "checker@mail.com",
       "password": "123456"
     }
+
+    const input1 = {
+        name: 'Toko A'
+      }
+
+      const input2 = {
+        name: 'Toko B'
+      }
+      
+
+      const response = await Store.create(input1)
+      await Store.create(input2)
     
     // act
       //Register
@@ -177,6 +190,20 @@ describe('Item Test', () => {
       expect(response).toHaveProperty('quantity');
     })
 
+    test('FIND_ALL_STORE: should return list of store data', async () => {
+      const FIND_ALL_STORE = `
+        query stores {
+          stores {
+            _id
+            name
+          }
+        }
+      `
+
+      const response = await query({ query: FIND_ALL_STORE, variables: {}})
+      // console.log(response, 'find all toko')
+      expect(typeof response.data.stores).toEqual('object')
+    })
     test('DELETE: response.result.ok should return 1', async () => {
       const response = await Item.deleteOne(id)
       console.log(response.result, 'ini dari delete')
@@ -201,6 +228,25 @@ describe('Item Test', () => {
       // console.log(response, 'dari findone ITEM')
       // assert
       expect(response.data.item).toEqual(null)  
+    })
+
+    test('CREATE: should return error', async () => {
+      const CREATE_ITEM = `
+        mutation createItem($input: CreateItemInput) {
+          createItem(item: $input) {
+            _id
+            name
+            quantity
+          }
+        }
+      `;
+      
+      const input = {
+          "name": "semangka"
+      }
+    
+      // act
+      const response = await mutate({ mutation: CREATE_ITEM, variables: input });
     })
   })
 })

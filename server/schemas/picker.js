@@ -72,10 +72,9 @@ module.exports = {
               }
             }
           })
-          // console.log(broadcastForPickers)
           return { broadcasts: broadcastForPickers, unfinishedBroadcast }
         } catch (err) {
-          console.log(err)
+          // console.log(err)
           return new ApolloError("bad request", "404", err)
         }
       },
@@ -97,11 +96,10 @@ module.exports = {
               }
             }
           })
-          
+          // console.log(hasTask, ' ini has task')
           
           //add key to brodcast
           let foundBroadCast = await Broadcast.findOne(args.id)
-          console.log(foundBroadCast, 'dari skema by id')
           if (foundBroadCast.pickerId) {
             if (decoded._id === foundBroadCast.pickerId) {
               return foundBroadCast
@@ -111,7 +109,6 @@ module.exports = {
               delete foundBroadCast._id
               foundBroadCast.pickerId = decoded._id
               const updatedBroadcast = await Broadcast.updateOne(args.id, foundBroadCast)
-
               return updatedBroadcast
             } else {
               throw { type: "CheckerError", message: "Redundant Task" }
@@ -139,11 +136,11 @@ module.exports = {
             let item = listItem[i] // pisang // semangka //druan
             for (let j = 0; j < item.listPO.length; j++) {
               let PO = item.listPO[j]
-              console.log('=============================')
-              console.log('PO ', item.itemName, j + 1)
-              console.log(PO)
+              // console.log('=============================')
+              // console.log('PO ', item.itemName, j + 1)
+              // console.log(PO)
               const foundPO = await PurchasingOrder.findById(PO.idPO)
-              console.log(foundPO)
+              // console.log(foundPO)
               let clonePO = JSON.parse(JSON.stringify(foundPO))
               for (let k = 0; k < foundPO.items.length; k++) {
                 let itemPO = foundPO.items[k]
@@ -160,7 +157,7 @@ module.exports = {
                   // console.log(clonePO, '--------------------line 171')
 
                   //create history
-                  let payloadHis = updatedPO.value
+                  let payloadHis = {...updatedPO.value}
                   payloadHis.poId = payloadHis._id
                   delete payloadHis._id
                   payloadHis.user = authorize
@@ -171,11 +168,11 @@ module.exports = {
                 // console.log(itemPO)
               }
               // console.log(foundPO)
-              console.log('=============================')
+              // console.log('=============================')
             }
-            console.log(totalItemDecreased, `${item.itemName} TOTAL BERKURANG`)
+            // console.log(totalItemDecreased, `${item.itemName} TOTAL BERKURANG`)
             const foundItem = await Item.findOneById(item.idItem)
-            console.log(foundItem)
+            // console.log(foundItem)
             //update quantity on collection Item
             const updatedItem = await Item.updateOne(foundItem._id, foundItem.quantity - totalItemDecreased)
           }
@@ -189,7 +186,8 @@ module.exports = {
           const deleteBroadcast = await Broadcast.deleteOne(args.input.idBroadcast)
           return 'Items Picked Successfully'
         } catch (err) {
-          console.log(err)
+          // console.log(err)
+          return new ApolloError(err)
         }
       }
     }

@@ -4,7 +4,7 @@ const { createTestClient } = require('apollo-server-testing')
 const { query, mutate } = createTestClient(server);
 const Item = require('../models/item')
 
-describe('Item Success Cases', () => {
+describe('Purchasing Order Success Cases', () => {
   let idPO;
   let access_token_buyer
   let access_token_checker
@@ -238,69 +238,9 @@ describe('Item Success Cases', () => {
     expect(response.data.purchasingOrderById).toHaveProperty('createdAt', expect.any(String));
     expect(response.data.purchasingOrderById).toHaveProperty('expiredDate', expect.any(String));
   });
-
-  test('UPDATE_ONE_CHECKER: update current quantity purchasing orders should return updated data', async () => {
-    const UPDATE_ONE = `
-      mutation updateCurrentQuantityPurchasingOrder($id: ID!, $input: UpdateCurrentQuantityPurchasingOrderInput, $access_token: String) {
-        updateCurrentQuantityPurchasingOrder(id: $id, input: $input, access_token: $access_token){
-          _id,
-          vendorName,
-          status,
-          items {
-            name
-            quantity
-            currentQuantity
-          },
-          createdAt,
-          updatedAt,
-          expiredDate
-        }
-      }
-    `
-
-    const input = {
-      _id: idPO,
-      vendorName: 'warung mamang',
-      items: [
-          {
-            "name": "yamin",
-            "quantity": 20,
-            "currentQuantity": 20
-          },
-          {
-            "name": "lemper",
-            "quantity": 10,
-            "currentQuantity": 10
-          }
-        ],
-      status: "process",
-      createdAt,
-      updatedAt: "2021-03-21T07:54:22.851Z",
-      expiredDate: "2021-03-20T04:55:17.064Z"
-    }
-  
-    // act
-    const response = await mutate({ mutation: UPDATE_ONE, variables: {id: idPO, input, access_token: access_token_checker} })
-    // console.log(response, 'update one checker')
-    // console.log(response.data.updateCurrentQuantityPurchasingOrder.items, 'update one checker')
-    // console.log(response.data, 'data data data dari update ONE')
-    // assert
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('_id', expect.any(String))
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('vendorName', expect.any(String));
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('status', expect.any(String));
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('items');
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('createdAt', expect.any(String));
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('updatedAt', expect.any(String));
-    expect(response.data.updateCurrentQuantityPurchasingOrder).toHaveProperty('expiredDate', expect.any(String));
-    expect(response.data.updateCurrentQuantityPurchasingOrder._id).toEqual(input._id);
-    expect(response.data.updateCurrentQuantityPurchasingOrder.vendorName).toEqual(input.vendorName);
-    expect(response.data.updateCurrentQuantityPurchasingOrder.items).toEqual(input.items);
-    expect(response.data.updateCurrentQuantityPurchasingOrder.createdAt).toEqual(input.createdAt);
-    expect(response.data.updateCurrentQuantityPurchasingOrder.expiredDate).toEqual(input.expiredDate);
-  });
 })
 
-describe('Item Fail Cases', () => {
+describe('Purchasing Order Fail Cases', () => {
   let id;
   let access_token_buyer
   let access_token_checker
@@ -401,8 +341,8 @@ describe('Item Fail Cases', () => {
 
   afterAll(async () => {
     // // console.log('ini after all')
-    // await getDatabase().collection('users').deleteMany({})
-    // await getDatabase().collection('purchasingorder').deleteMany({})
+    await getDatabase().collection('users').deleteMany({})
+    await getDatabase().collection('purchasingorder').deleteMany({})
   })
 
   //ERROR - PROVIDED WRONG ACCESS_TOKEN
@@ -415,7 +355,7 @@ describe('Item Fail Cases', () => {
     
     // graphl query
     const CREATE_PURCHASING_ORDER = `
-      mutation createPurchasingOrder($input: CreatePurchasingOrderInput, $access_token: String!) {
+      mutation createPurchasingOrder($input: CreatePurchasingOrderInput!, $access_token: String!) {
         createPurchasingOrder(input: $input, access_token: $access_token) {
           _id
           vendorName
@@ -445,55 +385,7 @@ describe('Item Fail Cases', () => {
     // act
     const response = await mutate({ mutation: CREATE_PURCHASING_ORDER, variables: {input, access_token: access_token_checker} });
     // id = response.data.createPurchasingOrder._id
-    expect(response.errors).toBeDefined()
-  });
-
-  test('UPDATE_ONE_CHECKER: update current quantity purchasing orders should return updated data', async () => {
-    const UPDATE_ONE = `
-      mutation updateCurrentQuantityPurchasingOrder($id: ID!, $input: UpdateCurrentQuantityPurchasingOrderInput, $access_token: String) {
-        updateCurrentQuantityPurchasingOrder(id: $id, input: $input, access_token: $access_token){
-          _id,
-          vendorName,
-          status,
-          items {
-            name
-            quantity
-            currentQuantity
-          },
-          createdAt,
-          updatedAt,
-          expiredDate
-        }
-      }
-    `
-
-    const input = {
-      _id: id,
-      vendorName: 'warung mamang',
-      items: [
-          {
-            "name": "yamin",
-            "quantity": 20,
-            "currentQuantity": 20
-          },
-          {
-            "name": "lemper",
-            "quantity": 10,
-            "currentQuantity": 10
-          }
-        ],
-      status: "process",
-      createdAt,
-      updatedAt: "2021-03-21T07:54:22.851Z",
-      expiredDate: "2021-03-20T04:55:17.064Z"
-    }
-  
-    // act
-    const response = await mutate({ mutation: UPDATE_ONE, variables: {id, input, access_token: access_token_buyer} })
-    // console.log(response, 'update one checker')
-    // console.log(response.data.updateCurrentQuantityPurchasingOrder.items, 'update one checker')
-    // console.log(response.data, 'data data data dari update ONE')
-    // assert
+    console.log(response, 'error')
     expect(response.errors).toBeDefined()
   });
 })
