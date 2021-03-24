@@ -85,9 +85,12 @@ module.exports = {
 
           //add key to brodcast
           let foundBroadCast = await Broadcast.findOne(args.id)
+          if (foundBroadCast.role !== 'checker') throw  {type: "CheckerError", message: "Task not for checkers"}
           if (foundBroadCast.checkerId) {
             if (decoded._id === foundBroadCast.checkerId) {
               return foundBroadCast
+            } else {
+              throw {type: "CheckerError", message: "Task has been taken by other checker"}
             }
           } else {
             if (!hasTask){
@@ -102,7 +105,7 @@ module.exports = {
           }
           // 
         } catch(err) {
-          // console.log(err)
+          console.log(err)
           return new ApolloError("bad request","404",err)
         }
       }
