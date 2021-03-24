@@ -29,8 +29,18 @@ export default function RequestStore(props) {
   const [itemsData, setItemsData] = useState([]);
   const history = useHistory();
 
+  useEffect(() => {
+    if (data) setItemsData([...data.items]);
+  }, [data]);
+
   function handleSubmit(e) {
     e.preventDefault();
+    const newData = itemsData.filter((el) => {
+      return (el._id !== item)
+    })
+    setItemsData(newData)
+    // console.log(newData, "newData")
+
     const itemData = data.items.filter((el) => {
       if (el._id == item) return el;
     });
@@ -45,8 +55,6 @@ export default function RequestStore(props) {
   const itemData = data.stores.filter((el) => {
       if (el._id == target.value) return el;
     });
-    // console.log(itemData, "item data");
-    //  console.log(data.items);
     setStore({...itemData[0]});
  }
 
@@ -107,11 +115,12 @@ const onChange = ({ target }) => {
             onChange={(e) => {
               setItem(e.target.value);
             }}
+            defaultValue=""
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               ---Select Item---
             </option>
-            {data.items.map((el) => (
+            {itemsData.map((el) => (
               <option key={el._id} value={el._id}>
                 {el.name}
               </option>
@@ -123,8 +132,8 @@ const onChange = ({ target }) => {
       <hr />
       <Form onSubmit={handleSubmit2}>
         <Form.Label>Nama Toko</Form.Label>
-        <Form.Control name="storeName" as="select" onChange={handleChangeStore}>
-          <option value="" disabled selected>
+        <Form.Control name="storeName" as="select" onChange={handleChangeStore} defaultValue="">
+          <option value="" disabled>
             ---Select Store---
           </option>
 
