@@ -105,7 +105,7 @@ module.exports = {
           }
           // 
         } catch(err) {
-          // console.log(err)
+          console.log(err)
           return new ApolloError("bad request","404",err)
         }
       }

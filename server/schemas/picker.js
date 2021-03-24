@@ -96,8 +96,7 @@ module.exports = {
               }
             }
           })
-          // console.log(hasTask, ' ini has task')
-          
+
           //add key to brodcast
           let foundBroadCast = await Broadcast.findOne(args.id)
           if (foundBroadCast.role !== 'picker') throw  {type: "PickerError", message: "Task not for pickers"}
@@ -132,7 +131,7 @@ module.exports = {
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
           const listItem = args.input.listItem
-          console.log(listItem)
+          // console.log(listItem)
           //looping per item => pisang, semangka,durian
           for (let i = 0; i < listItem.length; i++) {
             let totalItemDecreased = 0

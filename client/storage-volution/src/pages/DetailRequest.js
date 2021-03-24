@@ -43,11 +43,11 @@ const [datatable, setDatatable] = React.useState({
 useEffect(() => {
   if (data) {
     // console.log(data, "data<<<<<<<<<<<<<<<<")
-    const filterData = data.requestById.items.map((po) => {
+    const filterData = data.requestById.items.map((item) => {
       let obj = {
-        item: po.itemName,
-        requestQuantity: po.quantityRequest,
-        storageQuantity: po.storageQuantity,
+        item: item.itemName[0].toUpperCase() + item.itemName.slice(1),
+        requestQuantity: item.quantityRequest,
+        storageQuantity: item.storageQuantity,
       };
       return obj;
     });
@@ -75,7 +75,7 @@ useEffect(() => {
           <h1 className="col-md-4">Request Detail</h1>
           <h3 className="col-md-6">ID: {id}</h3>
         </div>
-        <div className="mb-5" style={{ height: "70vh", overflowY: "auto" }}>
+        <div>
           {/* {JSON.stringify(data)} */}
           <MDBDataTableV5
             hover
@@ -88,31 +88,6 @@ useEffect(() => {
             searchBottom={false}
             striped="dark"
           />
-          {/* <Table className="text-center" responsive="md">
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Request Quantity</th>
-                <th>Storage Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                data && data.requestById.items.map(item => {
-                  return (
-                    <>
-                      <tr>
-                        <td className="align-middle" style={{textTransform:"capitalize"}}>{item.itemName}</td>
-                        <td className="align-middle">{item.quantityRequest}</td>
-                        <td className="align-middle">{item.storageQuantity}</td>
-                      </tr>
-                    </>
-                  )
-                })
-              }
-              
-            </tbody>
-          </Table> */}
         </div>
         {data.requestById.status === "process" && role === "warehouseadmin" && (
           <>

@@ -1,9 +1,10 @@
-import {Form, Button, Container} from 'react-bootstrap'
+import {Form, Button, Modal, Container} from 'react-bootstrap'
 import { GET_BROADCAST_PICKER_BY_ID, SUBMIT_PICKER } from "../config/queries";
 import { useQuery, useMutation, gql } from '@apollo/client'
 import {useState, useEffect} from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
+import QrReader from 'react-qr-reader'
 
 export default function Picking(params) {
   const history = useHistory()
@@ -12,10 +13,19 @@ export default function Picking(params) {
   const [submitPick, {data: responsePick}] = useMutation(SUBMIT_PICKER)
   const [listItem, setListItem] = useState([])
   const [storeReq, setStoreReq] = useState({})
+  const [show, setShow] = useState(false);
+  const [dataToScan, setDataToScan] = useState({
+    value: {},
+    qrData: {}
+  })
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   useEffect (() => {
     if (error) {
-      toast.error(`❌ Finish your existing task first`)
+      console.log(error.graphQLErrors)
+      toast.error(`❌ ${error.graphQLErrors[0].extensions.message}`)
       history.push('/main')
     }
   }, [error]);
@@ -41,6 +51,33 @@ export default function Picking(params) {
       setListItem(items)
     }
   }, [data])
+
+  const handleClickQR = (index, idPO, itemName) => {
+    setDataToScan({
+      value: {index, idPO, itemName},
+      qrData: {
+        _id: idPO,
+        name: itemName
+      }
+    })
+    handleShow()
+  }
+
+  const onScanned = (e) => {
+    if (e) {
+      let decoded = JSON.parse(e)
+      if (decoded) {
+        const {_id, name} = dataToScan.qrData
+        if (decoded._id === _id && decoded.name === name) {
+          handleClose()
+          const {index, idPO} = dataToScan.value
+          pickedData (index, idPO)
+        } else {
+          console.log(decoded)
+        }
+      }
+    }
+  }
 
   const pickedData = (index, idPO) => {
     // console.log(listItem[index])
@@ -113,7 +150,7 @@ export default function Picking(params) {
   return (
     <>
       <h1>Request</h1>
-      {JSON.stringify(data)}
+      {/* {JSON.stringify(data)} */}
       <div>
         <div className="mb-5 row d-flex align-items-center">
           <h1 className="col-md-4">Picking</h1>
@@ -147,7 +184,7 @@ export default function Picking(params) {
                             </Form.Group>
                             <Form.Group className="col-md-3" >
                               <br />
-                              <Button onClick={() => {pickedData(index, po.idPO)}} disabled={po.picked} className="mt-3"><i class="fas fa-qrcode"></i></Button>
+                              <Button onClick={() => {handleClickQR(index, po.idPO, item.itemName)}} disabled={po.picked} className="mt-3"><i class="fas fa-qrcode"></i></Button>
                             </Form.Group>
                             
                           </Form.Row>
@@ -162,7 +199,28 @@ export default function Picking(params) {
         }
         <Button onClick={checkTasks} className="mt-4">Submit Task</Button>
       </div>
-
+      
+      <Modal show={show} onHide={handleClose} animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <QrReader
+            delay={400}
+            onError={(e) => { console.log(e)}}
+            onScan={onScanned}
+            style={{ width: '100%' }}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   )
 }

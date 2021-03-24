@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client'
 import {useState} from 'react'
 import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify';
+import { MDBRow, MDBInput, MDBBtn } from 'mdbreact';
 
 const dateString = (date) => {
   const offsetMs = date.getTimezoneOffset() * 60 * 1000;
@@ -83,51 +84,56 @@ export default function CreatePO(props) {
     <>
       <h1 className="mb-5">Create PO</h1>
       <Form onSubmit={handleSubmit}>
-        <Form.Row>
-          <Form.Group className="col-md-8" >
-            <Form.Label><h5><i className="fa fa-user"/> Vendor's Name</h5></Form.Label>
-            <Form.Control onChange={onChange} name="vendorName" value={formData.vendorName} type="text" placeholder="Enter Vendor's Name" />
-          </Form.Group>
-        </Form.Row>
+        <MDBInput
+          className="col-md-5"
+          value={formData.vendorName}
+          onChange={onChange}
+          name="vendorName"
+          label="Vendor's Name" 
+          icon="user" 
+          group 
+          type="text"
+        />
 
         <Form.Label><h5><i className="fa fa-box"/> Items</h5></Form.Label>
         <Container className="col" fluid style={{maxHeight: '50vh', overflowY: "auto"}}>
           {
             formData.items.map((item, index) => {
               return (
-                <Form.Row key={index}>
-                  <Form.Group className="col-md-4">
-                    <Form.Label><h5>Name</h5></Form.Label>
-                    <Form.Control
-                      value={formData.items[index].name}
-                      name={`Name_${index}`}
-                      onChange={onChange}
-                      placeholder="Item Name" 
-                    />
-                  </Form.Group>
-                  <Form.Group className="col-md-4">
-                    <Form.Label><h5>Quantity</h5></Form.Label>
-                    <Form.Control 
-                      type="number" 
-                      min="1"
-                      value={formData.items[index].quantity}
-                      name={`Qty_${index}`}
-                      onChange={onChange}
-                      placeholder="Item Quantity" 
-                    />
-                  </Form.Group>
-                </Form.Row>
+                <MDBRow className="ml-3" key={index}>
+                  <MDBInput 
+                    className="col"
+                    label="Item Name"
+                    icon="box"
+                    value={formData.items[index].name}
+                    name={`Name_${index}`}
+                    onChange={onChange}
+
+                  />
+                  <MDBInput 
+                    className="col"
+                    label="Item Quantity"
+                    icon="boxes"
+                    type="number" 
+                    min="1"
+                    value={formData.items[index].quantity}
+                    name={`Qty_${index}`}
+                    onChange={onChange}
+
+                  />
+                  
+                </MDBRow>
               )
             })
           }
         </Container>
 
-        <Button onClick={addNewItem} className="mb-4" variant="primary">
+        <Button onClick={addNewItem} className="mb-4 btn-sm" variant="primary">
           Add new item
         </Button>
 
         <Form.Row>
-          <Form.Group className="col-md-8" >
+          <Form.Group className="col-md-6" >
             <Form.Label><h5><i className="fa fa-calendar"/> Expired Date</h5></Form.Label>
             <Form.Control type="datetime-local" name="expiredDate" onChange={onChange} value={formData.expiredDate.slice(0,19)}/>
           </Form.Group>
