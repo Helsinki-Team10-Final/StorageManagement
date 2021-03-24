@@ -39,7 +39,7 @@ module.exports = {
     }
 
     extend type Mutation {
-      pickerUpdateItem(input: BroadcastPickerInput!, access_token: String!, idStoreReq: ID!): String 
+      pickerUpdateItem(input: BroadcastPickerInput, access_token: String!, idStoreReq: ID!): String 
 
     }
   `,

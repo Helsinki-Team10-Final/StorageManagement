@@ -1,5 +1,5 @@
 import {Form, Button, Container} from 'react-bootstrap'
-import { GET_BROADCAST_PICKER_BY_ID, SUBMIT_CHECKER } from "../config/queries";
+import { GET_BROADCAST_PICKER_BY_ID, SUBMIT_PICKER } from "../config/queries";
 import { useQuery, useMutation, gql } from '@apollo/client'
 import {useState, useEffect} from 'react'
 import { useHistory, useParams } from 'react-router-dom'
@@ -9,6 +9,7 @@ export default function Picking(params) {
   const history = useHistory()
   const {id} = useParams()
   const {data, loading, error} = useQuery(GET_BROADCAST_PICKER_BY_ID, {variables: {id, access_token: localStorage.getItem('access_token')}})
+  const [submitPick, {data: responsePick}] = useMutation(SUBMIT_PICKER)
   const [listItem, setListItem] = useState([])
   const [storeReq, setStoreReq] = useState({})
 
@@ -55,13 +56,62 @@ export default function Picking(params) {
 
   }
 
+  const checkTasks = async () => {
+    try {
+      let flag = false
+      listItem.map((item) => {
+        item.listPO.map((po) => {
+          if (!po.picked) flag = true
+        })
+      })
+      if (flag) toast.error(`❌ Please pick all items first before submitting task`)
+      let temp = JSON.parse(JSON.stringify(data.broadcastPickerById))
+      delete temp.listItem.__typename
+      
+      temp.listItem = temp.listItem.map((po) => {
+        return {
+          idPO: po.idPO,
+          quantity: po.quantity
+        }
+      })
+      // console.log(temp.listItem)
+
+      const input = {
+        idBroadcast: data.broadcastPickerById._id,
+        role: data.broadcastPickerById.role,
+        listItem: temp.listItem
+      }
+      console.log(
+        {
+          input: {
+            idBroadcast: data.broadcastPickerById._id,
+            role: data.broadcastPickerById.role,
+            listItem: data.broadcastPickerById.listItem
+          },
+          access_token: localStorage.getItem('access_token'),
+          idStoreReq: data.broadcastPickerById.StoreReq._id,
+        }
+      )
+      await submitPick({variables: {
+        input,
+        access_token: localStorage.getItem('access_token'),
+        idStoreReq: data.broadcastPickerById.StoreReq._id,
+      }})
+      toast.success(`✅ Check Submited`)
+      history.push('/main')
+    } catch (err) {
+      console.log(err.graphQLErrors)
+    }
+    
+  }
+
   if (loading) return <h1>Loading...</h1>
   else if (error) return <h1>Error..</h1>
 
   return (
     <>
       <h1>Request</h1>
-      {JSON.stringify(data)}
+      {/* {JSON.stringify(data)} */}
       <div>
         <div className="mb-5 row d-flex align-items-center">
           <h1 className="col-md-4">Picking</h1>
@@ -108,6 +158,7 @@ export default function Picking(params) {
             )
           })
         }
+        <Button onClick={checkTasks} className="mt-4">Submit Task</Button>
       </div>
 
     </>

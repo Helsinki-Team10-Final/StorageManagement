@@ -232,6 +232,14 @@ export const SUBMIT_CHECKER = gql`
   }
 `;
 
+export const SUBMIT_PICKER = gql`
+  mutation pickerUpdateItem($input: BroadcastPickerInput!, $access_token: String!, $idStoreReq: ID!){
+    pickerUpdateItem(input: $input, access_token: $access_token, idStoreReq:$idStoreReq)
+  }
+`;
+
+
+
 export const GET_REQUESTS = gql`
   query findAllRequest{
     requests{
