@@ -9,6 +9,10 @@ import ListPOK from './ListPOK'
 import DetailPO from './DetailPO'
 import ListBroadcast from './ListBroadcast'
 import Checking from './Checking'
+import Picking from './Picking'
+import ListRequest from './ListRequest'
+import DetailRequest from './DetailRequest'
+import CreateRequestBroadcast from './CreateRequestBroadcast'
 import RequestStore from './RequestStore';
 
 export default function Dashboard(props) {
@@ -34,8 +38,14 @@ export default function Dashboard(props) {
       <div className="container-fluid mx-4 my-3">
         {/* Lokasi SwitchRoute Child */}
         <Switch>
-          <Route path={`${path}/addPO`}>
-            <CreatePO />
+          <Route path={`${path}/request/createBroadcast/:id`}>
+            <CreateRequestBroadcast />
+          </Route>
+          <Route path={`${path}/request/:id`}>
+            <DetailRequest />
+          </Route>
+          <Route path={`${path}/request`}>
+            <ListRequest />
           </Route>
           <Route path={`${path}/:id`}>
             <DetailPO />
@@ -59,8 +69,12 @@ export default function Dashboard(props) {
           {/* <Route path={`${path}/listBroadcast`}>
             
           </Route> */}
+          <Route path={`${path}/picking/:id`}>
+            {/* <h1>Broadcast Detail</h1> */}
+            <Picking />
+          </Route>
           <Route exact path={`${path}`}>
-            <ListBroadcast  type="picker"/>
+            <ListBroadcast type="picker"/>
           </Route>
           <Route>
             <h1>Page Not Found</h1>
@@ -79,9 +93,15 @@ export default function Dashboard(props) {
         <div className="container-fluid mx-4 my-3">
           {/* Lokasi SwitchRoute Child */}
           <Switch>
-            <Route path={`${path}/request`}>
+            <Route path={`${path}/addRequest`}>
               <RequestStore />
             </Route>
+            <Route path={`${path}/request/:id`}>
+              <DetailRequest />
+            </Route>
+            <Route path={`${path}/request`}>
+            <ListRequest />
+          </Route>
             <Route path={`${path}/addPO`}>
               <CreatePO />
             </Route>

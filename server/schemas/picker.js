@@ -39,7 +39,7 @@ module.exports = {
     }
 
     extend type Mutation {
-      pickerUpdateItem(input: BroadcastPickerInput!, access_token: String!, idStoreReq: ID!): String 
+      pickerUpdateItem(input: BroadcastPickerInput, access_token: String!, idStoreReq: ID!): String 
 
     }
   `,
@@ -129,7 +129,7 @@ module.exports = {
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
 
           const listItem = args.input.listItem
-          // console.log(listItem)
+          console.log(listItem)
           //looping per item => pisang, semangka,durian
           for (let i = 0; i < listItem.length; i++) {
             let totalItemDecreased = 0

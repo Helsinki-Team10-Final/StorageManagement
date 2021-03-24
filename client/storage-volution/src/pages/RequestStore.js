@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Form, Button } from "react-bootstrap";
 import Loading from "../components/Loading.js"
-import { SUBMIT_REQUEST } from "../config/queries";
+import { SUBMIT_REQUEST, GET_REQUESTS } from "../config/queries";
 
 const GET_ITEM = gql`
  query storeAndItemForCreateReq{
@@ -88,10 +88,10 @@ const onChange = ({ target }) => {
         variables: {
           input,
           access_token: localStorage.getItem("access_token"),
-        },
+        }, refetchQueries: [{query: GET_REQUESTS}]
       });
       toast.success(`✅ Check Submited`);
-      history.push("/main");
+      history.push("/main/request");
     } catch (err) {
       toast.error(`❌ ${err.message || err.graphQLErrors[0].extensions.message}`, {
         position: "top-center",
