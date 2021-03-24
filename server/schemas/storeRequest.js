@@ -148,7 +148,9 @@ module.exports = {
     Mutation: {
       createRequest: async (_, args) => {
         try {
+          console.log(args)
           const authorize = await authorization(args.access_token, "buyer")
+          console.log(authorize)
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
           
           //create request

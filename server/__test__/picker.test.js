@@ -2,6 +2,7 @@ const server = require('../app')
 const { connect, getDatabase } = require('../config/mongodb')
 const { createTestClient } = require('apollo-server-testing')
 const { query, mutate } = createTestClient(server);
+const Store = require('../models/store')
 
 describe('Picker Test', () => {
   let idPO1;
@@ -11,13 +12,18 @@ describe('Picker Test', () => {
   let idBroadCast2
   let itemData1
   let itemData2
-  let pickerId;
+  let pickerId1;
+  let pickerId2;
   let access_token_buyer
   let access_token_checker
   let access_token_warehouseadmin
+  let access_token_picker1;
+  let access_token_picker2;
   let createdAt
   let storeReq
   let idStoreReq
+  let store1
+  let store2
   
   beforeAll(async () => {
     await connect()
@@ -47,8 +53,15 @@ describe('Picker Test', () => {
         "name": "user2"
     }
 
-    const picker = {
+    const picker1 = {
         "email": "picker@mail.com",
+        "password": "123456",
+        "role": "picker",
+        "name": "user2"
+    }
+
+    const picker2 = {
+        "email": "picker2@mail.com",
         "password": "123456",
         "role": "picker",
         "name": "user2"
@@ -82,6 +95,11 @@ describe('Picker Test', () => {
 
     const picker_login = {
       "email": "picker@mail.com",
+      "password": "123456"
+    }
+
+    const picker_login2 = {
+      "email": "picker2@mail.com",
       "password": "123456"
     }
 
@@ -143,18 +161,22 @@ describe('Picker Test', () => {
     await mutate({ mutation: USER_REGISTER, variables: {input: buyer} });
     await mutate({ mutation: USER_REGISTER, variables: {input: checker} });
     await mutate({ mutation: USER_REGISTER, variables: {input: warehouseadmin} });
-    const responsePickerId = await mutate({ mutation: USER_REGISTER, variables: {input: picker} });
-    pickerId = responsePickerId.data.createUser._id
+    const responsePickerId1 = await mutate({ mutation: USER_REGISTER, variables: {input: picker1} });
+    const responsePickerId2 = await mutate({ mutation: USER_REGISTER, variables: {input: picker2} });
+    pickerId1 = responsePickerId1.data.createUser._id
+    pickerId2 = responsePickerId2.data.createUser._id
     // console.log(responsePickerId, 'ini ini ini')
 
     //Login
     const responseBuyer = await mutate({ mutation: USER_LOGIN, variables: {input: buyer_login} });
     const responseChecker = await mutate({ mutation: USER_LOGIN, variables: {input: checker_login} });
     const responsePicker = await mutate({ mutation: USER_LOGIN, variables: {input: picker_login} });
+    const responsePicker2 = await mutate({ mutation: USER_LOGIN, variables: {input: picker_login} });
     const responseWarehouseadmin = await mutate({ mutation: USER_LOGIN, variables: {input: warehouseadmin_login} });
     access_token_buyer = responseBuyer.data.login.access_token
     access_token_checker = responseChecker.data.login.access_token
-    access_token_picker = responsePicker.data.login.access_token
+    access_token_picker1 = responsePicker.data.login.access_token
+    access_token_picker2 = responsePicker2.data.login.access_token
     access_token_warehouseadmin = responseWarehouseadmin.data.login.access_token
 
     //Create PO
@@ -191,43 +213,57 @@ describe('Picker Test', () => {
     itemData1 = responseItem1.data.createItem
     itemData2 = responseItem2.data.createItem
 
-
-    //Store Request
-    const CREATE_STORE_REQUEST = `
-        mutation createRequest($request: RequestInput!, $access_token: String!){
-          createRequest(request: $request, access_token: $access_token) {
-            _id
-            storeName
-            items {
-              itemId
-              itemName
-              quantityRequest
-            },
-            createdAt
-            updatedAt
-            status
-          }
-        }
-      `
-
-    const inputStoreReq = {
-      storeName: 'Toko Di Depan',
-      items: [
-        {
-          itemId: itemData1._id,
-          itemName: itemData1.name,
-          quantityRequest: 10
-        },
-        {
-          itemId: itemData2._id,
-          itemName: itemData2.name,
-          quantityRequest: 8
-        }
-      ]
+    //Create Store
+    const inputStore1 = {
+      name: 'Toko A'
     }
 
-    //Create Store Request
-    const responseStoreReq = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: inputStoreReq, access_token: access_token_buyer }})
+    const inputStore2 = {
+      name: 'Toko B'
+    }
+    
+
+    const responseStore1 = await Store.create(inputStore1)
+    const responseStore2 = await Store.create(inputStore2)
+    store1 = responseStore1.ops[0]
+    store2 = responseStore2.ops[0]
+
+  const CREATE_STORE_REQUEST = `
+    mutation createRequest($request: RequestInput!, $access_token: String!){
+      createRequest(request: $request, access_token: $access_token) {
+        _id
+        storeId
+        storeName
+        items {
+          itemId
+          itemName
+          quantityRequest
+        },
+        createdAt
+        updatedAt
+        status
+      }
+    }
+  `
+
+  const input = {
+    storeName: store1.name,
+    storeId: `${store1._id}`,
+    items: [
+      {
+        itemId: itemData1._id,
+        itemName: itemData1.name,
+        quantityRequest: 10
+      },
+      {
+        itemId: itemData2._id,
+        itemName: itemData2.name,
+        quantityRequest: 8
+      }
+    ]
+  }
+
+    const responseStoreReq = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_buyer }})
     storeReq = responseStoreReq.data.createRequest
     idStoreReq = responseStoreReq.data.createRequest._id
     // console.log(responseStoreReq, 'ini store req')
@@ -329,7 +365,7 @@ describe('Picker Test', () => {
     const responseBroadcast1 = await mutate({ mutation: PICKER_BROADCAST, variables: inputBroadcast1 });
     const responseBroadcast2 = await mutate({ mutation: PICKER_BROADCAST, variables: inputBroadcast2 });
     // console.log(responseBroadcast1, 'ini response bBC')
-    console.log(responseBroadcast1.data.createBroadcastPicker.StoreReq, 'ini response bBC')
+    // console.log(responseBroadcast1.data.createBroadcastPicker.StoreReq, 'ini response bBC')
     // console.log(responseBroadcast1.data.createBroadcastPicker.listItem)
     // console.log(responseBroadcast1.data.createBroadcastPicker.StoreReq)
     broadcastPicker = responseBroadcast1.data.createBroadcastPicker
@@ -345,6 +381,7 @@ describe('Picker Test', () => {
     await getDatabase().collection('broadcasts').deleteMany({})
     await getDatabase().collection('items').deleteMany({})
     await getDatabase().collection('storerequest').deleteMany({})
+    await getDatabase().collection('store').deleteMany({})
   })
 
   describe('Picker success case', () => {
@@ -380,9 +417,9 @@ describe('Picker Test', () => {
         }
       `
 
-      const response = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker, id: idBroadCast2 }})
-      const response2 = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker, id: idBroadCast1 }})
-      const response3 = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker, id: idBroadCast2 }})
+      const response = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker1, id: idBroadCast2 }})
+      const response2 = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker1, id: idBroadCast1 }})
+      const response3 = await query({ query: FIND_BY_ID, variables: {access_token: access_token_picker1, id: idBroadCast2 }})
       // console.log(response)
       expect(response.data.broadcastPickerById).toHaveProperty('_id')
       expect(response.data.broadcastPickerById).toHaveProperty('role')
@@ -449,17 +486,15 @@ describe('Picker Test', () => {
         }
       `
 
-      const response = await query({ query: FIND_ALL, variables:{ access_token: access_token_picker }})
+      const response = await query({ query: FIND_ALL, variables:{ access_token: access_token_picker1 }})
       // console.log(response.data)
       expect(response.data.broadcastPicker).toHaveProperty('broadcasts')
       expect(response.data.broadcastPicker).toHaveProperty('unfinishedBroadcast')
     })
 
-    
-
     test('UPDATE_ITEM: should return updated broadcast data with specific properties', async () => {
       const UPDATE_ITEM = `
-        mutation pickerUpdateItem($input: BroadcastPickerInput!, $access_token: String!, $idStoreReq: ID!) {
+        mutation pickerUpdateItem($input: BroadcastPickerInput, $access_token: String!, $idStoreReq: ID!) {
           pickerUpdateItem(input: $input, access_token: $access_token, idStoreReq: $idStoreReq)
         }
       `
@@ -497,23 +532,26 @@ describe('Picker Test', () => {
             ]
           }
         ],
-        pickerId,
+        pickerId: pickerId1,
         StoreReq: {
-          storeName: storeReq.name,
+          storeId: idStoreReq,
+          storeName: storeReq.storeName,
           items: [
             {
               itemId: itemData1._id,
+              itemName: itemData1.name,
               quantityRequest: 15
             },
             {
               itemId: itemData2._id,
+              itemName: itemData2.name,
               quantityRequest: 5
             }
           ]
         }
       }
 
-      const response = await mutate({ mutation: UPDATE_ITEM, variables: { input, access_token: access_token_picker, idStoreReq }})
+      const response = await mutate({ mutation: UPDATE_ITEM, variables: { input, access_token: access_token_picker1, idStoreReq }})
       // console.log(response, 'ini dari picker update testotesto')
       expect(response.data.pickerUpdateItem).toEqual('Items Picked Successfully', expect.any(String))
     })
@@ -587,7 +625,7 @@ describe('Picker Test', () => {
 
     test('FIND_BY_ID: should return error when provided wrong access token', async () => {
       const FIND_BY_ID = `
-        query broadcastPickerById($access_token: String, $id: ID!) {
+        query broadcastPickerById($access_token: String!, $id: ID!) {
           broadcastPickerById(access_token: $access_token, id: $id) {
             _id
             role
@@ -616,7 +654,7 @@ describe('Picker Test', () => {
         }
       `
 
-      const response = await query({ query: FIND_BY_ID, variables: {access_token: access_token_buyer, id: idBroadCast1 }})
+      const response = await query({ query: FIND_BY_ID, variables: {access_token: access_token_buyer, id: idBroadCast2 }})
       // console.log(response.data.broadcastPickerById.listItem)
       expect(response.errors).toBeDefined()
     })
@@ -661,16 +699,19 @@ describe('Picker Test', () => {
             ]
           }
         ],
-        pickerId,
+        pickerId: pickerId1,
         StoreReq: {
-          storeName: storeReq.name,
+          storeId: idStoreReq,
+          storeName: storeReq.storeName,
           items: [
             {
               itemId: itemData1._id,
+              itemName: itemData1.name,
               quantityRequest: 15
             },
             {
               itemId: itemData2._id,
+              itemName: itemData2.name,
               quantityRequest: 5
             }
           ]

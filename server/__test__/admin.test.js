@@ -1,6 +1,7 @@
 const server = require('../app')
 const { connect, getDatabase } = require('../config/mongodb')
 const { createTestClient } = require('apollo-server-testing')
+const Store = require('../models/store')
 const { query, mutate } = createTestClient(server);
 
 describe('Admin Test', () => {
@@ -12,6 +13,8 @@ describe('Admin Test', () => {
   let statusBefore
   let itemData1;
   let itemData2;
+  let store1;
+  let store2;
 
   beforeAll(async () => {
     // console.log('ini before All')
@@ -140,10 +143,26 @@ describe('Admin Test', () => {
     itemData1 = responseItem1.data.createItem
     itemData2 = responseItem2.data.createItem
 
+    //Create Store
+    const inputStore1 = {
+      name: 'Toko A'
+    }
+
+    const inputStore2 = {
+      name: 'Toko B'
+    }
+    
+
+    const responseStore1 = await Store.create(inputStore1)
+    const responseStore2 = await Store.create(inputStore2)
+    store1 = responseStore1.ops[0]
+    store2 = responseStore2.ops[0]
+
     const CREATE_STORE_REQUEST = `
         mutation createRequest($request: RequestInput!, $access_token: String!){
           createRequest(request: $request, access_token: $access_token) {
             _id
+            storeId
             storeName
             items {
               itemId
@@ -156,9 +175,9 @@ describe('Admin Test', () => {
           }
         }
       `
-
-    const inputStoreReq = {
-      storeName: 'Toko Di Depan',
+    const input = {
+      storeName: store1.name,
+      storeId: `${store1._id}`,
       items: [
         {
           itemId: itemData1._id,
@@ -173,9 +192,10 @@ describe('Admin Test', () => {
       ]
     }
 
-    const responseStoreReq = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: inputStoreReq, access_token: access_token_buyer }})
+    const responseStoreReq = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_buyer }})
     idStoreReq = responseStoreReq.data.createRequest._id
 
+    // console.log(responseStoreReq, 'response store req')
     idPO1 = responsePO1.data.createPurchasingOrder._id
     idPO2 = responsePO2.data.createPurchasingOrder._id
     createdAt = responsePO1.data.createPurchasingOrder.createdAt
@@ -232,15 +252,16 @@ describe('Admin Test', () => {
         mutation rejectStoreRequest($id: ID!, $access_token: String!) {
           rejectStoreRequest(id: $id, access_token: $access_token) {
             _id
-              storeName
-              items {
-                itemId
-                itemName
-                quantityRequest
-              },
-              createdAt
-              updatedAt
-              status
+            storeId
+            storeName
+            items {
+              itemId
+              itemName
+              quantityRequest
+            },
+            createdAt
+            updatedAt
+            status
           }
         }
       `
