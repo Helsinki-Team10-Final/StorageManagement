@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { useParams } from "react-router";
 import { PO_HISTORY } from "../config/queries";
  import React, { useState, useEffect } from "react";
- import { MDBDataTableV5 } from "mdbreact";
+ import { MDBDataTableV5, MDBBadge } from "mdbreact";
 import Loading from "../components/Loading";
 import { Button } from "react-bootstrap";
 
@@ -13,8 +13,8 @@ export default function History () {
   const [datatable, setDatatable] = React.useState({
     columns: [
       {
-        label: "Date",
-        field: "date",
+        label: "ID User",
+        field: "idUser",
         width: 150,
         attributes: {
           "aria-controls": "DataTable",
@@ -22,25 +22,24 @@ export default function History () {
         },
       },
       {
-        label: "Status",
-        field: "status",
-        width: 270,
-      },
-      {
-        label: "ID User",
-        field: "idUser",
-        sort: "desc",
-        width: 200,
-      },
-      {
         label: "PIC",
         field: "pic",
-        sort: "desc",
-        width: 200,
+        width: 270,
       },
       {
         label: "Role",
         field: "role",
+        width: 200,
+      },
+      {
+        label: "Status",
+        field: "status",
+        sort: "desc",
+        width: 200,
+      },
+      {
+        label: "Date",
+        field: "date",
         width: 100,
       },
     ],
@@ -52,11 +51,11 @@ export default function History () {
       // console.log(data, "data<<<<<<<<<<<<<<<<")
       const filterData = data.poHistoriesByPoId.map((history) => {
         let obj = {
-          date: new Date(history.createdAt).toLocaleString(),
-          status: history.status,
           idUser: history.user._id,
           pic: history.user.name,
           role: history.user.role,
+          status: <h5 style={{margin: 0}}><MDBBadge style={{textTransform: "capitalize"}} color={setStatusBadge(history.status)}>{history.status}</MDBBadge></h5>,
+          date: new Date(history.createdAt).toLocaleString(),
         };
         return obj;
       });
@@ -81,6 +80,21 @@ export default function History () {
     }
     document.body.appendChild(tmp);
   };
+
+const setStatusBadge = (status) => {
+  switch (status) {
+    case "process":
+      return "info";
+    case "checking":
+      return "secondary";
+    case "clear":
+      return "success";
+    case "rejected":
+      return "danger";
+    default:
+      return "light";
+  }
+};
 
 if (loading) {
   return <Loading />;
@@ -110,8 +124,8 @@ if (loading) {
           searchBottom={false}
           striped
         />
-        <Button onClick={() => printTable("print")}>Print</Button>
       </div>
+        <Button onClick={() => printTable("print")}>Print</Button>
     </>
   );
 }

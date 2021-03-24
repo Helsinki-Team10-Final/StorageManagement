@@ -2,11 +2,12 @@ import {useQuery, gql} from '@apollo/client'
 import { GET_PO } from "../config/queries";
 import Loading from "../components/Loading";
 import { Table } from "react-bootstrap";
-import {Link } from "react-router-dom"
+import {useHistory } from "react-router-dom"
  import React, { useState, useEffect } from "react";
-import { MDBDataTableV5 } from 'mdbreact';
+import { MDBDataTableV5, MDBBtn, MDBBadge } from 'mdbreact';
 
 export default function ListPOK(props) {
+  const history = useHistory()
   const { data, loading, error } = useQuery(GET_PO);
   const [dataPO, setDataPO] = useState([]);
   
@@ -35,6 +36,7 @@ export default function ListPOK(props) {
       {
         label: "Status",
         field: "status",
+        sort: "disabled",
         width: 100,
       },
       {
@@ -44,19 +46,27 @@ export default function ListPOK(props) {
         width: 150,
       },
     ],
-    rows: []
+    rows: [],
   });
 
   useEffect(() => {
     if (data) {
-      // console.log(data, "data<<<<<<<<<<<<<<<<")
       const filterData = data.purchasingOrders.map((po) => {
         let obj = {
           id: po._id,
           vendor: po.vendorName,
           created: new Date(po.createdAt).toLocaleString(),
-          status: po.status,
-          action: <Link to={`/main/${po._id}`}>Detail</Link>,
+          status: <h5 style={{margin: 0}}><MDBBadge style={{textTransform: "capitalize"}} color={setStatusBadge(po.status)}>{po.status}</MDBBadge></h5>,
+          action: <MDBBtn
+            rounded
+            color="mdb-color"
+            size="sm"
+            onClick={() => {
+              history.push(`/main/${po._id}`);
+            }}
+          >
+            Detail
+          </MDBBtn>,
         };
         return obj;
       });
@@ -64,6 +74,21 @@ export default function ListPOK(props) {
       setDatatable({ ...datatable, rows: [...filterData] });
     }
   }, [data]);
+
+  const setStatusBadge = (status) => {
+    switch (status) {
+      case "process":
+        return "info"
+      case "checking":
+        return "secondary"
+      case "clear":
+        return "success"
+      case "rejected":
+        return "danger"
+      default:
+        return "light"
+    }
+  }
 
   if (loading) {
     return <Loading />;
@@ -75,12 +100,12 @@ export default function ListPOK(props) {
     <>
       <div>
         <div className="mb-5">
-          <h1 className="col-md-4">List PO</h1>
+          <h1 className="col-md-4">Purchasing Orders</h1>
         </div>
-        {/* <MDBDataTableV5 hover entriesOptions={[10, 15, 20]} entries={10} pagesAmount={4} data={datatable} striped />; */}
         <MDBDataTableV5
+          order={["created", "desc"]}
           hover
-          entriesOptions={[5, 20, 25]}
+          entriesOptions={[5, 10, 15]}
           entries={5}
           pagesAmount={4}
           data={datatable}
@@ -89,33 +114,6 @@ export default function ListPOK(props) {
           searchBottom={false}
           striped="dark"
         />
-        {/* <Table className="text-center" responsive="md">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Vendor</th>
-            <th>Created</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {data.purchasingOrders.map((el) => {
-            return (
-              <tr key={el._id}>
-                <td>{el._id}</td>
-                <td>{el.vendorName}</td>
-                <td>{new Date(el.createdAt).toLocaleString().slice(0,9)}</td>
-                <td style={{textTransform:"capitalize"}}>{el.status}</td>
-                <td>
-                  <Link to={`/main/${el._id}`}>Detail</Link>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table> */}
       </div>
     </>
   );
