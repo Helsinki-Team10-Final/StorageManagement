@@ -10,6 +10,7 @@ const pickerSchema = require('./schemas/picker')
 const poHistoriesSchema = require('./schemas/pohistories')
 const customScalarResolver = require('./schemas/graphQlResolver')
 const storeRequestSchema = require('./schemas/storeRequest')
+const { resolvers } = require('./schemas/index')
 
 
 const server = new ApolloServer({

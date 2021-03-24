@@ -150,7 +150,7 @@ module.exports = {
           const authorize = await authorization(args.access_token, "buyer")
           console.log(authorize, 'ini authorize create request')
           if (!authorize) throw { type: "CustomError", message: "Not authorize" }
-
+          
           //create request
           const payload = {
             storeName: args.request.storeName,

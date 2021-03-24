@@ -13,7 +13,6 @@ export default function ListPOK(props) {
     return <h1>Error..</h1>
   }
 
-
   return (
     <>
     <div>
