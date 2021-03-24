@@ -35,6 +35,10 @@ export default function ListPOK(props) {
     history.push('/main')
   }
 
+  const toHistory = () => {
+    history.push(`/main/history/${id}`)
+  }
+
   if (loading) {
     return (
       <h1>Loading...</h1>
@@ -47,11 +51,14 @@ export default function ListPOK(props) {
   return (
     <>
       <div>
+        <button onClick={toHistory} className="btn btn-primary mx-3">
+          History
+        </button>
         <div className="mb-5 row d-flex align-items-center">
           <h1 className="col-md-4">PO Detail</h1>
           <h3 className="col-md-6">ID: {id}</h3>
         </div>
-        <div className="mb-5" style={{height: '70vh', overflowY: 'auto'}}>
+        <div className="mb-5" style={{ height: "70vh", overflowY: "auto" }}>
           <Table className="text-center" responsive="md">
             <thead>
               <tr>
@@ -62,36 +69,35 @@ export default function ListPOK(props) {
               </tr>
             </thead>
             <tbody>
-              {
-                data && data.purchasingOrderById.items.map(item => {
+              {data &&
+                data.purchasingOrderById.items.map((item) => {
                   return (
                     <>
                       <tr>
                         <td className="align-middle">
-                          <QRCode value={JSON.stringify({_id: data.purchasingOrderById._id, name: item.name.toLowerCase()})} />
+                          <QRCode value={JSON.stringify({ _id: data.purchasingOrderById._id, name: item.name.toLowerCase() })} />
                         </td>
                         <td className="align-middle">{item.name}</td>
                         <td className="align-middle">{item.quantity}</td>
                         <td className="align-middle">{item.currentQuantity ? item.currentQuantity : 0}</td>
                       </tr>
                     </>
-                  )
-                })
-              }
-              
+                  );
+                })}
             </tbody>
           </Table>
         </div>
-          {
-            data.purchasingOrderById.status === 'process' && role === "warehouseadmin" &&
-            <>
-              <div className="row">
-                  <button onClick={createBroadcast} className="btn btn-primary mx-3">Accept PO</button>
-                  <button className="btn btn-primary mx-3">Reject PO</button>
-              </div>
-            </>
-          }
+        {data.purchasingOrderById.status === "process" && role === "warehouseadmin" && (
+          <>
+            <div className="row">
+              <button onClick={createBroadcast} className="btn btn-primary mx-3">
+                Accept PO
+              </button>
+              <button className="btn btn-primary mx-3">Reject PO</button>
+            </div>
+          </>
+        )}
       </div>
     </>
-  )
+  );
 }
