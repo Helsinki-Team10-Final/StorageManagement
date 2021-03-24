@@ -32,13 +32,14 @@ export default function CreatePO(props) {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      console.log(formData)
 
       // console.log(formData)
       if (!formData.vendorName) throw ({message: `Vendor's name is required.`})
       await handleCreatePO({variables: {input: formData, access_token: localStorage.getItem('access_token')}, refetchQueries: [{query: GET_PO}]})
       history.push('/main')
     } catch (err) {
-      console.log(err)
+      console.log(err.graphQLErrors)
       toast.error(`❌ ${err.message || err.graphQLErrors[0].extensions.message}`, {
         position: "top-center",
         autoClose: 5000,
@@ -54,7 +55,7 @@ export default function CreatePO(props) {
     let {name, value} = e.target
 
     if (name === 'expiredDate') {
-      value = `${value}Z`
+      value = `${value}.000Z`
     }
 
     let itemsName = name.split('_')

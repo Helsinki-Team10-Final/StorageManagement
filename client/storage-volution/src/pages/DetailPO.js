@@ -10,6 +10,7 @@ import {useHistory} from 'react-router-dom'
 
 export default function ListPOK(props) {
   const history = useHistory()
+  const role = localStorage.getItem("role")
   const {id} = useParams()
   const {loading, error, data} = useQuery(GET_DETAIL_PO, {variables: {id}})
   const [createBroadcastChecker, {data: createdBroadcast}] = useMutation(CREATE_BROADCAST_CHECKER)
@@ -81,7 +82,7 @@ export default function ListPOK(props) {
           </Table>
         </div>
           {
-            data.purchasingOrderById.status === 'process' && 
+            data.purchasingOrderById.status === 'process' && role === "warehouseadmin" &&
             <>
               <div className="row">
                   <button onClick={createBroadcast} className="btn btn-primary mx-3">Accept PO</button>

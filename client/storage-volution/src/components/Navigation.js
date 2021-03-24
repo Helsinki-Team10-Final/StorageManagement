@@ -23,7 +23,7 @@ export default function Navigation({showSidebar, setShowSidebar}) {
           <i className={showSidebar ? 'fas fa-angle-right' : 'fas fa-angle-left'} style={{fontSize:"1.2em"}}></i>
           <img
             src={logo}
-            height="30px"
+            height="30vh"
             className="ml-5"
           />
         </Navbar.Brand>
