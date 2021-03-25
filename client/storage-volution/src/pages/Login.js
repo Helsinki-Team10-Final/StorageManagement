@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { gql, useMutation } from '@apollo/client'
 import { useHistory } from 'react-router-dom'
 import { toast } from 'react-toastify';
+import hero1 from "../assets/img/storage.jpg";
 
 const Login = gql`
   mutation login($login : UserLoginInput) {
