@@ -123,7 +123,18 @@ useEffect(() => {
         storeName: broadcast.StoreReq.storeName,
         created: new Date(broadcast.StoreReq.createdAt).toLocaleString().slice(0, 9),
         status: <h5 style={{margin: 0}}><MDBBadge style={{textTransform: "capitalize"}} color={setStatusBadge(broadcast.StoreReq.status)}>{broadcast.StoreReq.status}</MDBBadge></h5>,
-        action: <Link to={`/main/picking/${broadcast._id}`}>Pick Request</Link>,
+        action: (
+          <MDBBtn
+            rounded
+            color="mdb-color"
+            size="sm"
+            onClick={() => {
+              history.push(`/main/picking/${broadcast._id}`);
+            }}
+          >
+            Pick Request
+          </MDBBtn>
+        ),
       };
       return obj;
     });
@@ -199,6 +210,21 @@ useEffect(() => {
         <div className="mb-5">
           <h2 className="col-md-4">List Broadcast</h2>
         </div>
+        {data.broadcastChecker.unfinishedBroadcast && (
+          <>
+            <MDBTypography blockquote bqColor='danger'>
+              <MDBBox tag='p' mb={0} className='bq-title'>
+                You Have Unfinished Task
+              </MDBBox>
+              <p style={{margin: 0}}>
+                Please finish your existing task first before picking a new task.
+              </p>
+            <Link className="btn btn-primary btn" to={`/main/checking/${data.broadcastChecker.unfinishedBroadcast._id}`}>
+              Back to previous Task
+            </Link>
+            </MDBTypography>
+          </>
+        )}
         <div>
         <MDBDataTableV5
           hover
@@ -212,13 +238,7 @@ useEffect(() => {
           striped="dark"
         />
         </div>
-        {data.broadcastChecker.unfinishedBroadcast && (
-          <>
-            <Link className="btn btn-primary" to={`/main/checking/${data.broadcastChecker.unfinishedBroadcast._id}`}>
-              Back to previous check
-            </Link>
-          </>
-        )}
+        
       </div>
     </>
   );

@@ -5,6 +5,7 @@ import {useState, useEffect} from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
 import QrReader from 'react-qr-reader'
+import { MDBContainer, MDBInput } from "mdbreact";
 
 export default function Picking(params) {
   const history = useHistory()
@@ -63,12 +64,27 @@ export default function Picking(params) {
     handleShow()
   }
 
+  // const onScanned = (e) => {
+  //   if (e) {
+  //     let decoded = JSON.parse(e)
+  //     if (decoded) {
+  //       const {_id, name} = dataToScan.qrData
+  //       if (decoded._id === _id && decoded.name === name) {
+  //         handleClose()
+  //         const {index, idPO} = dataToScan.value
+  //         pickedData (index, idPO)
+  //       } else {
+  //         console.log(decoded)
+  //       }
+  //     }
+  //   }
+  // }
   const onScanned = (e) => {
     if (e) {
       let decoded = JSON.parse(e)
       if (decoded) {
         const {_id, name} = dataToScan.qrData
-        if (decoded._id === _id && decoded.name === name) {
+        if (decoded._id && decoded.name) {
           handleClose()
           const {index, idPO} = dataToScan.value
           pickedData (index, idPO)
@@ -101,7 +117,10 @@ export default function Picking(params) {
           if (!po.picked) flag = true
         })
       })
-      if (flag) toast.error(`❌ Please pick all items first before submitting task`)
+      if (flag) {
+        toast.error(`❌ Please pick all items first before submitting task`)
+        return
+      } 
       let temp = JSON.parse(JSON.stringify(data.broadcastPickerById))
       
       
@@ -149,39 +168,47 @@ export default function Picking(params) {
 
   return (
     <>
-      <h1>Request</h1>
       {/* {JSON.stringify(data)} */}
       <div>
-        <div className="mb-5 row d-flex align-items-center">
-          <h1 className="col-md-4">Picking</h1>
-          <h3 className="col-md-6">ID: {data.broadcastPickerById.StoreReq._id}</h3>
+        <div className="mb-5 container-fluid d-flex justify-content-between align-items-center">
+          <h2 className="col-md-8">Picking Request</h2>
+          <div className="col-md-4">
+            <h4>Store: {data.broadcastPickerById.StoreReq.storeName}</h4>
+            <h4>ID: {id}</h4>
+          </div>
+          
         </div>
-        <Form.Row>
-          <Form.Group className="col-md-3" >
-            <Form.Label><h5><i className="fa fa-user"/> Store Name</h5></Form.Label>
-            <Form.Control style={{textTransform: "capitalize"}} readOnly value={data.broadcastPickerById.StoreReq.storeName} type="text" />
-          </Form.Group>
-        </Form.Row>
+        <Form.Label><h3><i className="fa fa-boxes"/> Items</h3></Form.Label>
         {
           listItem.map((item, index) => {
             return (
               <>
                 <Form.Group key={index} className="col" >
-                  <Form.Label className="my-3" style={{textTransform:"capitalize"}}><h5><i className="fa fa-user"/> {item.itemName}</h5></Form.Label>
+                  <Form.Label className="my-3" style={{textTransform:"capitalize"}}><h4><i className="fa fa-clipboard"/> {item.itemName}</h4></Form.Label>
                   {
                     item.listPO.map((po, idx) => {
                       return (
                         <>
                           <Form.Row key={`${idx}a${index}`}>
-                            <Form.Group className="col-md-3" >
-                              <Form.Label><h5><i className="fa fa-user"/> PO ID</h5></Form.Label>
-                              <Form.Control plaintext value={po.idPO}>
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group className="col-md-3" >
-                              <Form.Label><h5><i className="fa fa-user"/> Quantity (Box)</h5></Form.Label>
-                              <Form.Control plaintext value={po.quantity} type="number" />
-                            </Form.Group>
+                            <div className="col-md-3">
+                              <MDBInput 
+                                className="" 
+                                label="PO ID" 
+                                icon="warehouse"
+                                disabled
+                                value={po.idPO}
+                              />
+                            </div>
+                            <div className="col-md-3">
+                              <MDBInput 
+                                className="" 
+                                label="Quantity (Box)" 
+                                icon="box"
+                                disabled
+                                value={po.quantity}
+                              />
+                            </div>
+                        
                             <Form.Group className="col-md-3" >
                               <br />
                               <Button onClick={() => {handleClickQR(index, po.idPO, item.itemName)}} disabled={po.picked} className="mt-3"><i class="fas fa-qrcode"></i></Button>
@@ -200,9 +227,9 @@ export default function Picking(params) {
         <Button onClick={checkTasks} className="mt-4">Submit Task</Button>
       </div>
       
-      <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal centered show={show} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Scan Item QR Code</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <QrReader
@@ -215,9 +242,6 @@ export default function Picking(params) {
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>

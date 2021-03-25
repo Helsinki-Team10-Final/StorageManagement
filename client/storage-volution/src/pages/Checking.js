@@ -4,6 +4,7 @@ import { useQuery, useMutation, gql } from '@apollo/client'
 import {useState, useEffect} from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify';
+import { MDBRow, MDBInput, MDBBtn } from 'mdbreact';
 
 
 export default function CreatePO(props) {
@@ -15,7 +16,8 @@ export default function CreatePO(props) {
 
   useEffect (() => {
     if (error) {
-      toast.error(`❌ Finish your existing task first`)
+      console.log(error.graphQLErrors)
+      toast.error(`❌ ${error.graphQLErrors[0].extensions.message}`)
       history.push('/main')
     }
   }, [error]);
@@ -63,41 +65,55 @@ export default function CreatePO(props) {
   }
 
   if (loading) return <h1>Loading...</h1>
+  else if (error) return <h1>Error..</h1>
 
   return (
     <>
+      {/* {JSON.stringify(data.broadcastCheckerById)} */}
       <div>
-        <div className="mb-5 row d-flex align-items-center">
-          <h1 className="col-md-4">Checking PO</h1>
-          <h3 className="col-md-6">ID: {id}</h3>
+        <div className="mb-5 container-fluid d-flex justify-content-between align-items-center">
+          <h2 className="col-md-8">Checking PO</h2>
+          <h4 className="col-md-4">ID: {data.broadcastCheckerById.purchasingOrder._id}</h4>
+          
         </div>
         <div>
           <div className="mb-5">
-            <h1 className="col-md-4 mb-4">Items</h1>
+          <Form.Label className="mb-3"><h2><i className="fa fa-boxes"/> Items</h2></Form.Label>
             <Form onSubmit={handleSubmit}>
               <Form.Row>
                 <Form.Group className="col" >
-                  <Form.Label><h5><i className="fa fa-user"/> PO Items</h5></Form.Label>
+                  <Form.Label><h5><i className="fa fa-box"/> PO Items</h5></Form.Label>
                 </Form.Group>
                 <Form.Group className="col" >
-                  <Form.Label><h5><i className="fa fa-user"/> PO Quantity (Box)</h5></Form.Label>
+                  <Form.Label><h5><i className="fa fa-box"/> PO Quantity (Box)</h5></Form.Label>
                 </Form.Group>
                 <Form.Group className="col" >
-                  <Form.Label><h5><i className="fa fa-user"/> Recieved Quantity (Box)</h5></Form.Label>
+                  <Form.Label><h5><i className="fa fa-box"/> Recieved Quantity (Box)</h5></Form.Label>
                 </Form.Group>
               </Form.Row>
               {
                 itemsData.length > 0 &&
                 data.broadcastCheckerById.purchasingOrder.items.map((item, index) => {
-                   return (<Form.Row key={index}>
+                   return (<Form.Row key={index} className="d-flex align-items-center">
                     <Form.Group className="col" >
-                      <Form.Label className="ml-4"><h5>{item.name}</h5></Form.Label>
+                      <Form.Label className="ml-4" style={{textTransform: "capitalize"}}><h5>{item.name}</h5></Form.Label>
                     </Form.Group>
                     <Form.Group className="col" >
                       <Form.Label className="ml-4"><h5>{item.quantity}</h5></Form.Label>
                     </Form.Group>
                     <Form.Group className="col" >
-                      <Form.Control onChange={onChange} name={`${index}`} value={itemsData[index].currentQuantity} type="number" min="0" max={`${item.quantity}`} placeholder="Recieved Quantity" />
+                        <MDBInput 
+                        className="col"
+                        label="Recieved Quantity"
+                        icon="box"
+                        value={itemsData[index].currentQuantity}
+                        min="0" 
+                        max={`${item.quantity}`}
+                        name={`${index}`}
+                        onChange={onChange}
+
+                      />
+                      {/* <Form.Control onChange={onChange} name={`${index}`} value={itemsData[index].currentQuantity} type="number" min="0" max={`${item.quantity}`} placeholder="Recieved Quantity" /> */}
                     </Form.Group>
                   </Form.Row>)
 
