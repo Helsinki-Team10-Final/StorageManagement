@@ -169,7 +169,7 @@ const onChange = ({ target }) => {
 
                 <MDBInput 
                     className="col"
-                    label="Item Quantity"
+                    label="Item Quantity (Box)"
                     icon="boxes"
                     type="number" 
                     min="1"

@@ -335,3 +335,28 @@ export const SUBMIT_REQUEST = gql`
     }
   }
 `;
+
+export const PO_HISTORY = gql`
+  query getpohistoryById ($input: ID!) {
+    poHistoriesByPoId(poId: $input) {
+      _id
+      vendorName
+      items {
+        name
+        quantity
+        currentQuantity
+      }
+      status
+      createdAt
+      updatedAt
+      expiredDate
+      user {
+        _id
+        name
+        role
+        email
+      }
+      poId
+    }
+  }
+`;

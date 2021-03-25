@@ -14,6 +14,7 @@ import ListRequest from './ListRequest'
 import DetailRequest from './DetailRequest'
 import CreateRequestBroadcast from './CreateRequestBroadcast'
 import RequestStore from './RequestStore';
+import History from './History';
 
 export default function Dashboard(props) {
   const [currentRole, setCurrentRole] = useState('')
@@ -41,6 +42,9 @@ export default function Dashboard(props) {
           <Switch>
             <Route path={`${path}/request/createBroadcast/:id`}>
               <CreateRequestBroadcast />
+            </Route>
+            <Route path={`${path}/history/:id`}>
+              <History />
             </Route>
             <Route path={`${path}/request/:id`}>
               <DetailRequest />
@@ -94,6 +98,9 @@ export default function Dashboard(props) {
         <div className="container-fluid mx-4 my-3">
           {/* Lokasi SwitchRoute Child */}
           <Switch>
+            <Route path={`${path}/history/:id`}>
+              <History />
+            </Route>
             <Route path={`${path}/addRequest`}>
               <RequestStore />
             </Route>
@@ -101,8 +108,8 @@ export default function Dashboard(props) {
               <DetailRequest />
             </Route>
             <Route path={`${path}/request`}>
-            <ListRequest />
-          </Route>
+              <ListRequest />
+            </Route>
             <Route path={`${path}/addPO`}>
               <CreatePO />
             </Route>

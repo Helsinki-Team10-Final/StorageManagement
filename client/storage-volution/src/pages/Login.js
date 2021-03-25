@@ -29,18 +29,21 @@ export default function LandingPage () {
     }
   }, [history])
 
+  useEffect(() => {
+    if (data) {
+      localStorage.setItem('access_token', data.login.access_token)
+      localStorage.setItem('name', data.login.name)
+      localStorage.setItem('role', data.login.role)
+      history.push('/main')
+    }
+  }, [data])
+
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      // console.log(formData)
+      console.log(formData)
       if (!formData.email || !formData.password) throw ({})
       await handleLogin({variables: {login: formData}})
-      if (data) {
-        localStorage.setItem('access_token', data.login.access_token)
-        localStorage.setItem('name', data.login.name)
-        localStorage.setItem('role', data.login.role)
-        history.push('/main')
-      }
     } catch (err) {
       if (err.graphQLErrors) {
         toast.error(`❌ ${err.graphQLErrors[0].extensions.message}`, {

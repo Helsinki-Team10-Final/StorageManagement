@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { DropdownButton, Dropdown } from "react-bootstrap";
 import {useState, useEffect} from 'react'
 import { MDBLink, MDBTypography, MDBBadge, MDBContainer, MDBBox } from "mdbreact";
+import gambar1 from "../assets/img/Checking-boxes-removebg-preview.png";
+import gambar2 from "../assets/img/forklift-removebg-preview.png";
 
 export default function Sidebar({showSidebar}) {
   const [roleColor, setRoleColor] = useState("")
@@ -32,8 +34,14 @@ export default function Sidebar({showSidebar}) {
       <nav id="sidebar" className={showSidebar ? "active" : null}>
         <div className="sidebar-header"></div>
         <MDBContainer className="mx-3">
-          <MDBBox style={{margin: 0, textTransform: "capitalize"}} tag="h3">{localStorage.getItem("name")}</MDBBox>
-          <h5><MDBBadge style={{margin: 0, textTransform: "capitalize"}} color={roleColor}>{localStorage.getItem("role")}</MDBBadge></h5>
+          <MDBBox style={{ margin: 0, textTransform: "capitalize" }} tag="h3">
+            {localStorage.getItem("name")}
+          </MDBBox>
+          <h5>
+            <MDBBadge style={{ margin: 0, textTransform: "capitalize" }} color={roleColor}>
+              {localStorage.getItem("role")}
+            </MDBBadge>
+          </h5>
         </MDBContainer>
         <ul className="list-unstyled components">
           <li>
@@ -80,6 +88,16 @@ export default function Sidebar({showSidebar}) {
             </>
           )}
         </ul>
+        {role === "checker" && (
+          <>
+            <img alt="example" class="img-fluid rounded" src={gambar1} />
+          </>
+        )}
+        {role === "picker" && (
+          <>
+            <img alt="example" class="img-fluid rounded" src={gambar2} />
+          </>
+        )}
       </nav>
     </>
   );
