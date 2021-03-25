@@ -80,10 +80,10 @@ export default function CreatePO(props) {
                   <Form.Label><h5><i className="fa fa-user"/> PO Items</h5></Form.Label>
                 </Form.Group>
                 <Form.Group className="col" >
-                  <Form.Label><h5><i className="fa fa-user"/> PO Quantity</h5></Form.Label>
+                  <Form.Label><h5><i className="fa fa-user"/> PO Quantity (Box)</h5></Form.Label>
                 </Form.Group>
                 <Form.Group className="col" >
-                  <Form.Label><h5><i className="fa fa-user"/> Recieved Quantity</h5></Form.Label>
+                  <Form.Label><h5><i className="fa fa-user"/> Recieved Quantity (Box)</h5></Form.Label>
                 </Form.Group>
               </Form.Row>
               {

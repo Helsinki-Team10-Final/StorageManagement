@@ -59,8 +59,8 @@ export default function ListPOK(props) {
               <tr>
                 <th style={{ fontWeight: 600 }}>QR Code</th>
                 <th style={{ fontWeight: 600 }}>Item</th>
-                <th style={{ fontWeight: 600 }}>PO Quantity</th>
-                <th style={{ fontWeight: 600 }}>Actual Quantity</th>
+                <th style={{ fontWeight: 600 }}>PO Quantity (Box)</th>
+                <th style={{ fontWeight: 600 }}>Actual Quantity (Box)</th>
               </tr>
             </MDBTableHead>
             <MDBTableBody>

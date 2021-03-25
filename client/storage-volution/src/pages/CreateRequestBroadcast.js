@@ -152,7 +152,7 @@ export default function CreateRequestBroadcast (props) {
                                       </Form.Control>
                                   </Form.Group>
                                   <Form.Group className="col-md-3" >
-                                    <Form.Label><h5><i className="fa fa-user"/> Quantity</h5></Form.Label>
+                                    <Form.Label><h5><i className="fa fa-user"/> Quantity (Box)</h5></Form.Label>
                                     <Form.Control readOnly value={po.quantity} type="number" />
                                   </Form.Group>
                                   <Form.Group className="col-md-3" >
@@ -187,14 +187,14 @@ export default function CreateRequestBroadcast (props) {
                               </Form.Control>
                           </Form.Group>
                           <Form.Group className="col-md-3" >
-                            <Form.Label><h5><i className="fa fa-user"/> PO Quantity</h5></Form.Label>
+                            <Form.Label><h5><i className="fa fa-user"/> PO Quantity (Box)</h5></Form.Label>
 
                             <Form.Control readOnly value={itemsPOTemp[index].selected ? itemsPOTemp[index].selected.current_quantity : "-"} type="number" />
                             
                             
                           </Form.Group>
                           <Form.Group className="col-md-3" >
-                            <Form.Label><h5><i className="fa fa-user"/> Quantity</h5></Form.Label>
+                            <Form.Label><h5><i className="fa fa-user"/> Quantity (Box)</h5></Form.Label>
                             <Form.Control disabled={itemsPOTemp[index].selected ? false : true} ref={elementsRef.current[index]} min="0" max={itemsPOTemp[index].selected ? (item.quantityRequest - countAddedPO(index) < itemsPOTemp[index].current_quantity ? itemsPOTemp[index].current_quantity : item.quantityRequest - countAddedPO(index) ) : item.quantityRequest - countAddedPO(index) } id={`quantity_${index}`} type="number" />
                           </Form.Group>
                           <Form.Group className="col-md-3" >

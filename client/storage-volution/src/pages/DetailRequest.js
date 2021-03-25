@@ -26,12 +26,12 @@ const [datatable, setDatatable] = React.useState({
       },
     },
     {
-      label: "Request Quantity",
+      label: "Request Quantity (Box)",
       field: "requestQuantity",
       width: 270,
     },
     {
-      label: "Storage Quantity",
+      label: "Storage Quantity (Box)",
       field: "storageQuantity",
       sort: "desc",
       width: 200,
