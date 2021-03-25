@@ -36,6 +36,7 @@ export default function ListPOK(props) {
       {
         label: "Status",
         field: "status",
+        sort: "disabled",
         width: 100,
       },
       {
@@ -45,7 +46,7 @@ export default function ListPOK(props) {
         width: 150,
       },
     ],
-    rows: []
+    rows: [],
   });
 
   useEffect(() => {
@@ -102,6 +103,7 @@ export default function ListPOK(props) {
           <h1 className="col-md-4">Purchasing Orders</h1>
         </div>
         <MDBDataTableV5
+          order={["created", "desc"]}
           hover
           entriesOptions={[5, 10, 15]}
           entries={5}

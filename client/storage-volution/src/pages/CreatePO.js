@@ -112,14 +112,13 @@ export default function CreatePO(props) {
                   />
                   <MDBInput 
                     className="col"
-                    label="Item Quantity"
+                    label="Item Quantity (Box)"
                     icon="boxes"
                     type="number" 
                     min="1"
                     value={formData.items[index].quantity}
                     name={`Qty_${index}`}
                     onChange={onChange}
-
                   />
                   
                 </MDBRow>

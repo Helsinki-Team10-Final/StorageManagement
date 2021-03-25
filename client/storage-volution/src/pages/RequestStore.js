@@ -154,7 +154,7 @@ const onChange = ({ target }) => {
             <Form.Group key={i} controlId="exampleForm.ControlInput1">
               <Form.Label>Name</Form.Label>
               <Form.Control name="itemName" type="text" placeholder="item" value={item.itemName} disabled />
-              <Form.Label>Quantity</Form.Label>
+              <Form.Label>Quantity (Box)</Form.Label>
               <Form.Control name={`${i}`} type="number" placeholder="quantity" min="0" value={item.quantityRequest} onChange={onChange} />
             </Form.Group>
           );

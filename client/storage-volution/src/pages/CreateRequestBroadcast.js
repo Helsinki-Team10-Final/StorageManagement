@@ -150,7 +150,7 @@ export default function CreateRequestBroadcast (props) {
                                       </Form.Control>
                                   </Form.Group>
                                   <Form.Group className="col-md-3" >
-                                    <Form.Label><h5><i className="fa fa-user"/> Quantity</h5></Form.Label>
+                                    <Form.Label><h5><i className="fa fa-user"/> Quantity (Box)</h5></Form.Label>
                                     <Form.Control readOnly value={po.quantity} type="number" />
                                   </Form.Group>
                                   <Form.Group className="col-md-3" >
