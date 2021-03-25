@@ -4,6 +4,8 @@ import {useState, useEffect} from 'react'
 import { MDBLink, MDBTypography, MDBBadge, MDBContainer, MDBBox } from "mdbreact";
 import gambar1 from "../assets/img/Checking-boxes-removebg-preview.png";
 import gambar2 from "../assets/img/forklift-removebg-preview.png";
+import logoAdmin from "../assets/img/admin.png";
+import logoBuyer from "../assets/img/buyer.png";
 
 export default function Sidebar({showSidebar}) {
   const [roleColor, setRoleColor] = useState("")
@@ -74,6 +76,9 @@ export default function Sidebar({showSidebar}) {
                   </MDBTypography>
                 </MDBLink>
               </li>
+              <>
+                <img alt="example" class="img-fluid rounded" src={logoBuyer} />
+              </>
             </>
           )}
           {role === "warehouseadmin" && (
@@ -85,6 +90,9 @@ export default function Sidebar({showSidebar}) {
                   </MDBTypography>
                 </MDBLink>
               </li>
+              <>
+                <img alt="example" class="img-fluid rounded" src={logoAdmin} />
+              </>
             </>
           )}
         </ul>

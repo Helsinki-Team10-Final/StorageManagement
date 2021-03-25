@@ -3,23 +3,22 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Form, Button, Container } from "react-bootstrap";
-import Loading from "../components/Loading.js"
+import Loading from "../components/Loading.js";
 import { SUBMIT_REQUEST, GET_REQUESTS } from "../config/queries";
-import { MDBRow, MDBInput, MDBBtn } from 'mdbreact';
-
+import { MDBRow, MDBInput, MDBBtn } from "mdbreact";
 
 const GET_ITEM = gql`
- query storeAndItemForCreateReq{
-  items{
-    _id
-    name
-    quantity
+  query storeAndItemForCreateReq {
+    items {
+      _id
+      name
+      quantity
+    }
+    stores {
+      _id
+      name
+    }
   }
-  stores{
-    _id
-    name
-  }
-}
 `;
 
 export default function RequestStore(props) {
@@ -37,43 +36,42 @@ export default function RequestStore(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!item) return
+    if (!item) return;
     const newData = itemsData.filter((el) => {
-      return (el._id !== item)
-    })
-    setItemsData(newData)
-    console.log(newData, "newData")
+      return el._id !== item;
+    });
+    setItemsData(newData);
+    console.log(newData, "newData");
 
     const itemData = data.items.filter((el) => {
       if (el._id == item) return el;
     });
     // console.log(itemData, "item data");
     //  console.log(data.items);
-    
-    setListItem([...listItem, { itemId: itemData[0]._id, itemName: itemData[0].name, quantityRequest: 0 }]);
-    setItem("")
-    document.getElementById("selectItem").value = "";
 
+    setListItem([...listItem, { itemId: itemData[0]._id, itemName: itemData[0].name, quantityRequest: 0 }]);
+    setItem("");
+    document.getElementById("selectItem").value = "";
   }
 
- function handleChangeStore({target}){
+  function handleChangeStore({ target }) {
     // console.log(target, "target.value");
-   
-  const itemData = data.stores.filter((el) => {
+
+    const itemData = data.stores.filter((el) => {
       if (el._id == target.value) return el;
     });
-    setStore({...itemData[0]});
- }
+    setStore({ ...itemData[0] });
+  }
 
-const onChange = ({ target }) => {
-  let { value, name } = target;
-  console.log(value, name)
-  let temp = [...listItem];
-  temp[+name] = { ...temp[+name], quantityRequest: +value };
-  setListItem(temp);
-};
+  const onChange = ({ target }) => {
+    let { value, name } = target;
+    console.log(value, name);
+    let temp = [...listItem];
+    temp[+name] = { ...temp[+name], quantityRequest: +value };
+    setListItem(temp);
+  };
 
-  const handleSubmit2 = async (e) =>{
+  const handleSubmit2 = async (e) => {
     try {
       e.preventDefault();
       if (!store.name) {
@@ -91,7 +89,8 @@ const onChange = ({ target }) => {
         variables: {
           input,
           access_token: localStorage.getItem("access_token"),
-        }, refetchQueries: [{query: GET_REQUESTS}]
+        },
+        refetchQueries: [{ query: GET_REQUESTS }],
       });
       toast.success(`✅ Request Store Created`);
       history.push("/main/request");
@@ -106,7 +105,7 @@ const onChange = ({ target }) => {
         progress: undefined,
       });
     }
-  }
+  };
 
   if (loading) {
     return <Loading></Loading>;
@@ -116,7 +115,11 @@ const onChange = ({ target }) => {
       {/* {console.log(data)} */}
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="exampleForm.ControlSelect1">
-          <Form.Label><h5><i className="fa fa-box"/> Warehouse's Items</h5></Form.Label>
+          <Form.Label>
+            <h5>
+              <i className="fa fa-box" /> Warehouse's Items
+            </h5>
+          </Form.Label>
           <Form.Control
             className="col-md-5"
             id="selectItem"
@@ -141,7 +144,11 @@ const onChange = ({ target }) => {
       </Form>
       <hr />
       <Form onSubmit={handleSubmit2}>
-        <Form.Label><h5><i className="fa fa-store"/> Store's Name</h5></Form.Label>
+        <Form.Label>
+          <h5>
+            <i className="fa fa-store" /> Store's Name
+          </h5>
+        </Form.Label>
         <Form.Control name="storeName" className="col-md-5" as="select" onChange={handleChangeStore} defaultValue="">
           <option value="" disabled>
             ---Select Store---
@@ -153,35 +160,36 @@ const onChange = ({ target }) => {
             </option>
           ))}
         </Form.Control>
-        <Form.Label className="mt-4"><h5><i className="fa fa-box"/> List Items</h5></Form.Label>
-        <Container className="col mt-3" fluid style={{maxHeight: '40vh', overflowY: 'auto'}}>
+
+        <Form.Label className="mt-4">
+          <h5>
+            <i className="fa fa-box" /> List Items
+          </h5>
+        </Form.Label>
+        <Container className="col mt-3" fluid style={{ maxHeight: "40vh", overflowY: "auto" }}>
           {listItem.map((item, i) => {
             return (
               <MDBRow key={i} className="ml-3">
+                <MDBInput className="col" label="Item Name" icon="box" value={item.itemName} name={`Name_${i}`} disabled />
+
                 <MDBInput
                   className="col"
-                  label="Item Name"
-                  icon="box"
-                  value={item.itemName}
-                  name={`Name_${i}`}
-                  disabled
-                />
-
-                <MDBInput 
-                    className="col"
-                    label="Item Quantity (Box)"
-                    icon="boxes"
-                    type="number" 
-                    min="1"
-                    name={i}
-                    value={item.quantityRequest}
-                    onChange={onChange}
+                  label="Item Quantity (Box)"
+                  icon="boxes"
+                  type="number"
+                  min="1"
+                  name={i}
+                  value={item.quantityRequest}
+                  onChange={onChange}
                 />
               </MDBRow>
             );
           })}
         </Container>
-        <Button type="submit" className="mt-2"> Submit </Button>
+        <Button type="submit" className="mt-2">
+          {" "}
+          Submit{" "}
+        </Button>
       </Form>
     </>
   );
