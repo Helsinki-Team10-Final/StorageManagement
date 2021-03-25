@@ -2,7 +2,7 @@ import {useQuery, gql} from '@apollo/client'
 import {Link, useHistory } from "react-router-dom"
 import {GET_BROADCASTS_CHECKER, GET_BROADCASTS_PICKER} from "../config/queries"
 import React, { useState, useEffect } from "react";
-import { MDBDataTableV5, MDBBtn, MDBTypography  } from "mdbreact";
+import { MDBDataTableV5, MDBBtn, MDBBadge, MDBTypography, MDBBox} from "mdbreact";
 import Loading from '../components/Loading';
 
 export default function ListPOK({type}) {
@@ -34,6 +34,7 @@ export default function ListPOK({type}) {
       {
         label: "Status",
         field: "status",
+        sort: "disabled",
         width: 100,
       },
       {
@@ -49,19 +50,19 @@ export default function ListPOK({type}) {
   useEffect(() => {
     if (data && type === "checker") {
       console.log(data, "data<<<<<<<<<<<<<<<<")
-      const filterData = data.broadcastChecker.broadcasts.map((po) => {
+      const filterData = data.broadcastChecker.broadcasts.map((broadcast) => {
         let obj = {
-          broadcastID: po._id,
-          vendor: po.purchasingOrder.vendorName,
-          created: new Date(po.purchasingOrder.createdAt).toLocaleString().slice(0, 9),
-          status: po.purchasingOrder.status,
+          broadcastID: broadcast._id,
+          vendor: broadcast.purchasingOrder.vendorName,
+          created: new Date(broadcast.purchasingOrder.createdAt).toLocaleString().slice(0, 9),
+          status: <h5 style={{margin: 0}}><MDBBadge style={{textTransform: "capitalize"}} color={setStatusBadge(broadcast.purchasingOrder.status)}>{broadcast.purchasingOrder.status}</MDBBadge></h5>,
           action: (
             <MDBBtn
               rounded
               color="mdb-color"
               size="sm"
               onClick={() => {
-                history.push(`/main/checking/${po._id}`);
+                history.push(`/main/checking/${broadcast._id}`);
               }}
             >
               Check PO
@@ -100,6 +101,7 @@ export default function ListPOK({type}) {
       {
         label: "Status",
         field: "status",
+        sort: "disabled",
         width: 100,
       },
       {
@@ -115,13 +117,13 @@ export default function ListPOK({type}) {
 useEffect(() => {
   if (data && type === "picker") {
     // console.log(data, "data<<<<<<<<<<<<<<<<")
-    const filterData = data.broadcastPicker.broadcasts.map((po) => {
+    const filterData = data.broadcastPicker.broadcasts.map((broadcast) => {
       let obj = {
-        broadcastID: po._id,
-        storeName: po.StoreReq.storeName,
-        created: new Date(po.StoreReq.createdAt).toLocaleString().slice(0, 9),
-        status: po.StoreReq.status,
-        action: <Link to={`/main/picking/${po._id}`}>Pick Request</Link>,
+        broadcastID: broadcast._id,
+        storeName: broadcast.StoreReq.storeName,
+        created: new Date(broadcast.StoreReq.createdAt).toLocaleString().slice(0, 9),
+        status: <h5 style={{margin: 0}}><MDBBadge style={{textTransform: "capitalize"}} color={setStatusBadge(broadcast.StoreReq.status)}>{broadcast.StoreReq.status}</MDBBadge></h5>,
+        action: <Link to={`/main/picking/${broadcast._id}`}>Pick Request</Link>,
       };
       return obj;
     });
@@ -133,6 +135,17 @@ useEffect(() => {
   useEffect(() => {
     refetch()
   }, [])
+
+  const setStatusBadge = (status) => {
+    switch (status) {
+      case "checking":
+        return "primary"
+      case "picking":
+        return "secondary"
+      default:
+        return "light"
+    }
+  }
 
   if (loading) {
     return (
@@ -146,17 +159,36 @@ useEffect(() => {
     <>
       <div>
         <div className="mb-5">
-          <h1 className="col-md-4">List Broadcast</h1>
-        </div>
-        <div style={{ height: "73vh", overflowY: "auto" }}>
+          <h2 className="col-md-4">List Broadcast</h2>
         </div>
         {data.broadcastPicker.unfinishedBroadcast && (
           <>
-            <Link className="btn btn-primary" to={`/main/picking/${data.broadcastPicker.unfinishedBroadcast._id}`}>
+            <MDBTypography blockquote bqColor='danger'>
+              <MDBBox tag='p' mb={0} className='bq-title'>
+                You Have Unfinished Task
+              </MDBBox>
+              <p style={{margin: 0}}>
+                Please finish your existing task first before picking a new task.
+              </p>
+            <Link className="btn btn-primary btn" to={`/main/picking/${data.broadcastPicker.unfinishedBroadcast._id}`}>
               Back to previous Task
             </Link>
+            </MDBTypography>
           </>
         )}
+        <div>
+          <MDBDataTableV5
+            hover
+            entriesOptions={[5, 10, 15]}
+            entries={5}
+            pagesAmount={4}
+            data={datatable2}
+            pagingTop
+            searchTop
+            searchBottom={false}
+            striped="dark"
+          />
+        </div>
       </div>
     </>
   )
@@ -165,10 +197,20 @@ useEffect(() => {
     <>
       <div>
         <div className="mb-5">
-          <h1 className="col-md-4">List Broadcast</h1>
+          <h2 className="col-md-4">List Broadcast</h2>
         </div>
-        <div style={{ height: "73vh", overflowY: "auto" }}>
-          <MDBDataTableV5 hover entriesOptions={[10, 15, 20]} entries={10} pagesAmount={4} data={datatable} />;
+        <div>
+        <MDBDataTableV5
+          hover
+          entriesOptions={[5, 10, 15]}
+          entries={5}
+          pagesAmount={4}
+          data={datatable}
+          pagingTop
+          searchTop
+          searchBottom={false}
+          striped="dark"
+        />
         </div>
         {data.broadcastChecker.unfinishedBroadcast && (
           <>

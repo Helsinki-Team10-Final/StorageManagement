@@ -98,6 +98,9 @@ export default function Dashboard(props) {
         <div className="container-fluid mx-4 my-3">
           {/* Lokasi SwitchRoute Child */}
           <Switch>
+            <Route path={`${path}/history/:id`}>
+              <History />
+            </Route>
             <Route path={`${path}/addRequest`}>
               <RequestStore />
             </Route>
@@ -105,8 +108,8 @@ export default function Dashboard(props) {
               <DetailRequest />
             </Route>
             <Route path={`${path}/request`}>
-            <ListRequest />
-          </Route>
+              <ListRequest />
+            </Route>
             <Route path={`${path}/addPO`}>
               <CreatePO />
             </Route>
