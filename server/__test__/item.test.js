@@ -175,7 +175,7 @@ describe('Item Test', () => {
       const input  = 12
 
       const response = await Item.updateOne(id, input)
-      console.log(response, 'update item')
+      // console.log(response, 'update item')
       expect(response).toHaveProperty('_id')
       expect(response).toHaveProperty('name', expect.any(String))
       expect(response).toHaveProperty('quantity', expect.any(Number))
@@ -204,10 +204,12 @@ describe('Item Test', () => {
       // console.log(response, 'find all toko')
       expect(typeof response.data.stores).toEqual('object')
     })
+    
     test('DELETE: response.result.ok should return 1', async () => {
       const response = await Item.deleteOne(id)
-      console.log(response.result, 'ini dari delete')
-      expect(response.result.ok).toBeTruthy()
+      // console.log(response.result, 'ini dari delete')
+      expect(response.result.ok).toEqual(1)
+      expect(response.deletedCount).toEqual(1)
     })
   })
 
@@ -247,6 +249,8 @@ describe('Item Test', () => {
     
       // act
       const response = await mutate({ mutation: CREATE_ITEM, variables: input });
+      // console.log(response,'dariitemgagal')
+      expect(response.errors).toBeDefined()
     })
   })
 })

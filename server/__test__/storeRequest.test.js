@@ -1,6 +1,7 @@
 const server = require('../app')
 const { connect, getDatabase } = require('../config/mongodb')
 const { createTestClient } = require('apollo-server-testing')
+const Store = require('../models/store')
 const { query, mutate } = createTestClient(server);
 
 describe('Store Request Test', () => {
@@ -14,6 +15,8 @@ describe('Store Request Test', () => {
   let itemData1;
   let itemData2;
   let requestId
+  let store1;
+  let store2;
 
   beforeAll(async () => {
     await connect()
@@ -208,16 +211,6 @@ describe('Store Request Test', () => {
         }
       `
 
-      // const inputCheck1 = {
-      //   idPurchasingOrder: idPO1,
-      //   access_token: access_token_warehouseadmin
-      // }
-
-      // const inputCheck2 = {
-      //   idPurchasingOrder: IdPO2,
-      //   access_token: access_token_warehouseadmin
-      // }
-
       const responseCheck1 = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: {idPurchasingOrder: idPO1, access_token: access_token_warehouseadmin} })
       const responseCheck2 = await mutate({ mutation: CREATE_BROADCAST_CHECKER, variables: {idPurchasingOrder: idPO2, access_token: access_token_warehouseadmin} })
       // console.log(responseCheck1, 'ini bc 111111')
@@ -244,10 +237,23 @@ describe('Store Request Test', () => {
 
       const responseUp1 = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_checker, idPO: idPO1, idBroadCast: idBroadCastCheck}})
       const responseUp2 = await mutate({ mutation: CHECKER_UPDATE_ITEM, variables: { items, access_token: access_token_checker, idPO: idPO2, idBroadCast: idBroadCastCheck}})
-      console.log(responseUp2, 'ceki ceki')
+      // console.log(responseUp2, 'ceki ceki')
+
+
+      //Create Store
+      const inputStore1 = {
+        name: 'Toko A'
+      }
+
+      const inputStore2 = {
+        name: 'Toko B'
+      }
       
 
-
+      const responseStore1 = await Store.create(inputStore1)
+      const responseStore2 = await Store.create(inputStore2)
+      store1 = responseStore1.ops[0]
+      store2 = responseStore2.ops[0]
   })
 
   afterAll(async () => {
@@ -256,6 +262,7 @@ describe('Store Request Test', () => {
     await getDatabase().collection('purchasingorders').deleteMany({})
     await getDatabase().collection('broadcasts').deleteMany({})
     await getDatabase().collection('items').deleteMany({})
+    await getDatabase().collection('stores').deleteMany({})
   })
 
   describe('Store request success case', () => {
@@ -264,6 +271,7 @@ describe('Store Request Test', () => {
         mutation createRequest($request: RequestInput!, $access_token: String!){
           createRequest(request: $request, access_token: $access_token) {
             _id
+            storeId
             storeName
             items {
               itemId
@@ -276,8 +284,10 @@ describe('Store Request Test', () => {
           }
         }
       `
+
       const input = {
-        storeName: 'Toko Di Depan',
+        storeName: store1.name,
+        storeId: `${store1._id}`,
         items: [
           {
             itemId: itemData1._id,
@@ -405,6 +415,7 @@ describe('Store Request Test', () => {
         mutation createRequest($request: RequestInput!, $access_token: String!){
           createRequest(request: $request, access_token: $access_token) {
             _id
+            storeId
             storeName
             items {
               itemId
@@ -417,8 +428,10 @@ describe('Store Request Test', () => {
           }
         }
       `
+      
       const input = {
-        storeName: 'Toko Di Depan',
+        storeName: store1.name,
+        storeId: `${store1._id}`,
         items: [
           {
             itemId: itemData1._id,
@@ -434,7 +447,7 @@ describe('Store Request Test', () => {
       }
   
       const response = await mutate({ mutation: CREATE_STORE_REQUEST, variables: { request: input, access_token: access_token_checker }})
-      console.log(response.errors, 'error create store request')
+      // console.log(response, 'error create store request')
       expect(response.errors).toBeDefined()
     })
 
